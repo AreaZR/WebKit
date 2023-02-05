@@ -51,8 +51,8 @@ void SearchFieldResultsMac::updateCellStates(const FloatRect& rect, const Contro
 {
     SearchControlMac::updateCellStates(rect, style);
 
-    if ([m_searchFieldCell searchMenuTemplate] != m_searchMenuTemplate)
-        [m_searchFieldCell setSearchMenuTemplate:m_searchMenuTemplate.get()];
+    if (m_searchFieldCell.searchMenuTemplate != m_searchMenuTemplate)
+        m_searchFieldCell.searchMenuTemplate = m_searchMenuTemplate.get();
 }
 
 void SearchFieldResultsMac::draw(GraphicsContext& context, const FloatRoundedRect& borderRect, float deviceScaleFactor, const ControlStyle& style)
@@ -74,7 +74,7 @@ void SearchFieldResultsMac::draw(GraphicsContext& context, const FloatRoundedRec
 
     auto *view = m_controlFactory.drawingView(borderRect.rect(), style);
 
-    drawCell(context, logicalRect, deviceScaleFactor, style, [m_searchFieldCell searchButtonCell], view, true);
+    drawCell(context, logicalRect, deviceScaleFactor, style, m_searchFieldCell.searchButtonCell, view, true);
 
     END_BLOCK_OBJC_EXCEPTIONS
 }

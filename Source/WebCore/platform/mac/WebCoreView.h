@@ -24,5 +24,5 @@
  */
 
 @interface NSView (WebCoreView)
-- (NSView *)_webcore_effectiveFirstResponder;
+@property (nonatomic, readonly, strong) NSView *_webcore_effectiveFirstResponder;
 @end

@@ -50,7 +50,7 @@
 - (void)addStreamDataParser:(AVStreamDataParser *)streamDataParser;
 - (void)removeStreamDataParser:(AVStreamDataParser *)streamDataParser;
 - (void)expire;
-- (NSData *)contentProtectionSessionIdentifier;
+@property (nonatomic, readonly, copy) NSData *contentProtectionSessionIdentifier;
 + (NSArray *)pendingExpiredSessionReportsWithAppIdentifier:(NSData *)appIdentifier storageDirectoryAtURL:(NSURL *)storageURL;
 + (void)removePendingExpiredSessionReports:(NSArray *)expiredSessionReports withAppIdentifier:(NSData *)appIdentifier storageDirectoryAtURL:(NSURL *)storageURL;
 @end
@@ -61,7 +61,7 @@
 @end
 
 @implementation WebCDMSessionAVStreamSessionObserver
-- (id)initWithParent:(WebCore::CDMSessionAVStreamSession *)parent
+- (instancetype)initWithParent:(WebCore::CDMSessionAVStreamSession *)parent
 {
     if ((self = [super init]))
         m_parent = parent;
@@ -70,7 +70,7 @@
 
 - (void)contentProtectionSessionIdentifierChanged:(NSNotification *)notification
 {
-    AVStreamSession* streamSession = (AVStreamSession*)[notification object];
+    AVStreamSession* streamSession = (AVStreamSession*)notification.object;
 
     NSData* identifier = [streamSession contentProtectionSessionIdentifier];
     RetainPtr<NSString> sessionIdentifierString = identifier ? adoptNS([[NSString alloc] initWithData:identifier encoding:NSUTF8StringEncoding]) : nil;
@@ -148,14 +148,14 @@ void CDMSessionAVStreamSession::releaseKeys()
         for (NSData* expiredSessionData in expiredSessions) {
             static const NSString *PlaybackSessionIdKey = @"PlaybackSessionID";
             NSDictionary *expiredSession = [NSPropertyListSerialization propertyListWithData:expiredSessionData options:kCFPropertyListImmutable format:nullptr error:nullptr];
-            NSString *playbackSessionIdValue = (NSString *)[expiredSession objectForKey:PlaybackSessionIdKey];
+            NSString *playbackSessionIdValue = (NSString *)expiredSession[PlaybackSessionIdKey];
             if (![playbackSessionIdValue isKindOfClass:[NSString class]])
                 continue;
 
             if (m_sessionId == String(playbackSessionIdValue)) {
                 ALWAYS_LOG(LOGIDENTIFIER, "found session, sending expiration message");
                 m_expiredSession = expiredSessionData;
-                m_client->sendMessage(Uint8Array::create(static_cast<const uint8_t*>([m_expiredSession bytes]), [m_expiredSession length]).ptr(), emptyString());
+                m_client->sendMessage(Uint8Array::create(static_cast<const uint8_t*>(m_expiredSession.bytes), m_expiredSession.length).ptr(), emptyString());
                 break;
             }
         }
@@ -251,7 +251,7 @@ bool CDMSessionAVStreamSession::update(Uint8Array* key, RefPtr<Uint8Array>& next
         }
 
         ALWAYS_LOG(LOGIDENTIFIER, "generated key request");
-        nextMessage = Uint8Array::create([request length]);
+        nextMessage = Uint8Array::create(request.length);
         [request getBytes:nextMessage->data() length:nextMessage->length()];
         return false;
     }
@@ -324,7 +324,7 @@ RefPtr<Uint8Array> CDMSessionAVStreamSession::generateKeyReleaseMessage(unsigned
     }
 
     NSArray* expiredSessions = [PAL::getAVStreamSessionClass() pendingExpiredSessionReportsWithAppIdentifier:certificateData.get() storageDirectoryAtURL:[NSURL fileURLWithPath:storagePath]];
-    if (![expiredSessions count]) {
+    if (!expiredSessions.count) {
         ALWAYS_LOG("no expired sessions found");
 
         errorCode = MediaPlayer::KeySystemNotSupported;
@@ -336,8 +336,8 @@ RefPtr<Uint8Array> CDMSessionAVStreamSession::generateKeyReleaseMessage(unsigned
 
     errorCode = 0;
     systemCode = 0;
-    m_expiredSession = [expiredSessions firstObject];
-    return Uint8Array::tryCreate(static_cast<const uint8_t*>([m_expiredSession bytes]), [m_expiredSession length]);
+    m_expiredSession = expiredSessions.firstObject;
+    return Uint8Array::tryCreate(static_cast<const uint8_t*>(m_expiredSession.bytes), m_expiredSession.length);
 }
 
 }

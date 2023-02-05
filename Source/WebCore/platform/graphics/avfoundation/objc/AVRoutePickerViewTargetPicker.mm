@@ -47,7 +47,7 @@ using namespace WebCore;
     WeakPtr<AVRoutePickerViewTargetPicker> m_callback;
 }
 
-- (instancetype)initWithCallback:(WeakPtr<AVRoutePickerViewTargetPicker>&&)callback;
+- (instancetype)initWithCallback:(WeakPtr<AVRoutePickerViewTargetPicker>&&)callback NS_DESIGNATED_INITIALIZER;
 - (void)clearCallback;
 - (void)notificationHandler:(NSNotification *)notification;
 - (void)routePickerViewDidEndPresentingRoutes:(AVRoutePickerView *)routePickerView;
@@ -98,7 +98,7 @@ AVRoutePickerView *AVRoutePickerViewTargetPicker::devicePicker()
 {
     if (!m_routePickerView) {
         m_routePickerView = adoptNS([allocAVRoutePickerViewInstance() init]);
-        [m_routePickerView setDelegate:m_routePickerViewDelegate.get()];
+        m_routePickerView.delegate = m_routePickerViewDelegate.get();
     }
 
     return m_routePickerView.get();
@@ -109,7 +109,7 @@ AVRouteDetector *AVRoutePickerViewTargetPicker::routeDetector()
     if (!m_routeDetector) {
         m_routeDetector = adoptNS([PAL::allocAVRouteDetectorInstance() init]);
         [[NSNotificationCenter defaultCenter] addObserver:m_routePickerViewDelegate.get() selector:@selector(notificationHandler:) name:PAL::AVRouteDetectorMultipleRoutesDetectedDidChangeNotification object:m_routeDetector.get()];
-        if ([m_routeDetector multipleRoutesDetected])
+        if (m_routeDetector.multipleRoutesDetected)
             availableDevicesDidChange();
     }
 
@@ -199,8 +199,8 @@ bool AVRoutePickerViewTargetPicker::hasActiveRoute() const
     if (!m_outputContext)
         return false;
 
-    if ([m_outputContext respondsToSelector:@selector(supportsMultipleOutputDevices)] && [m_outputContext respondsToSelector:@selector(outputDevices)]&& [m_outputContext supportsMultipleOutputDevices]) {
-        for (AVOutputDevice *outputDevice in [m_outputContext outputDevices]) {
+    if ([m_outputContext respondsToSelector:@selector(supportsMultipleOutputDevices)] && [m_outputContext respondsToSelector:@selector(outputDevices)]&& m_outputContext.supportsMultipleOutputDevices) {
+        for (AVOutputDevice *outputDevice in m_outputContext.outputDevices) {
             if (outputDevice.deviceFeatures & (AVOutputDeviceFeatureVideo | AVOutputDeviceFeatureAudio))
                 return true;
         }
@@ -209,11 +209,11 @@ bool AVRoutePickerViewTargetPicker::hasActiveRoute() const
     }
 
     if ([m_outputContext respondsToSelector:@selector(outputDevice)]) {
-        if (auto *outputDevice = [m_outputContext outputDevice])
+        if (auto *outputDevice = m_outputContext.outputDevice)
             return outputDevice.deviceFeatures & (AVOutputDeviceFeatureVideo | AVOutputDeviceFeatureAudio);
     }
 
-    return [m_outputContext deviceName];
+    return m_outputContext.deviceName;
 }
 
 void AVRoutePickerViewTargetPicker::currentDeviceDidChange()
@@ -279,9 +279,9 @@ void AVRoutePickerViewTargetPicker::devicePickerWasDismissed()
         if (!m_callback)
             return;
 
-        if ([[notification name] isEqualToString:PAL::AVOutputContextOutputDevicesDidChangeNotification])
+        if ([notification.name isEqualToString:PAL::AVOutputContextOutputDevicesDidChangeNotification])
             m_callback->currentDeviceDidChange();
-        else if ([[notification name] isEqualToString:PAL::AVRouteDetectorMultipleRoutesDetectedDidChangeNotification])
+        else if ([notification.name isEqualToString:PAL::AVRouteDetectorMultipleRoutesDetectedDidChangeNotification])
             m_callback->availableDevicesDidChange();
     });
 }

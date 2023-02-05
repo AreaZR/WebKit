@@ -79,7 +79,7 @@ static std::optional<double> cookieExpiry(NSHTTPCookie *cookie)
     NSDate *expiryDate = cookie.expiresDate;
     if (!expiryDate)
         return std::nullopt;
-    return [expiryDate timeIntervalSince1970] * 1000.0;
+    return expiryDate.timeIntervalSince1970 * 1000.0;
 }
 
 static Cookie::SameSitePolicy coreSameSitePolicy(NSHTTPCookieStringPolicy _Nullable policy)
@@ -138,47 +138,47 @@ Cookie::operator NSHTTPCookie * _Nullable () const
     NSMutableDictionary *properties = [NSMutableDictionary dictionaryWithCapacity:14];
 
     if (!comment.isNull())
-        [properties setObject:(NSString *)comment forKey:NSHTTPCookieComment];
+        properties[NSHTTPCookieComment] = (NSString *)comment;
 
     if (!commentURL.isNull())
-        [properties setObject:(NSURL *)commentURL forKey:NSHTTPCookieCommentURL];
+        properties[NSHTTPCookieCommentURL] = (NSURL *)commentURL;
 
     if (!domain.isNull())
-        [properties setObject:(NSString *)domain forKey:NSHTTPCookieDomain];
+        properties[NSHTTPCookieDomain] = (NSString *)domain;
 
     if (!name.isNull())
-        [properties setObject:(NSString *)name forKey:NSHTTPCookieName];
+        properties[NSHTTPCookieName] = (NSString *)name;
 
     if (!path.isNull())
-        [properties setObject:(NSString *)path forKey:NSHTTPCookiePath];
+        properties[NSHTTPCookiePath] = (NSString *)path;
 
     if (!value.isNull())
-        [properties setObject:(NSString *)value forKey:NSHTTPCookieValue];
+        properties[NSHTTPCookieValue] = (NSString *)value;
 
     if (expires) {
         NSDate *expirationDate = [NSDate dateWithTimeIntervalSince1970:*expires / 1000.0];
-        [properties setObject:expirationDate forKey:NSHTTPCookieExpires];
+        properties[NSHTTPCookieExpires] = expirationDate;
     }
 
-    [properties setObject:@(created / 1000.0 - NSTimeIntervalSince1970) forKey:@"Created"];
+    properties[@"Created"] = @(created / 1000.0 - NSTimeIntervalSince1970);
 
     auto* portString = portStringFromVector(ports);
     if (portString)
-        [properties setObject:portString forKey:NSHTTPCookiePort];
+        properties[NSHTTPCookiePort] = portString;
 
     if (secure)
-        [properties setObject:@YES forKey:NSHTTPCookieSecure];
+        properties[NSHTTPCookieSecure] = @YES;
 
     if (session)
-        [properties setObject:@YES forKey:NSHTTPCookieDiscard];
+        properties[NSHTTPCookieDiscard] = @YES;
     
     if (httpOnly)
-        [properties setObject:@YES forKey:@"HttpOnly"];
+        properties[@"HttpOnly"] = @YES;
 
     if (auto* sameSitePolicy = nsSameSitePolicy(sameSite))
-        [properties setObject:sameSitePolicy forKey:@"SameSite"];
+        properties[@"SameSite"] = sameSitePolicy;
 
-    [properties setObject:@"1" forKey:NSHTTPCookieVersion];
+    properties[NSHTTPCookieVersion] = @"1";
 
     return [NSHTTPCookie cookieWithProperties:properties];
 }

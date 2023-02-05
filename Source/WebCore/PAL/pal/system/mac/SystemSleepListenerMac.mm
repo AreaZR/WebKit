@@ -43,7 +43,7 @@ SystemSleepListenerMac::SystemSleepListenerMac(Client& client)
     , m_sleepObserver(nil)
     , m_wakeObserver(nil)
 {
-    NSNotificationCenter *center = [[NSWorkspace sharedWorkspace] notificationCenter];
+    NSNotificationCenter *center = [NSWorkspace sharedWorkspace].notificationCenter;
     NSOperationQueue *queue = [NSOperationQueue mainQueue];
 
     WeakPtr weakThis { *this };
@@ -65,7 +65,7 @@ SystemSleepListenerMac::SystemSleepListenerMac(Client& client)
 
 SystemSleepListenerMac::~SystemSleepListenerMac()
 {
-    NSNotificationCenter* center = [[NSWorkspace sharedWorkspace] notificationCenter];
+    NSNotificationCenter* center = [NSWorkspace sharedWorkspace].notificationCenter;
     [center removeObserver:m_sleepObserver];
     [center removeObserver:m_wakeObserver];
 }

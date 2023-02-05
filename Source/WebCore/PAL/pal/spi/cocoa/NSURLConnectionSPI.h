@@ -39,7 +39,7 @@ typedef NSUInteger TimingDataCollection;
 @interface NSURLConnection ()
 + (CFRunLoopRef)resourceLoaderRunLoop;
 - (void)setDefersCallbacks:(BOOL)defers;
-- (NSDictionary *)_timingData;
+@property (nonatomic, readonly, copy) NSDictionary *_timingData;
 @end
 
 #endif

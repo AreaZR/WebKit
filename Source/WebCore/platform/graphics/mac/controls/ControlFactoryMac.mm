@@ -71,11 +71,11 @@ NSView *ControlFactoryMac::drawingView(const FloatRect& rect, const ControlStyle
     // Use a fake view.
     [m_drawingView setFrameSize:NSSizeFromCGSize(rect.size())];
     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    [m_drawingView setAppearance:[NSAppearance currentAppearance]];
+    m_drawingView.appearance = [NSAppearance currentAppearance];
     ALLOW_DEPRECATED_DECLARATIONS_END
 #if USE(NSVIEW_SEMANTICCONTEXT)
     if (style.states.contains(ControlStyle::State::FormSemanticContext))
-        [m_drawingView _setSemanticContext:NSViewSemanticContextForm];
+        m_drawingView._semanticContext = NSViewSemanticContextForm;
 #else
     UNUSED_PARAM(style);
 #endif
@@ -105,7 +105,7 @@ NSButtonCell* ControlFactoryMac::defaultButtonCell() const
     if (!m_defaultButtonCell) {
         BEGIN_BLOCK_OBJC_EXCEPTIONS
         m_defaultButtonCell = createButtonCell();
-        [m_defaultButtonCell setKeyEquivalent:@"\r"];
+        m_defaultButtonCell.keyEquivalent = @"\r";
         END_BLOCK_OBJC_EXCEPTIONS
     }
     return m_defaultButtonCell.get();
@@ -115,7 +115,7 @@ static RetainPtr<NSButtonCell> createToggleButtonCell()
 {
     auto buttonCell = adoptNS([[NSButtonCell alloc] init]);
     [buttonCell setTitle:nil];
-    [buttonCell setFocusRingType:NSFocusRingTypeExterior];
+    buttonCell.focusRingType = NSFocusRingTypeExterior;
     return buttonCell;
 }
 
@@ -147,7 +147,7 @@ NSLevelIndicatorCell *ControlFactoryMac::levelIndicatorCell() const
     if (!m_levelIndicatorCell) {
         BEGIN_BLOCK_OBJC_EXCEPTIONS
         m_levelIndicatorCell = adoptNS([[NSLevelIndicatorCell alloc] initWithLevelIndicatorStyle:NSLevelIndicatorStyleContinuousCapacity]);
-        [m_levelIndicatorCell setLevelIndicatorStyle:NSLevelIndicatorStyleContinuousCapacity];
+        m_levelIndicatorCell.levelIndicatorStyle = NSLevelIndicatorStyleContinuousCapacity;
         END_BLOCK_OBJC_EXCEPTIONS
     }
     return m_levelIndicatorCell.get();
@@ -158,8 +158,8 @@ NSPopUpButtonCell *ControlFactoryMac::popUpButtonCell() const
     if (!m_popUpButtonCell) {
         m_popUpButtonCell = adoptNS([[NSPopUpButtonCell alloc] initTextCell:@"" pullsDown:NO]);
         [m_popUpButtonCell setUsesItemFromMenu:NO];
-        [m_popUpButtonCell setFocusRingType:NSFocusRingTypeExterior];
-        [m_popUpButtonCell setUserInterfaceLayoutDirection:NSUserInterfaceLayoutDirectionLeftToRight];
+        m_popUpButtonCell.focusRingType = NSFocusRingTypeExterior;
+        m_popUpButtonCell.userInterfaceLayoutDirection = NSUserInterfaceLayoutDirectionLeftToRight;
     }
     return m_popUpButtonCell.get();
 }
@@ -169,9 +169,9 @@ NSServicesRolloverButtonCell *ControlFactoryMac::servicesRolloverButtonCell() co
 {
     if (!m_servicesRolloverButtonCell) {
         m_servicesRolloverButtonCell = [NSServicesRolloverButtonCell serviceRolloverButtonCellForStyle:NSSharingServicePickerStyleRollover];
-        [m_servicesRolloverButtonCell setBezelStyle:NSBezelStyleRoundedDisclosure];
+        m_servicesRolloverButtonCell.bezelStyle = NSBezelStyleRoundedDisclosure;
         [m_servicesRolloverButtonCell setButtonType:NSButtonTypePushOnPushOff];
-        [m_servicesRolloverButtonCell setImagePosition:NSImageOnly];
+        m_servicesRolloverButtonCell.imagePosition = NSImageOnly;
         [m_servicesRolloverButtonCell setState:NO];
     }
     return m_servicesRolloverButtonCell.get();
@@ -182,10 +182,10 @@ NSSearchFieldCell *ControlFactoryMac::searchFieldCell() const
 {
     if (!m_searchFieldCell) {
         m_searchFieldCell = adoptNS([[NSSearchFieldCell alloc] initTextCell:@""]);
-        [m_searchFieldCell setBezelStyle:NSTextFieldRoundedBezel];
+        m_searchFieldCell.bezelStyle = NSTextFieldRoundedBezel;
         [m_searchFieldCell setBezeled:YES];
         [m_searchFieldCell setEditable:YES];
-        [m_searchFieldCell setFocusRingType:NSFocusRingTypeExterior];
+        m_searchFieldCell.focusRingType = NSFocusRingTypeExterior;
         [m_searchFieldCell setCenteredLook:NO];
     }
     return m_searchFieldCell.get();
@@ -202,9 +202,9 @@ NSSliderCell *ControlFactoryMac::sliderCell() const
 {
     if (!m_sliderCell) {
         m_sliderCell = adoptNS([[NSSliderCell alloc] init]);
-        [m_sliderCell setSliderType:NSSliderTypeLinear];
-        [m_sliderCell setControlSize:NSControlSizeSmall];
-        [m_sliderCell setFocusRingType:NSFocusRingTypeExterior];
+        m_sliderCell.sliderType = NSSliderTypeLinear;
+        m_sliderCell.controlSize = NSControlSizeSmall;
+        m_sliderCell.focusRingType = NSFocusRingTypeExterior;
     }
     return m_sliderCell.get();
 }
@@ -216,7 +216,7 @@ NSTextFieldCell *ControlFactoryMac::textFieldCell() const
         m_textFieldCell = adoptNS([[WebControlTextFieldCell alloc] initTextCell:@""]);
         [m_textFieldCell setBezeled:YES];
         [m_textFieldCell setEditable:YES];
-        [m_textFieldCell setFocusRingType:NSFocusRingTypeExterior];
+        m_textFieldCell.focusRingType = NSFocusRingTypeExterior;
         // Post-Lion, WebCore can be in charge of paintinng the background thanks to
         // the workaround in place for <rdar://problem/11385461>, which is implemented
         // above as _coreUIDrawOptionsWithFrame.

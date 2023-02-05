@@ -29,7 +29,7 @@
 
 @interface WebControlWindow : NSWindow
 @property (class) BOOL hasKeyAppearance;
-- (BOOL)_needsToResetDragMargins;
+@property (nonatomic, readonly) BOOL _needsToResetDragMargins;
 - (void)_setNeedsToResetDragMargins:(BOOL)needs;
 @end
 

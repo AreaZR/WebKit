@@ -51,7 +51,7 @@ ApplePaySetupFeature::~ApplePaySetupFeature() = default;
 
 ApplePaySetupFeatureType ApplePaySetupFeature::type() const
 {
-    switch ([m_feature type]) {
+    switch (m_feature.type) {
     case PKPaymentSetupFeatureTypeApplePay:
         return ApplePaySetupFeatureType::ApplePay;
 
@@ -66,7 +66,7 @@ ApplePaySetupFeatureType ApplePaySetupFeature::type() const
 
 ApplePaySetupFeatureState ApplePaySetupFeature::state() const
 {
-    switch ([m_feature state]) {
+    switch (m_feature.state) {
     case PKPaymentSetupFeatureStateUnsupported:
         return ApplePaySetupFeatureState::Unsupported;
     case PKPaymentSetupFeatureStateSupported:
@@ -85,7 +85,7 @@ bool ApplePaySetupFeature::supportsInstallments() const
     if (![m_feature respondsToSelector:@selector(supportedOptions)])
         return false;
 #endif
-    return [m_feature supportedOptions] & PKPaymentSetupFeatureSupportedOptionsInstallments;
+    return m_feature.supportedOptions & PKPaymentSetupFeatureSupportedOptionsInstallments;
 }
 #endif
 

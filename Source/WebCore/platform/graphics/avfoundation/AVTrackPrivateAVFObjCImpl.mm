@@ -46,7 +46,7 @@
 
 @class AVMediaSelectionOption;
 @interface AVMediaSelectionOption (WebKitInternal)
-- (id)optionID;
+@property (nonatomic, readonly, strong) id optionID;
 @end
 
 namespace WebCore {
@@ -59,7 +59,7 @@ static NSArray* assetTrackConfigurationKeyNames()
 
 AVTrackPrivateAVFObjCImpl::AVTrackPrivateAVFObjCImpl(AVPlayerItemTrack* track)
     : m_playerItemTrack(track)
-    , m_assetTrack([track assetTrack])
+    , m_assetTrack(track.assetTrack)
 {
     initializeAssetTrack();
 }
@@ -99,7 +99,7 @@ void AVTrackPrivateAVFObjCImpl::initializeAssetTrack()
 bool AVTrackPrivateAVFObjCImpl::enabled() const
 {
     if (m_playerItemTrack)
-        return [m_playerItemTrack isEnabled];
+        return m_playerItemTrack.enabled;
     if (m_mediaSelectionOption)
         return m_mediaSelectionOption->selected();
     ASSERT_NOT_REACHED();
@@ -109,7 +109,7 @@ bool AVTrackPrivateAVFObjCImpl::enabled() const
 void AVTrackPrivateAVFObjCImpl::setEnabled(bool enabled)
 {
     if (m_playerItemTrack)
-        [m_playerItemTrack setEnabled:enabled];
+        m_playerItemTrack.enabled = enabled;
     else if (m_mediaSelectionOption)
         m_mediaSelectionOption->setSelected(enabled);
     else
@@ -177,9 +177,9 @@ VideoTrackPrivate::Kind AVTrackPrivateAVFObjCImpl::videoKind() const
 int AVTrackPrivateAVFObjCImpl::index() const
 {
     if (m_assetTrack)
-        return [[[m_assetTrack asset] tracks] indexOfObject:m_assetTrack.get()];
+        return [m_assetTrack.asset.tracks indexOfObject:m_assetTrack.get()];
     if (m_mediaSelectionOption)
-        return [[[m_playerItem asset] tracks] count] + m_mediaSelectionOption->index();
+        return m_playerItem.asset.tracks.count + m_mediaSelectionOption->index();
     ASSERT_NOT_REACHED();
     return 0;
 }
@@ -187,7 +187,7 @@ int AVTrackPrivateAVFObjCImpl::index() const
 AtomString AVTrackPrivateAVFObjCImpl::id() const
 {
     if (m_assetTrack)
-        return AtomString::number([m_assetTrack trackID]);
+        return AtomString::number(m_assetTrack.trackID);
     if (m_mediaSelectionOption)
         return [[m_mediaSelectionOption->avMediaSelectionOption() optionID] stringValue];
     ASSERT_NOT_REACHED();
@@ -198,21 +198,21 @@ AtomString AVTrackPrivateAVFObjCImpl::label() const
 {
     NSArray *commonMetadata = nil;
     if (m_assetTrack)
-        commonMetadata = [m_assetTrack commonMetadata];
+        commonMetadata = m_assetTrack.commonMetadata;
     else if (m_mediaSelectionOption)
-        commonMetadata = [m_mediaSelectionOption->avMediaSelectionOption() commonMetadata];
+        commonMetadata = m_mediaSelectionOption->avMediaSelectionOption().commonMetadata;
     else
         ASSERT_NOT_REACHED();
 
     NSArray *titles = [PAL::getAVMetadataItemClass() metadataItemsFromArray:commonMetadata withKey:AVMetadataCommonKeyTitle keySpace:AVMetadataKeySpaceCommon];
-    if (![titles count])
+    if (!titles.count)
         return emptyAtom();
 
     // If possible, return a title in one of the user's preferred languages.
     NSArray *titlesForPreferredLanguages = [PAL::getAVMetadataItemClass() metadataItemsFromArray:titles filteredAndSortedAccordingToPreferredLanguages:[NSLocale preferredLanguages]];
-    if ([titlesForPreferredLanguages count])
-        return [[titlesForPreferredLanguages objectAtIndex:0] stringValue];
-    return [[titles objectAtIndex:0] stringValue];
+    if (titlesForPreferredLanguages.count)
+        return [titlesForPreferredLanguages[0] stringValue];
+    return [titles[0] stringValue];
 }
 
 AtomString AVTrackPrivateAVFObjCImpl::language() const
@@ -228,13 +228,13 @@ AtomString AVTrackPrivateAVFObjCImpl::language() const
 
 String AVTrackPrivateAVFObjCImpl::languageForAVAssetTrack(AVAssetTrack* track)
 {
-    NSString *language = [track extendedLanguageTag];
+    NSString *language = track.extendedLanguageTag;
 
     // If the language code is stored as a QuickTime 5-bit packed code there aren't enough bits for a full
     // RFC 4646 language tag so extendedLanguageTag returns NULL. In this case languageCode will return the
     // ISO 639-2/T language code so check it.
     if (!language)
-        language = [track languageCode];
+        language = track.languageCode;
 
     // Some legacy tracks have "und" as a language, treat that the same as no language at all.
     if (!language || [language isEqualToString:@"und"])
@@ -245,13 +245,13 @@ String AVTrackPrivateAVFObjCImpl::languageForAVAssetTrack(AVAssetTrack* track)
 
 String AVTrackPrivateAVFObjCImpl::languageForAVMediaSelectionOption(AVMediaSelectionOption* option)
 {
-    NSString *language = [option extendedLanguageTag];
+    NSString *language = option.extendedLanguageTag;
 
     // If the language code is stored as a QuickTime 5-bit packed code there aren't enough bits for a full
     // RFC 4646 language tag so extendedLanguageTag returns NULL. In this case languageCode will return the
     // ISO 639-2/T language code so check it.
     if (!language)
-        language = [[option locale] objectForKey:NSLocaleLanguageCode];
+        language = [option.locale objectForKey:NSLocaleLanguageCode];
 
     // Some legacy tracks have "und" as a language, treat that the same as no language at all.
     if (!language || [language isEqualToString:@"und"])
@@ -285,7 +285,7 @@ PlatformAudioTrackConfiguration AVTrackPrivateAVFObjCImpl::audioTrackConfigurati
 int AVTrackPrivateAVFObjCImpl::trackID() const
 {
     if (m_assetTrack)
-        return [m_assetTrack trackID];
+        return m_assetTrack.trackID;
     if (m_mediaSelectionOption)
         return [[m_mediaSelectionOption->avMediaSelectionOption() optionID] intValue];
     ASSERT_NOT_REACHED();

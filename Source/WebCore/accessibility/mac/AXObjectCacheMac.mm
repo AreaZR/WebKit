@@ -479,14 +479,14 @@ void AXObjectCache::postTextStateChangePlatformNotification(AXCoreObject* object
 
     auto userInfo = adoptNS([[NSMutableDictionary alloc] initWithCapacity:5]);
     if (m_isSynchronizingSelection)
-        [userInfo setObject:@YES forKey:NSAccessibilityTextStateSyncKey];
+        userInfo[NSAccessibilityTextStateSyncKey] = @YES;
     if (intent.type != AXTextStateChangeTypeUnknown) {
-        [userInfo setObject:@(platformChangeTypeForWebCoreChangeType(intent.type)) forKey:NSAccessibilityTextStateChangeTypeKey];
+        userInfo[NSAccessibilityTextStateChangeTypeKey] = @(platformChangeTypeForWebCoreChangeType(intent.type));
         switch (intent.type) {
         case AXTextStateChangeTypeSelectionMove:
         case AXTextStateChangeTypeSelectionExtend:
         case AXTextStateChangeTypeSelectionBoundary:
-            [userInfo setObject:@(platformDirectionForWebCoreDirection(intent.selection.direction)) forKey:NSAccessibilityTextSelectionDirection];
+            userInfo[NSAccessibilityTextSelectionDirection] = @(platformDirectionForWebCoreDirection(intent.selection.direction));
             switch (intent.selection.direction) {
             case AXTextSelectionDirectionUnknown:
                 break;
@@ -494,13 +494,13 @@ void AXObjectCache::postTextStateChangePlatformNotification(AXCoreObject* object
             case AXTextSelectionDirectionEnd:
             case AXTextSelectionDirectionPrevious:
             case AXTextSelectionDirectionNext:
-                [userInfo setObject:@(platformGranularityForWebCoreGranularity(intent.selection.granularity)) forKey:NSAccessibilityTextSelectionGranularity];
+                userInfo[NSAccessibilityTextSelectionGranularity] = @(platformGranularityForWebCoreGranularity(intent.selection.granularity));
                 break;
             case AXTextSelectionDirectionDiscontiguous:
                 break;
             }
             if (intent.selection.focusChange)
-                [userInfo setObject:@(intent.selection.focusChange) forKey:NSAccessibilityTextSelectionChangedFocus];
+                userInfo[NSAccessibilityTextSelectionChangedFocus] = @(intent.selection.focusChange);
             break;
         case AXTextStateChangeTypeUnknown:
         case AXTextStateChangeTypeEdit:
@@ -509,11 +509,11 @@ void AXObjectCache::postTextStateChangePlatformNotification(AXCoreObject* object
     }
     if (!selection.isNone()) {
         if (auto textMarkerRange = textMarkerRangeFromVisiblePositions(this, selection.visibleStart(), selection.visibleEnd()))
-            [userInfo setObject:(id)textMarkerRange forKey:NSAccessibilitySelectedTextMarkerRangeAttribute];
+            userInfo[NSAccessibilitySelectedTextMarkerRangeAttribute] = (id)textMarkerRange;
     }
 
     if (id wrapper = object->wrapper()) {
-        [userInfo setObject:wrapper forKey:NSAccessibilityTextChangeElement];
+        userInfo[NSAccessibilityTextChangeElement] = wrapper;
 #if ENABLE(ACCESSIBILITY_ISOLATED_TREE)
         createIsolatedObjectIfNeeded(*object, m_pageID);
 #endif
@@ -531,29 +531,29 @@ static void addTextMarkerFor(NSMutableDictionary* change, AXCoreObject& object, 
     if (position.isNull())
         return;
     if (id textMarker = [object.wrapper() textMarkerForVisiblePosition:position])
-        [change setObject:textMarker forKey:NSAccessibilityTextChangeValueStartMarker];
+        change[NSAccessibilityTextChangeValueStartMarker] = textMarker;
 }
 
 static void addTextMarkerFor(NSMutableDictionary* change, AXCoreObject& object, HTMLTextFormControlElement& textControl)
 {
     if (auto textMarker = [object.wrapper() textMarkerForFirstPositionInTextControl:textControl])
-        [change setObject:bridge_id_cast(textMarker.get()) forKey:NSAccessibilityTextChangeValueStartMarker];
+        change[NSAccessibilityTextChangeValueStartMarker] = bridge_id_cast(textMarker.get());
 }
 
 template <typename TextMarkerTargetType>
 static NSDictionary *textReplacementChangeDictionary(AXCoreObject& object, AXTextEditType type, const String& string, TextMarkerTargetType& markerTarget)
 {
     NSString *text = (NSString *)string;
-    NSUInteger length = [text length];
+    NSUInteger length = text.length.length.length;
     if (!length)
         return nil;
     auto change = adoptNS([[NSMutableDictionary alloc] initWithCapacity:4]);
-    [change setObject:@(platformEditTypeForWebCoreEditType(type)) forKey:NSAccessibilityTextEditType];
+    change[] = [] = [NSAccessibilityTextEditType] = @(platformEditTypeForWebCoreEditType(type));
     if (length > AXValueChangeTruncationLength) {
-        [change setObject:@(length) forKey:NSAccessibilityTextChangeValueLength];
+        change[] = [] = [NSAccessibilityTextChangeValueLength] = @(length);
         text = [text substringToIndex:AXValueChangeTruncationLength];
     }
-    [change setObject:text forKey:NSAccessibilityTextChangeValue];
+    change[] = [] = [NSAccessibilityTextChangeValue] = text;
     addTextMarkerFor(change.get(), object, markerTarget);
     return change.autorelease();
 }
@@ -569,12 +569,12 @@ void AXObjectCache::postTextStateChangePlatformNotification(AccessibilityObject*
 static void postUserInfoForChanges(AXCoreObject& rootWebArea, AXCoreObject& object, NSMutableArray* changes, std::optional<PageIdentifier> pageID)
 {
     auto userInfo = adoptNS([[NSMutableDictionary alloc] initWithCapacity:4]);
-    [userInfo setObject:@(platformChangeTypeForWebCoreChangeType(AXTextStateChangeTypeEdit)) forKey:NSAccessibilityTextStateChangeTypeKey];
+    userInfo[NSAccessibilityTextStateChangeTypeKey] = @(platformChangeTypeForWebCoreChangeType(AXTextStateChangeTypeEdit));
     if (changes.count)
-        [userInfo setObject:changes forKey:NSAccessibilityTextChangeValues];
+        userInfo[NSAccessibilityTextChangeValues] = changes;
 
     if (id wrapper = object.wrapper()) {
-        [userInfo setObject:wrapper forKey:NSAccessibilityTextChangeElement];
+        userInfo[NSAccessibilityTextChangeElement] = wrapper;
 #if ENABLE(ACCESSIBILITY_ISOLATED_TREE)
         createIsolatedObjectIfNeeded(object, pageID);
 #endif

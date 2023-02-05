@@ -88,15 +88,15 @@ NSBezelStyle ButtonMac::bezelStyle(const FloatRect& rect, const ControlStyle& st
 void ButtonMac::updateCellStates(const FloatRect& rect, const ControlStyle& style)
 {
     ButtonControlMac::updateCellStates(rect, style);
-    [m_buttonCell setBezelStyle:bezelStyle(rect, style)];
+    m_buttonCell.bezelStyle = bezelStyle(rect, style);
 }
 
 FloatRect ButtonMac::rectForBounds(const FloatRect& bounds, const ControlStyle& style) const
 {
-    if ([m_buttonCell bezelStyle] != NSBezelStyleRounded)
+    if (m_buttonCell.bezelStyle != NSBezelStyleRounded)
         return bounds;
 
-    auto controlSize = [m_buttonCell controlSize];
+    auto controlSize = m_buttonCell.controlSize;
 
     // Explicitly use `FloatSize` to support non-integral sizes following zoom.
     FloatSize size = cellSize(controlSize, style);
@@ -128,12 +128,12 @@ void ButtonMac::draw(GraphicsContext& context, const FloatRoundedRect& borderRec
     }
 
     auto *view = m_controlFactory.drawingView(borderRect.rect(), style);
-    auto *window = [view window];
-    auto *previousDefaultButtonCell = [window defaultButtonCell];
+    auto *window = view.window;
+    auto *previousDefaultButtonCell = window.defaultButtonCell;
 
     // Setup the window default button cell.
     if (style.states.contains(ControlStyle::State::Default))
-        [window setDefaultButtonCell:m_buttonCell.get()];
+        window.defaultButtonCell = m_buttonCell.get();
     else if ([previousDefaultButtonCell isEqual:m_buttonCell.get()])
         [window setDefaultButtonCell:nil];
 
@@ -141,7 +141,7 @@ void ButtonMac::draw(GraphicsContext& context, const FloatRoundedRect& borderRec
 
     // Restore the window default button cell.
     if (![previousDefaultButtonCell isEqual:m_buttonCell.get()])
-        [window setDefaultButtonCell:previousDefaultButtonCell];
+        window.defaultButtonCell = previousDefaultButtonCell;
 
     END_BLOCK_OBJC_EXCEPTIONS
 }

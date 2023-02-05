@@ -41,12 +41,12 @@
 @interface WebScrollerImpPairDelegateMac : NSObject <NSScrollerImpPairDelegate> {
     WebCore::ScrollerPairMac* _scrollerPair;
 }
-- (id)initWithScrollerPair:(WebCore::ScrollerPairMac*)scrollerPair;
+- (instancetype)initWithScrollerPair:(WebCore::ScrollerPairMac*)scrollerPair NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation WebScrollerImpPairDelegateMac
 
-- (id)initWithScrollerPair:(WebCore::ScrollerPairMac*)scrollerPair
+- (instancetype)initWithScrollerPair:(WebCore::ScrollerPairMac*)scrollerPair
 {
     self = [super init];
     if (!self)
@@ -94,7 +94,7 @@
         return NSZeroPoint;
 
     WebCore::ScrollerMac* scroller = nullptr;
-    if ([scrollerImp isHorizontal])
+    if (scrollerImp.horizontal)
         scroller = &_scrollerPair->horizontalScroller();
     else
         scroller = &_scrollerPair->verticalScroller();
@@ -112,7 +112,7 @@
 
 - (void)scrollerImpPair:(NSScrollerImpPair *)scrollerImpPair updateScrollerStyleForNewRecommendedScrollerStyle:(NSScrollerStyle)newRecommendedScrollerStyle
 {
-    [scrollerImpPair setScrollerStyle:newRecommendedScrollerStyle];
+    scrollerImpPair.scrollerStyle = newRecommendedScrollerStyle;
 }
 
 @end
@@ -131,8 +131,8 @@ void ScrollerPairMac::init()
     m_scrollerImpPairDelegate = adoptNS([[WebScrollerImpPairDelegateMac alloc] initWithScrollerPair:this]);
 
     m_scrollerImpPair = adoptNS([[NSScrollerImpPair alloc] init]);
-    [m_scrollerImpPair.get() setDelegate:m_scrollerImpPairDelegate.get()];
-    [m_scrollerImpPair setScrollerStyle:WebCore::ScrollerStyle::recommendedScrollerStyle()];
+    m_scrollerImpPair.get().delegate = m_scrollerImpPairDelegate.get();
+    m_scrollerImpPair.scrollerStyle = WebCore::ScrollerStyle::recommendedScrollerStyle();
 
     m_verticalScroller.attach();
     m_horizontalScroller.attach();

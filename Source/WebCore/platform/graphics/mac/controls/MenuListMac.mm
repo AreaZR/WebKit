@@ -73,7 +73,7 @@ void MenuListMac::updateCellStates(const FloatRect& rect, const ControlStyle& st
     ControlMac::updateCellStates(rect, style);
 
     auto direction = style.states.contains(ControlStyle::State::RightToLeft) ? NSUserInterfaceLayoutDirectionRightToLeft : NSUserInterfaceLayoutDirectionLeftToRight;
-    [m_popUpButtonCell setUserInterfaceLayoutDirection:direction];
+    m_popUpButtonCell.userInterfaceLayoutDirection = direction;
 
     // Update the various states we respond to.
     updateCheckedState(m_popUpButtonCell.get(), style);
@@ -82,8 +82,8 @@ void MenuListMac::updateCellStates(const FloatRect& rect, const ControlStyle& st
 
     // Only update if we have to, since AppKit does work even if the size is the same.
     auto controlSize = controlSizeForSize(rect.size(), style);
-    if (controlSize != [m_popUpButtonCell controlSize])
-        [m_popUpButtonCell setControlSize:controlSize];
+    if (controlSize != m_popUpButtonCell.controlSize)
+        m_popUpButtonCell.controlSize = controlSize;
 }
 
 FloatRect MenuListMac::rectForBounds(const FloatRect& bounds, const ControlStyle& style) const
@@ -92,7 +92,7 @@ FloatRect MenuListMac::rectForBounds(const FloatRect& bounds, const ControlStyle
     if (bounds.width() < minimumMenuListSize)
         return bounds;
 
-    auto controlSize = [m_popUpButtonCell controlSize];
+    auto controlSize = m_popUpButtonCell.controlSize;
     auto size = cellSize(controlSize, style);
     auto outsets = cellOutsets(controlSize, style);
 

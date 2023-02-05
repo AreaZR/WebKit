@@ -96,30 +96,30 @@ RetainPtr<NSDateFormatter> LocalizedDateCache::createFormatterForType(DateCompon
 {
     auto dateFormatter = adoptNS([[NSDateFormatter alloc] init]);
     NSLocale *currentLocale = [NSLocale currentLocale];
-    [dateFormatter setLocale:currentLocale];
+    dateFormatter.locale = currentLocale;
 
     switch (type) {
     case DateComponentsType::Invalid:
         ASSERT_NOT_REACHED();
         break;
     case DateComponentsType::Date:
-        [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-        [dateFormatter setTimeStyle:NSDateFormatterNoStyle];
-        [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+        dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+        dateFormatter.timeStyle = NSDateFormatterNoStyle;
+        dateFormatter.dateStyle = NSDateFormatterMediumStyle;
         break;
     case DateComponentsType::DateTimeLocal:
-        [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-        [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
-        [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+        dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+        dateFormatter.timeStyle = NSDateFormatterShortStyle;
+        dateFormatter.dateStyle = NSDateFormatterMediumStyle;
         break;
     case DateComponentsType::Month:
-        [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-        [dateFormatter setDateFormat:[NSDateFormatter dateFormatFromTemplate:@"MMMMyyyy" options:0 locale:currentLocale]];
+        dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+        dateFormatter.dateFormat = [NSDateFormatter dateFormatFromTemplate:@"MMMMyyyy" options:0 locale:currentLocale];
         break;
     case DateComponentsType::Time:
-        [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-        [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
-        [dateFormatter setDateStyle:NSDateFormatterNoStyle];
+        dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+        dateFormatter.timeStyle = NSDateFormatterShortStyle;
+        dateFormatter.dateStyle = NSDateFormatterNoStyle;
         break;
     case DateComponentsType::Week:
         ASSERT_NOT_REACHED();
@@ -144,14 +144,14 @@ float LocalizedDateCache::calculateMaximumWidth(DateComponentsType type, const M
     // date doesn't adjust for the current timezone. This is an arbitrary date
     // (x-27-2007) and time (10:45 PM).
     RetainPtr<NSCalendar> gregorian = adoptNS([[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian]);
-    [gregorian setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    gregorian.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
     RetainPtr<NSDateComponents> components = adoptNS([[NSDateComponents alloc] init]);
-    [components setDay:27];
-    [components setYear:2007];
-    [components setHour:22];
-    [components setMinute:45];
+    components.day = 27;
+    components.year = 2007;
+    components.hour = 22;
+    components.minute = 45;
 
-    static const NSUInteger numberOfGregorianMonths = [[dateFormatter monthSymbols] count];
+    static const NSUInteger numberOfGregorianMonths = [dateFormatter monthSymbols].count;
     ASSERT(numberOfGregorianMonths == 12);
 
     // For each month (in the Gregorian Calendar), format a date and measure its length.
@@ -161,7 +161,7 @@ float LocalizedDateCache::calculateMaximumWidth(DateComponentsType type, const M
         || type == DateComponentsType::Month)
         totalMonthsToTest = numberOfGregorianMonths;
     for (NSUInteger i = 0; i < totalMonthsToTest; ++i) {
-        [components setMonth:(i + 1)];
+        components.month = (i + 1);
         NSDate *date = [gregorian dateFromComponents:components.get()];
         NSString *formattedDate = [dateFormatter stringFromDate:date];
         maximumWidth = std::max(maximumWidth, measurer.measureText(String(formattedDate)));

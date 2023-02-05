@@ -41,7 +41,7 @@ enum {
 
 @interface NSEvent ()
 - (nullable NSEvent *)_initWithCGEvent:(nullable CGEventRef)cgEvent eventRef:(nullable void*)eventRef;
-- (nullable void*)_eventRef NS_RETURNS_INNER_POINTER;
+@property (nonatomic, readonly) void * _Nullable _eventRef NS_RETURNS_INNER_POINTER;
 - (NSEvent *)_eventRelativeToWindow:(NSWindow *)window;
 @end
 

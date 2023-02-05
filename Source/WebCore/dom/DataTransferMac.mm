@@ -56,7 +56,7 @@ DragImageRef DataTransfer::createDragImage(IntPoint& location) const
         result = m_dragImage->image()->snapshotNSImage();
         
         location = m_dragLocation;
-        location.setY([result size].height - location.y());
+        location.setY(result.size.height - location.y());
     }
     return result;
 }

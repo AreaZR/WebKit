@@ -53,11 +53,11 @@ std::unique_ptr<GameControllerHapticEffect> GameControllerHapticEffect::create(G
             CHHapticPatternKeyPattern: @[
                 @{ CHHapticPatternKeyEvent: @{
                     CHHapticPatternKeyEventType: CHHapticEventTypeHapticContinuous,
-                    CHHapticPatternKeyTime: [NSNumber numberWithDouble:std::max<double>(parameters.startDelay / 1000., 0)],
-                    CHHapticPatternKeyEventDuration: [NSNumber numberWithDouble:std::clamp<double>(parameters.duration / 1000., 0, GamepadEffectParameters::maximumDuration.seconds())],
+                    CHHapticPatternKeyTime: @(std::max<double>(parameters.startDelay / 1000., 0)),
+                    CHHapticPatternKeyEventDuration: @(std::clamp<double>(parameters.duration / 1000., 0, GamepadEffectParameters::maximumDuration.seconds())),
                     CHHapticPatternKeyEventParameters: @[ @{
                         CHHapticPatternKeyParameterID: CHHapticEventParameterIDHapticIntensity,
-                        CHHapticPatternKeyParameterValue: [NSNumber numberWithDouble:magnitudeToIntensity(magnitude)],
+                        CHHapticPatternKeyParameterValue: @(magnitudeToIntensity(magnitude)),
                     } ]
                 }, },
             ],

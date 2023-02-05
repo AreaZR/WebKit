@@ -51,7 +51,7 @@ using namespace WebCore;
     AVCaptureDeviceManager* m_callback;
 }
 
--(id)initWithCallback:(AVCaptureDeviceManager*)callback;
+-(instancetype)initWithCallback:(AVCaptureDeviceManager*)callback NS_DESIGNATED_INITIALIZER;
 -(void)disconnect;
 -(void)deviceConnectedDidChange:(NSNotification *)notification;
 -(void)observeValueForKeyPath:keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context;
@@ -102,11 +102,11 @@ const Vector<CaptureDevice>& AVCaptureDeviceManager::captureDevices()
 
 inline static bool deviceIsAvailable(AVCaptureDevice *device)
 {
-    if (![device isConnected])
+    if (!device.connected)
         return false;
 
 #if !PLATFORM(IOS_FAMILY)
-    if ([device isSuspended])
+    if (device.suspended)
         return false;
 #endif
 
@@ -134,7 +134,7 @@ void AVCaptureDeviceManager::updateCachedAVCaptureDevices()
             [removedDevices addObject:cachedDevice];
     }
 
-    if ([removedDevices count]) {
+    if (removedDevices.count) {
         for (AVCaptureDevice *device in removedDevices.get())
             [device removeObserver:m_objcObserver.get() forKeyPath:@"suspended"];
         [m_avCaptureDevices removeObjectsInArray:removedDevices.get()];
@@ -279,7 +279,7 @@ void AVCaptureDeviceManager::registerForDeviceNotifications()
 
 @implementation WebCoreAVCaptureDeviceManagerObserver
 
-- (id)initWithCallback:(AVCaptureDeviceManager*)callback
+- (instancetype)initWithCallback:(AVCaptureDeviceManager*)callback
 {
     self = [super init];
     if (!self)

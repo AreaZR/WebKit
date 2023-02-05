@@ -234,7 +234,7 @@ void MediaPlayerPrivateWebM::play()
     flushIfNeeded();
 #endif
 
-    [m_synchronizer setRate:m_rate];
+    m_synchronizer.rate = m_rate;
 
     if (currentMediaTime() >= durationMediaTime())
         seek(MediaTime::zeroTime());
@@ -242,12 +242,12 @@ void MediaPlayerPrivateWebM::play()
 
 void MediaPlayerPrivateWebM::pause()
 {
-    [m_synchronizer setRate:0];
+    m_synchronizer.rate = 0;
 }
 
 bool MediaPlayerPrivateWebM::paused() const
 {
-    return ![m_synchronizer rate];
+    return !m_synchronizer.rate;
 }
 
 void MediaPlayerPrivateWebM::setPageIsVisible(bool visible)
@@ -261,7 +261,7 @@ void MediaPlayerPrivateWebM::setPageIsVisible(bool visible)
 
 MediaTime MediaPlayerPrivateWebM::currentMediaTime() const
 {
-    MediaTime synchronizerTime = PAL::toMediaTime(PAL::CMTimebaseGetTime([m_synchronizer timebase]));
+    MediaTime synchronizerTime = PAL::toMediaTime(PAL::CMTimebaseGetTime(m_synchronizer.timebase));
     if (synchronizerTime < MediaTime::zeroTime())
         return MediaTime::zeroTime();
     if (synchronizerTime > durationMediaTime())
@@ -282,7 +282,7 @@ void MediaPlayerPrivateWebM::seek(const MediaTime& time)
         trackBuffer.setNeedsReenqueueing(true);
         reenqueueMediaForTime(trackBuffer, trackId, time);
     }
-    [m_synchronizer setRate:m_rate];
+    m_synchronizer.rate = m_rate;
     m_player->timeChanged();
 }
 
@@ -294,26 +294,26 @@ void MediaPlayerPrivateWebM::setRateDouble(double rate)
     m_rate = std::max<double>(rate, 0);
 
     if (!paused())
-        [m_synchronizer setRate:m_rate];
+        m_synchronizer.rate = m_rate;
 
     m_player->rateChanged();
 }
 
 double MediaPlayerPrivateWebM::effectiveRate() const
 {
-    return PAL::CMTimebaseGetRate([m_synchronizer timebase]);
+    return PAL::CMTimebaseGetRate(m_synchronizer.timebase);
 }
 
 void MediaPlayerPrivateWebM::setVolume(float volume)
 {
     for (auto& renderer : m_audioRenderers.values())
-        [renderer setVolume:volume];
+        renderer.volume = volume;
 }
 
 void MediaPlayerPrivateWebM::setMuted(bool muted)
 {
     for (auto& renderer : m_audioRenderers.values())
-        [renderer setMuted:muted];
+        renderer.muted = muted;
 }
 
 std::unique_ptr<PlatformTimeRanges> MediaPlayerPrivateWebM::seekable() const
@@ -614,7 +614,7 @@ bool MediaPlayerPrivateWebM::shouldEnsureLayer() const
 {
 #if HAVE(AVSAMPLEBUFFERDISPLAYLAYER_COPYDISPLAYEDPIXELBUFFER)
     return isCopyDisplayedPixelBufferAvailable()
-        && ((m_displayLayer && !CGRectIsEmpty([m_displayLayer bounds]))
+        && ((m_displayLayer && !CGRectIsEmpty(m_displayLayer.bounds))
             || !m_player->presentationSize().isEmpty());
 #else
     return !m_hasBeenAskedToPaintGL && !m_isGatheringVideoFrameMetadata;
@@ -846,11 +846,11 @@ bool MediaPlayerPrivateWebM::isReadyForMoreSamples(uint64_t trackId)
         if (m_decompressionSession)
             return m_decompressionSession->isReadyForMoreMediaData();
         
-        return [m_displayLayer isReadyForMoreMediaData];
+        return m_displayLayer.readyForMoreMediaData;
     }
 
     if (m_audioRenderers.contains(trackId))
-        return [m_audioRenderers.get(trackId) isReadyForMoreMediaData];
+        return m_audioRenderers.get(trackId).readyForMoreMediaData;
 
     return false;
 }
@@ -1260,7 +1260,7 @@ void MediaPlayerPrivateWebM::ensureLayer()
         return;
 
     m_displayLayer = adoptNS([PAL::allocAVSampleBufferDisplayLayerInstance() init]);
-    [m_displayLayer setName:@"MediaPlayerPrivateWebM AVSampleBufferDisplayLayer"];
+    m_displayLayer.name = @"MediaPlayerPrivateWebM AVSampleBufferDisplayLayer";
 
     if (!m_displayLayer) {
         ERROR_LOG(LOGIDENTIFIER, "Creating the AVSampleBufferDisplayLayer failed.");
@@ -1302,7 +1302,7 @@ void MediaPlayerPrivateWebM::ensureDecompressionSession()
     m_hasAvailableVideoFrameSemaphore = makeUnique<BinarySemaphore>();
 
     m_decompressionSession = WebCoreDecompressionSession::createOpenGL();
-    m_decompressionSession->setTimebase([m_synchronizer timebase]);
+    m_decompressionSession->setTimebase(m_synchronizer.timebase);
     
     m_decompressionSession->requestMediaDataWhenReady([weakThis = WeakPtr { *this }, this] {
         if (weakThis)
@@ -1331,9 +1331,9 @@ void MediaPlayerPrivateWebM::addAudioRenderer(uint64_t trackId)
         return;
     }
 
-    [renderer setMuted:m_player->muted()];
-    [renderer setVolume:m_player->volume()];
-    [renderer setAudioTimePitchAlgorithm:(m_player->preservesPitch() ? AVAudioTimePitchAlgorithmSpectral : AVAudioTimePitchAlgorithmVarispeed)];
+    renderer.muted = m_player->muted();
+    renderer.volume = m_player->volume();
+    renderer.audioTimePitchAlgorithm = (m_player->preservesPitch() ? AVAudioTimePitchAlgorithmSpectral : AVAudioTimePitchAlgorithmVarispeed);
 
 #if HAVE(AUDIO_OUTPUT_DEVICE_UNIQUE_ID)
     auto deviceId = m_player->audioOutputDeviceIdOverride();
@@ -1378,7 +1378,7 @@ void MediaPlayerPrivateWebM::destroyLayer()
     if (!m_displayLayer)
         return;
 
-    CMTime currentTime = PAL::CMTimebaseGetTime([m_synchronizer timebase]);
+    CMTime currentTime = PAL::CMTimebaseGetTime(m_synchronizer.timebase);
     [m_synchronizer removeRenderer:m_displayLayer.get() atTime:currentTime withCompletionHandler:^(BOOL){
         // No-op.
     }];
@@ -1404,7 +1404,7 @@ void MediaPlayerPrivateWebM::destroyDecompressionSession()
 
 void MediaPlayerPrivateWebM::destroyAudioRenderer(RetainPtr<AVSampleBufferAudioRenderer> renderer)
 {
-    CMTime currentTime = PAL::CMTimebaseGetTime([m_synchronizer timebase]);
+    CMTime currentTime = PAL::CMTimebaseGetTime(m_synchronizer.timebase);
     [m_synchronizer removeRenderer:renderer.get() atTime:currentTime withCompletionHandler:^(BOOL){
         // No-op.
     }];

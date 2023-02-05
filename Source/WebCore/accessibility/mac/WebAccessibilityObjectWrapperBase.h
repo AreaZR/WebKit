@@ -75,10 +75,10 @@ void AXAttributedStringSetFont(NSMutableAttributedString *, CTFontRef, const NSR
     WebCore::AXID _identifier;
 }
 
-- (id)initWithAccessibilityObject:(WebCore::AccessibilityObject*)axObject;
+- (instancetype)initWithAccessibilityObject:(WebCore::AccessibilityObject*)axObject NS_DESIGNATED_INITIALIZER;
 #if ENABLE(ACCESSIBILITY_ISOLATED_TREE)
 - (void)attachIsolatedObject:(WebCore::AXIsolatedObject*)isolatedObject;
-- (BOOL)hasIsolatedObject;
+@property (nonatomic, readonly) BOOL hasIsolatedObject;
 #endif
 
 - (void)detach;
@@ -92,39 +92,39 @@ void AXAttributedStringSetFont(NSMutableAttributedString *, CTFontRef, const NSR
 #if PLATFORM(MAC)
 // Updates the underlying object and accessibility hierarchy , and returns the
 // corresponding AXCoreObject.
-- (WebCore::AXCoreObject*)updateObjectBackingStore;
+@property (nonatomic, readonly) WebCore::AXCoreObject *updateObjectBackingStore;
 #else
 - (BOOL)_prepareAccessibilityCall;
 #endif
 
 // This can be either an AccessibilityObject or an AXIsolatedObject
-- (WebCore::AXCoreObject*)axBackingObject;
+@property (nonatomic, readonly) WebCore::AXCoreObject *axBackingObject;
 
-- (NSArray<NSDictionary *> *)lineRectsAndText;
+@property (nonatomic, readonly, copy) NSArray<NSDictionary *> *lineRectsAndText;
 
 // These are pre-fixed with base so that AppKit does not end up calling into these directly (bypassing safety checks).
-- (NSString *)baseAccessibilityHelpText;
-- (NSArray<NSString *> *)baseAccessibilitySpeechHint;
+@property (nonatomic, readonly, copy) NSString *baseAccessibilityHelpText;
+@property (nonatomic, readonly, copy) NSArray<NSString *> *baseAccessibilitySpeechHint;
 
-- (NSString *)ariaLandmarkRoleDescription;
+@property (nonatomic, readonly, copy) NSString *ariaLandmarkRoleDescription;
 
-- (id)attachmentView;
+@property (nonatomic, readonly, strong) id attachmentView;
 // Used to inform an element when a notification is posted for it. Used by tests.
 - (void)accessibilityPostedNotification:(NSString *)notificationName;
 - (void)accessibilityPostedNotification:(NSString *)notificationName userInfo:(NSDictionary *)userInfo;
 
-- (CGPathRef)convertPathToScreenSpace:(const WebCore::Path&)path;
+- (CGPathRef)convertPathToScreenSpace:(const WebCore::Path&)path CF_RETURNS_NOT_RETAINED;
 
 - (CGRect)convertRectToSpace:(const WebCore::FloatRect&)rect space:(WebCore::AccessibilityConversionSpace)space;
 - (NSArray *)contentForSimpleRange:(const WebCore::SimpleRange&)range attributed:(BOOL)attributed;
 
 // Math related functions
-- (NSArray *)accessibilityMathPostscriptPairs;
-- (NSArray *)accessibilityMathPrescriptPairs;
+@property (nonatomic, readonly, copy) NSArray *accessibilityMathPostscriptPairs;
+@property (nonatomic, readonly, copy) NSArray *accessibilityMathPrescriptPairs;
 
-- (NSRange)accessibilityVisibleCharacterRange;
+@property (nonatomic, readonly) NSRange accessibilityVisibleCharacterRange;
 
-- (NSDictionary<NSString *, id> *)baseAccessibilityResolvedEditingStyles;
+@property (nonatomic, readonly, copy) NSDictionary<NSString *,id> *baseAccessibilityResolvedEditingStyles;
 
 extern WebCore::AccessibilitySearchCriteria accessibilitySearchCriteriaForSearchPredicateParameterizedAttribute(const NSDictionary *);
 

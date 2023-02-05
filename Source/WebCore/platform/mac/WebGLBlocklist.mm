@@ -78,7 +78,7 @@ static OSBuildInfo buildInfoFromOSBuildString(NSString *buildString)
 {
     NSError *error = NULL;
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^(\\d+)([A-Z])(\\d+)" options:0 error:&error];
-    NSArray *matches = [regex matchesInString:buildString options:0 range:NSMakeRange(0, [buildString length])];
+    NSArray *matches = [regex matchesInString:buildString options:0 range:NSMakeRange(0, buildString.length)];
     if (!matches || matches.count != 1) {
 #ifndef NDEBUG
         NSLog(@"WebGLBlocklist could not parse OSBuild entry: %@", buildString);
@@ -86,7 +86,7 @@ static OSBuildInfo buildInfoFromOSBuildString(NSString *buildString)
         return OSBuildInfo();
     }
 
-    NSTextCheckingResult *matchResult = [matches objectAtIndex:0];
+    NSTextCheckingResult *matchResult = matches[0];
 
     if (matchResult.numberOfRanges != 4) {
 #ifndef NDEBUG
@@ -95,9 +95,9 @@ static OSBuildInfo buildInfoFromOSBuildString(NSString *buildString)
         return OSBuildInfo();
     }
 
-    int majorVersion = [[buildString substringWithRange:[matchResult rangeAtIndex:1]] intValue];
+    int majorVersion = [buildString substringWithRange:[matchResult rangeAtIndex:1]].intValue;
     int minorVersion = [[buildString substringWithRange:[matchResult rangeAtIndex:2]] characterAtIndex:0] - 'A' + 1;
-    int buildVersion = [[buildString substringWithRange:[matchResult rangeAtIndex:3]] intValue];
+    int buildVersion = [buildString substringWithRange:[matchResult rangeAtIndex:3]].intValue;
 
     return OSBuildInfo(majorVersion, minorVersion, buildVersion);
 }
@@ -167,7 +167,7 @@ std::unique_ptr<WebGLBlocklist> WebGLBlocklist::create(NSDictionary *propertyLis
     if (!buildInfo.major)
         return nullptr;
 
-    NSArray *blockEntries = [propertyList objectForKey:@"WebGLBlocklist"];
+    NSArray *blockEntries = propertyList[@"WebGLBlocklist"];
 
     if (![blockEntries isKindOfClass:[NSArray class]] || !blockEntries.count)
         return nullptr;
@@ -201,18 +201,18 @@ std::unique_ptr<WebGLBlocklist> WebGLBlocklist::create(NSDictionary *propertyLis
 
     for (NSDictionary *blockData in blockEntries) {
 
-        GLint gpuMask = gpuMaskFromString([blockData objectForKey:@"GPU"]);
+        GLint gpuMask = gpuMaskFromString(blockData[@"GPU"]);
 
-        OSBuildInfo blockedBuildInfo = buildInfoFromOSBuildString(static_cast<NSString*>([blockData objectForKey:@"OSBuild"]));
+        OSBuildInfo blockedBuildInfo = buildInfoFromOSBuildString(static_cast<NSString*>(blockData[@"OSBuild"]));
 
-        NSString *comparisonString = [blockData objectForKey:@"Comparison"];
+        NSString *comparisonString = blockData[@"Comparison"];
         BlockComparison comparison = BlockComparison::Equals;
         if ([comparisonString isEqualToString:@"LessThan"])
             comparison = BlockComparison::LessThan;
         else if ([comparisonString isEqualToString:@"LessThanEquals"])
             comparison = BlockComparison::LessThanEquals;
 
-        NSString *commandString = [blockData objectForKey:@"Command"];
+        NSString *commandString = blockData[@"Command"];
         BlockCommand command = BlockCommand::Allow;
         if ([commandString isEqualToString:@"Block"])
             command = BlockCommand::Block;

@@ -101,7 +101,7 @@
             [super setNeedsDisplayInRect:dirtyRect];
 
             if (layerOwner->platformCALayerShowRepaintCounter(platformLayer.get())) {
-                CGRect bounds = [self bounds];
+                CGRect bounds = self.bounds;
                 CGRect indicatorRect = CGRectMake(bounds.origin.x, bounds.origin.y, 52, 27);
                 [super setNeedsDisplayInRect:indicatorRect];
             }
@@ -152,35 +152,35 @@
 
 - (NSString*)_descriptionWithPrefix:(NSString*)inPrefix
 {
-    CGRect aBounds = [self bounds];
-    CGPoint aPos = [self position];
+    CGRect aBounds = self.bounds;
+    CGPoint aPos = self.position;
 
     NSString* selfString = [NSString stringWithFormat:@"%@<%@ 0x%p> \"%@\" bounds(%.1f, %.1f, %.1f, %.1f) pos(%.1f, %.1f), sublayers=%lu masking=%d",
             inPrefix,
             [self class],
             self,
-            [self name],
+            self.name,
             aBounds.origin.x, aBounds.origin.y, aBounds.size.width, aBounds.size.height, 
             aPos.x, aPos.y,
-            static_cast<unsigned long>([[self sublayers] count]),
-            [self masksToBounds]];
+            static_cast<unsigned long>(self.sublayers.count),
+            self.masksToBounds];
     
     NSMutableString* curDesc = [NSMutableString stringWithString:selfString];
     
-    if ([[self sublayers] count] > 0)
+    if (self.sublayers.count > 0)
         [curDesc appendString:@"\n"];
 
     NSString* sublayerPrefix = [inPrefix stringByAppendingString:@"\t"];
 
-    NSEnumerator* sublayersEnum = [[self sublayers] objectEnumerator];
+    NSEnumerator* sublayersEnum = [self.sublayers objectEnumerator];
     CALayer* curLayer;
     while ((curLayer = [sublayersEnum nextObject]))
         [curDesc appendString:[curLayer _descriptionWithPrefix:sublayerPrefix]];
 
-    if ([[self sublayers] count] == 0)
+    if (self.sublayers.count == 0)
         [curDesc appendString:@"\n"];
 
-    if (CALayer *mask = [self mask]) {
+    if (CALayer *mask = self.mask) {
         [curDesc appendString:@"mask: "];
         [curDesc appendString:[mask _descriptionWithPrefix:sublayerPrefix]];
     }

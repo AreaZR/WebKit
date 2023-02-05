@@ -39,7 +39,7 @@ WEBCORE_EXPORT @interface WebTextIndicatorLayer : CALayer {
     BOOL _fadingOut;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame textIndicator:(WebCore::TextIndicator&)textIndicator margin:(CGSize)margin offset:(CGPoint)offset;
+- (instancetype)initWithFrame:(CGRect)frame textIndicator:(WebCore::TextIndicator&)textIndicator margin:(CGSize)margin offset:(CGPoint)offset NS_DESIGNATED_INITIALIZER;
 
 - (bool)indicatorWantsManualAnimation:(const WebCore::TextIndicator&)indicator;
 - (bool)indicatorWantsBounce:(const WebCore::TextIndicator&)indicator;
@@ -48,7 +48,7 @@ WEBCORE_EXPORT @interface WebTextIndicatorLayer : CALayer {
 - (void)hideWithCompletionHandler:(void(^)(void))completionHandler;
 
 - (void)setAnimationProgress:(float)progress;
-- (BOOL)hasCompletedAnimation;
+@property (nonatomic, readonly) BOOL hasCompletedAnimation;
 
 @property (nonatomic, getter=isFadingOut) BOOL fadingOut;
 

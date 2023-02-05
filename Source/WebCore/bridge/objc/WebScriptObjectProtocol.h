@@ -36,7 +36,7 @@
 
 + (id)_convertValueToObjcValue:(JSC::JSValue)value originRootObject:(JSC::Bindings::RootObject*)originRootObject rootObject:(JSC::Bindings::RootObject*)rootObject;
 - (id)_initWithJSObject:(JSC::JSObject*)imp originRootObject:(RefPtr<JSC::Bindings::RootObject>&&)originRootObject rootObject:(RefPtr<JSC::Bindings::RootObject>&&)rootObject;
-- (JSC::JSObject *)_imp;
+@property (nonatomic, readonly) JSC::JSObject *_imp;
 @end
 
 @protocol WebUndefined

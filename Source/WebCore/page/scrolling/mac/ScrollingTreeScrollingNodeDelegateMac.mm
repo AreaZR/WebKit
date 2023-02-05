@@ -96,8 +96,8 @@ bool ScrollingTreeScrollingNodeDelegateMac::handleWheelEvent(const PlatformWheel
         m_inMomentumPhase = false;
     
     if (wasInMomentumPhase != m_inMomentumPhase) {
-        [m_scrollerPair.scrollerImpVertical() setUsePresentationValue:m_inMomentumPhase];
-        [m_scrollerPair.scrollerImpHorizontal() setUsePresentationValue:m_inMomentumPhase];
+        m_scrollerPair.scrollerImpVertical().usePresentationValue = m_inMomentumPhase;
+        m_scrollerPair.scrollerImpHorizontal().usePresentationValue = m_inMomentumPhase;
     }
 
     auto deferrer = ScrollingTreeWheelEventTestMonitorCompletionDeferrer { scrollingTree(), scrollingNode().scrollingNodeID(), WheelEventTestMonitor::HandlingWheelEvent };
@@ -293,18 +293,18 @@ void ScrollingTreeScrollingNodeDelegateMac::updateScrollbarPainters()
 
         [CATransaction lock];
 
-        if ([m_scrollerPair.scrollerImpVertical() shouldUsePresentationValue]) {
+        if (m_scrollerPair.scrollerImpVertical().usePresentationValue) {
             float presentationValue;
             float overhangAmount;
             ScrollableArea::computeScrollbarValueAndOverhang(scrollOffset.y(), totalContentsSize().height(), scrollableAreaSize().height(), presentationValue, overhangAmount);
-            [m_scrollerPair.scrollerImpVertical() setPresentationValue:presentationValue];
+            m_scrollerPair.scrollerImpVertical().presentationValue = presentationValue;
         }
 
-        if ([m_scrollerPair.scrollerImpHorizontal() shouldUsePresentationValue]) {
+        if (m_scrollerPair.scrollerImpHorizontal().usePresentationValue) {
             float presentationValue;
             float overhangAmount;
             ScrollableArea::computeScrollbarValueAndOverhang(scrollOffset.x(), totalContentsSize().width(), scrollableAreaSize().width(), presentationValue, overhangAmount);
-            [m_scrollerPair.horizontalScroller().scrollerImp() setPresentationValue:presentationValue];
+            m_scrollerPair.horizontalScroller().scrollerImp().presentationValue = presentationValue;
         }
 
         [CATransaction unlock];

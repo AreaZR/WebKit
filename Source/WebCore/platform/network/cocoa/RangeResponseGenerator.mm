@@ -121,7 +121,7 @@ void RangeResponseGenerator::giveResponseToTaskIfBytesInRangeReceived(WebCoreNSU
 
     auto giveBytesToTask = [task = retainPtr(task), buffer, bufferSize, taskData = WeakPtr { *taskData }, generator = WeakPtr { *this }] {
         ASSERT(isMainThread());
-        if ([task state] != NSURLSessionTaskStateRunning)
+        if (task.state != NSURLSessionTaskStateRunning)
             return;
         if (!taskData)
             return;

@@ -43,12 +43,12 @@ TextAlternativeWithRange::TextAlternativeWithRange(NSTextAlternatives *anAlterna
 
 void collectDictationTextAlternatives(NSAttributedString *string, Vector<TextAlternativeWithRange>& alternatives) {
     NSRange effectiveRange = NSMakeRange(0, 0);
-    NSUInteger length = [string length];
+    NSUInteger length = string.length;
     do {
         NSDictionary *attributes = [string attributesAtIndex:effectiveRange.location effectiveRange:&effectiveRange];
         if (!attributes)
             break;
-        NSTextAlternatives *textAlternatives = [attributes objectForKey:NSTextAlternativesAttributeName];
+        NSTextAlternatives *textAlternatives = attributes[NSTextAlternativesAttributeName];
         if (textAlternatives)
             alternatives.append(TextAlternativeWithRange(textAlternatives, effectiveRange));
         effectiveRange.location = NSMaxRange(effectiveRange);

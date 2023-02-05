@@ -50,7 +50,7 @@ void MeterMac::updateCellStates(const FloatRect& rect, const ControlStyle& style
 
     ControlMac::updateCellStates(rect, style);
 
-    [m_levelIndicatorCell setUserInterfaceLayoutDirection:style.states.contains(ControlStyle::State::RightToLeft) ? NSUserInterfaceLayoutDirectionRightToLeft : NSUserInterfaceLayoutDirectionLeftToRight];
+    m_levelIndicatorCell.userInterfaceLayoutDirection = style.states.contains(ControlStyle::State::RightToLeft) ? NSUserInterfaceLayoutDirectionRightToLeft : NSUserInterfaceLayoutDirectionLeftToRight;
 
     auto& meterPart = owningMeterPart();
     
@@ -59,24 +59,24 @@ void MeterMac::updateCellStates(const FloatRect& rect, const ControlStyle& style
     switch (meterPart.gaugeRegion()) {
     case MeterPart::GaugeRegion::Optimum:
         // Make meter the green
-        [m_levelIndicatorCell setWarningValue:meterPart.value() + 1];
-        [m_levelIndicatorCell setCriticalValue:meterPart.value() + 2];
+        m_levelIndicatorCell.warningValue = meterPart.value() + 1;
+        m_levelIndicatorCell.criticalValue = meterPart.value() + 2;
         break;
     case MeterPart::GaugeRegion::Suboptimal:
         // Make the meter yellow
-        [m_levelIndicatorCell setWarningValue:meterPart.value() - 1];
-        [m_levelIndicatorCell setCriticalValue:meterPart.value() + 1];
+        m_levelIndicatorCell.warningValue = meterPart.value() - 1;
+        m_levelIndicatorCell.criticalValue = meterPart.value() + 1;
         break;
     case MeterPart::GaugeRegion::EvenLessGood:
         // Make the meter red
-        [m_levelIndicatorCell setWarningValue:meterPart.value() - 2];
-        [m_levelIndicatorCell setCriticalValue:meterPart.value() - 1];
+        m_levelIndicatorCell.warningValue = meterPart.value() - 2;
+        m_levelIndicatorCell.criticalValue = meterPart.value() - 1;
         break;
     }
 
-    [m_levelIndicatorCell setObjectValue:@(meterPart.value())];
-    [m_levelIndicatorCell setMinValue:meterPart.minimum()];
-    [m_levelIndicatorCell setMaxValue:meterPart.maximum()];
+    m_levelIndicatorCell.objectValue = @(meterPart.value());
+    m_levelIndicatorCell.minValue = meterPart.minimum();
+    m_levelIndicatorCell.maxValue = meterPart.maximum();
 
     END_BLOCK_OBJC_EXCEPTIONS
 }

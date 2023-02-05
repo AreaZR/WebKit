@@ -33,8 +33,8 @@ class ArchiveResource;
 @package
     RefPtr<WebCore::ArchiveResource> resource;
 }
-- (instancetype)initWithData:(NSData *)data URL:(NSURL *)URL MIMEType:(NSString *)MIMEType textEncodingName:(NSString *)textEncodingName frameName:(NSString *)frameName;
-- (NSString *)MIMEType;
-- (NSURL *)URL;
+- (instancetype)initWithData:(NSData *)data URL:(NSURL *)URL MIMEType:(NSString *)MIMEType textEncodingName:(NSString *)textEncodingName frameName:(NSString *)frameName NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly, copy) NSString *MIMEType;
+@property (nonatomic, readonly, copy) NSURL *URL;
 
 @end

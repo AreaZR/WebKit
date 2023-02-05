@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
     bool _hasSentEnd;
 }
 
-- (instancetype)initWithIdentifier:(WebCore::SpeechRecognitionConnectionClientIdentifier)identifier locale:(NSString*)localeIdentifier doMultipleRecognitions:(BOOL)continuous reportInterimResults:(BOOL)interimResults maxAlternatives:(unsigned long)alternatives delegateCallback:(void(^)(const WebCore::SpeechRecognitionUpdate&))callback;
+- (instancetype)initWithIdentifier:(WebCore::SpeechRecognitionConnectionClientIdentifier)identifier locale:(NSString*)localeIdentifier doMultipleRecognitions:(BOOL)continuous reportInterimResults:(BOOL)interimResults maxAlternatives:(unsigned long)alternatives delegateCallback:(void(^)(const WebCore::SpeechRecognitionUpdate&))callback NS_DESIGNATED_INITIALIZER;
 - (void)callbackWithTranscriptions:(NSArray<SFTranscription *> *)transcriptions isFinal:(BOOL)isFinal;
 - (void)audioSamplesAvailable:(CMSampleBufferRef)sampleBuffer;
 - (void)abort;
@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _maxAlternatives = alternatives ? alternatives : 1;
 
-    if (![localeIdentifier length])
+    if (!localeIdentifier.length)
         _recognizer = adoptNS([PAL::allocSFSpeechRecognizerInstance() init]);
     else
         _recognizer = adoptNS([PAL::allocSFSpeechRecognizerInstance() initWithLocale:[NSLocale localeWithLocaleIdentifier:localeIdentifier]]);
@@ -89,18 +89,18 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (![_recognizer isAvailable]) {
+    if (!_recognizer.available) {
         [self release];
         return nil;
     }
 
-    [_recognizer setDelegate:self];
+    _recognizer.delegate = self;
 
     _request = adoptNS([PAL::allocSFSpeechAudioBufferRecognitionRequestInstance() init]);
-    if ([_recognizer supportsOnDeviceRecognition])
+    if (_recognizer.supportsOnDeviceRecognition)
         [_request setRequiresOnDeviceRecognition:YES];
-    [_request setShouldReportPartialResults:interimResults];
-    [_request setTaskHint:SFSpeechRecognitionTaskHintDictation];
+    _request.shouldReportPartialResults = interimResults;
+    _request.taskHint = SFSpeechRecognitionTaskHintDictation;
 
 #if USE(APPLE_INTERNAL_SDK)
     [_request setDetectMultipleUtterances:YES];
@@ -118,11 +118,11 @@ NS_ASSUME_NONNULL_BEGIN
     for (SFTranscription* transcription in transcriptions) {
         // FIXME: <rdar://73629573> get confidence of SFTranscription when possible.
         double maxConfidence = 0.0;
-        for (SFTranscriptionSegment* segment in [transcription segments]) {
-            double confidence = [segment confidence];
+        for (SFTranscriptionSegment* segment in transcription.segments) {
+            double confidence = segment.confidence;
             maxConfidence = maxConfidence < confidence ? confidence : maxConfidence;
         }
-        alternatives.uncheckedAppend(WebCore::SpeechRecognitionAlternativeData { [transcription formattedString], maxConfidence });
+        alternatives.uncheckedAppend(WebCore::SpeechRecognitionAlternativeData { transcription.formattedString, maxConfidence });
         if (alternatives.size() == _maxAlternatives)
             break;
     }
@@ -137,10 +137,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)abort
 {
-    if (!_task || [_task state] == SFSpeechRecognitionTaskStateCanceling)
+    if (!_task || _task.state == SFSpeechRecognitionTaskStateCanceling)
         return;
 
-    if ([_task state] == SFSpeechRecognitionTaskStateCompleted) {
+    if (_task.state == SFSpeechRecognitionTaskStateCompleted) {
         [self sendSpeechEndIfNeeded];
         [self sendEndIfNeeded];
         return;
@@ -153,10 +153,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)stop
 {
-    if (!_task || [_task state] == SFSpeechRecognitionTaskStateCanceling)
+    if (!_task || _task.state == SFSpeechRecognitionTaskStateCanceling)
         return;
 
-    if ([_task state] == SFSpeechRecognitionTaskStateCompleted) {
+    if (_task.state == SFSpeechRecognitionTaskStateCompleted) {
         [self sendSpeechEndIfNeeded];
         [self sendEndIfNeeded];
         return;
@@ -214,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
     ASSERT(isMainThread());
 
     [self sendSpeechStartIfNeeded];
-    [self callbackWithTranscriptions:[NSArray arrayWithObjects:transcription, nil] isFinal:NO];
+    [self callbackWithTranscriptions:@[transcription] isFinal:NO];
 }
 
 - (void)speechRecognitionTask:(SFSpeechRecognitionTask *)task didFinishRecognition:(SFSpeechRecognitionResult *)recognitionResult

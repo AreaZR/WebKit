@@ -34,7 +34,7 @@
 
 @implementation WebCoreFullScreenPlaceholderView
 
-- (id)initWithFrame:(NSRect)frameRect
+- (instancetype)initWithFrame:(NSRect)frameRect
 {
     self = [super initWithFrame:frameRect];
     if (!self)
@@ -66,7 +66,7 @@
     _exitWarning.get().textColor = [NSColor tertiaryLabelColor];
     [_exitWarning sizeToFit];
 
-    NSRect warningFrame = [_exitWarning frame];
+    NSRect warningFrame = _exitWarning.frame;
     warningFrame.origin = NSMakePoint((frameRect.size.width - warningFrame.size.width) / 2, frameRect.size.height / 2);
     _exitWarning.get().frame = warningFrame;
     [_effectView addSubview:_exitWarning.get()];
@@ -88,17 +88,17 @@
 
 - (void)setContents:(id)contents
 {
-    [[self layer] setContents:contents];
+    self.layer.contents = contents;
 }
 
 - (id)contents
 {
-    return [[self layer] contents];
+    return self.layer.contents;
 }
 
 - (void)setExitWarningVisible:(BOOL)visible
 {
-    [_effectView setHidden:!visible];
+    _effectView.hidden = !visible;
 }
 
 - (void)mouseDown:(NSEvent *)event

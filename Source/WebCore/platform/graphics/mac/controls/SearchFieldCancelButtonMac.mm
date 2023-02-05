@@ -72,9 +72,9 @@ void SearchFieldCancelButtonMac::updateCellStates(const FloatRect& rect, const C
     bool readOnly = style.states.contains(ControlStyle::State::ReadOnly);
 
     if (!enabled && !readOnly)
-        updatePressedState([m_searchFieldCell cancelButtonCell], style);
-    else if ([[m_searchFieldCell cancelButtonCell] isHighlighted])
-        [[m_searchFieldCell cancelButtonCell] setHighlighted:NO];
+        updatePressedState(m_searchFieldCell.cancelButtonCell, style);
+    else if (m_searchFieldCell.cancelButtonCell.highlighted)
+        [m_searchFieldCell.cancelButtonCell setHighlighted:NO];
 
     SearchControlMac::updateCellStates(rect, style);
 }
@@ -99,7 +99,7 @@ void SearchFieldCancelButtonMac::draw(GraphicsContext& context, const FloatRound
 
     auto *view = m_controlFactory.drawingView(borderRect.rect(), style);
 
-    drawCell(context, logicalRect, deviceScaleFactor, styleForDrawing, [m_searchFieldCell cancelButtonCell], view, true);
+    drawCell(context, logicalRect, deviceScaleFactor, styleForDrawing, m_searchFieldCell.cancelButtonCell, view, true);
 }
 
 } // namespace WebCore

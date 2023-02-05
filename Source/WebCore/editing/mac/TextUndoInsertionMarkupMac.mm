@@ -40,7 +40,7 @@ bool shouldRegisterInsertionUndoGroup(NSAttributedString *string)
     
 void registerInsertionUndoGroupingWithUndoManager(NSUndoManager *undoManager)
 {
-    if ([undoManager groupingLevel])
+    if (undoManager.groupingLevel)
         [undoManager _processEndOfEventNotification:nil];
 }
     

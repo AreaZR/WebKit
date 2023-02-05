@@ -62,7 +62,7 @@ static RetainPtr<CFURLResponseRef> createCFURLResponseFromResponseData(CFDataRef
 
     NSDictionary *headerFields = httpResponse.allHeaderFields;
     for (NSString *headerField in [headerFields keyEnumerator])
-        CFHTTPMessageSetHeaderFieldValue(httpMessage.get(), (__bridge CFStringRef)headerField, (__bridge CFStringRef)[headerFields objectForKey:headerField]);
+        CFHTTPMessageSetHeaderFieldValue(httpMessage.get(), (__bridge CFStringRef)headerField, (__bridge CFStringRef)headerFields[headerField]);
 
     return adoptCF(CFURLResponseCreateWithHTTPResponse(kCFAllocatorDefault, (__bridge CFURLRef)response.URL, httpMessage.get(), kCFURLCacheStorageAllowed));
 }

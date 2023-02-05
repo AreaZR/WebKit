@@ -109,7 +109,7 @@ static bool _useFormSemanticContext;
 - (NSRect)_focusRingVisibleRect
 {
     if (NSIsEmptyRect(focusRingClipRect))
-        return [self visibleRect];
+        return self.visibleRect;
     return focusRingClipRect;
 }
 
@@ -199,8 +199,8 @@ static NSControlSize controlSizeFromPixelSize(const std::array<IntSize, 4>& size
 static void setControlSize(NSCell* cell, const std::array<IntSize, 4>& sizes, const IntSize& minZoomedSize, float zoomFactor)
 {
     auto size = controlSizeFromPixelSize(sizes, minZoomedSize, zoomFactor);
-    if (size != [cell controlSize]) // Only update if we have to, since AppKit does work even if the size is the same.
-        [cell setControlSize:size];
+    if (size != cell.controlSize) // Only update if we have to, since AppKit does work even if the size is the same.
+        cell.controlSize = size;
 }
 
 static void updateStates(NSCell* cell, const ControlStates& controlStates, bool useAnimation = false)
@@ -215,23 +215,23 @@ static void updateStates(NSCell* cell, const ControlStates& controlStates, bool 
     // Hover state is not supported by Aqua.
     
     // Pressed state
-    bool oldPressed = [cell isHighlighted];
+    bool oldPressed = cell.highlighted;
     bool pressed = states.contains(ControlStates::States::Pressed);
     if (pressed != oldPressed) {
         [(NSButtonCell*)cell _setHighlighted:pressed animated:useAnimation];
     }
     
     // Enabled state
-    bool oldEnabled = [cell isEnabled];
+    bool oldEnabled = cell.enabled;
     bool enabled = states.contains(ControlStates::States::Enabled);
     if (enabled != oldEnabled)
-        [cell setEnabled:enabled];
+        cell.enabled = enabled;
 
     // Checked and Indeterminate
-    bool oldIndeterminate = [cell state] == NSControlStateValueMixed;
+    bool oldIndeterminate = cell.state == NSControlStateValueMixed;
     bool indeterminate = states.contains(ControlStates::States::Indeterminate);
     bool checked = states.contains(ControlStates::States::Checked);
-    bool oldChecked = [cell state] == NSControlStateValueOn;
+    bool oldChecked = cell.state == NSControlStateValueOn;
     if (oldIndeterminate != indeterminate || checked != oldChecked) {
         NSControlStateValue newState = indeterminate ? NSControlStateValueMixed : (checked ? NSControlStateValueOn : NSControlStateValueOff);
         [(NSButtonCell*)cell _setState:newState animated:useAnimation];
@@ -353,7 +353,7 @@ static RetainPtr<NSButtonCell> createToggleButtonCell(StyleAppearance appearance
     }
     
     [toggleButtonCell setTitle:nil];
-    [toggleButtonCell setFocusRingType:NSFocusRingTypeExterior];
+    toggleButtonCell.focusRingType = NSFocusRingTypeExterior;
     return toggleButtonCell;
 }
     
@@ -405,7 +405,7 @@ static RetainPtr<NSButtonCell> buttonCell(ButtonCellType type)
     [cell setTitle:nil];
     [cell setButtonType:NSButtonTypeMomentaryPushIn];
     if (type == DefaultButtonCell)
-        [cell setKeyEquivalent:@"\r"];
+        cell.keyEquivalent = @"\r";
     return cell;
 }
 
@@ -415,17 +415,17 @@ static void setUpButtonCell(NSButtonCell *cell, StyleAppearance appearance, cons
     const std::array<IntSize, 4>& sizes = buttonSizes();
     switch (appearance) {
     case StyleAppearance::SquareButton:
-        [cell setBezelStyle:NSBezelStyleShadowlessSquare];
+        cell.bezelStyle = NSBezelStyleShadowlessSquare;
         break;
 #if ENABLE(INPUT_TYPE_COLOR)
     case StyleAppearance::ColorWell:
-        [cell setBezelStyle:NSBezelStyleTexturedSquare];
+        cell.bezelStyle = NSBezelStyleTexturedSquare;
         break;
 #endif
     default:
         auto largestControlSize = ThemeMac::supportsLargeFormControls() ? NSControlSizeLarge : NSControlSizeRegular;
         NSBezelStyle style = (zoomedSize.height() > buttonSizes()[largestControlSize].height() * zoomFactor) ? NSBezelStyleShadowlessSquare : NSBezelStyleRounded;
-        [cell setBezelStyle:style];
+        cell.bezelStyle = style;
         break;
     }
 
@@ -485,12 +485,12 @@ NSView *ThemeMac::ensuredView(ScrollView* scrollView, const ControlStates& contr
     static WebCoreThemeView *themeView = [[WebCoreThemeView alloc] init];
     [themeView setFrameSize:NSSizeFromCGSize(scrollView->totalContentsSize())];
     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    [themeView setAppearance:[NSAppearance currentAppearance]];
+    themeView.appearance = [NSAppearance currentAppearance];
     ALLOW_DEPRECATED_DECLARATIONS_END
 
 #if USE(NSVIEW_SEMANTICCONTEXT)
     if (_useFormSemanticContext)
-        [themeView _setSemanticContext:NSViewSemanticContextForm];
+        themeView._semanticContext = NSViewSemanticContextForm;
 #endif
 
     themeWindowHasKeyAppearance = controlStates.states().contains(ControlStates::States::WindowActive);
@@ -531,8 +531,8 @@ std::optional<FontCascadeDescription> ThemeMac::controlFont(StyleAppearance appe
 
         NSFont* nsFont = [NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:controlSizeForFont(font)]];
         fontDescription.setOneFamily("-apple-system"_s);
-        fontDescription.setComputedSize([nsFont pointSize] * zoomFactor);
-        fontDescription.setSpecifiedSize([nsFont pointSize] * zoomFactor);
+        fontDescription.setComputedSize(nsFont.pointSize * zoomFactor);
+        fontDescription.setSpecifiedSize(nsFont.pointSize * zoomFactor);
         return fontDescription;
     }
     default:
@@ -620,7 +620,7 @@ void ThemeMac::inflateControlPaintRect(StyleAppearance appearance, const Control
         // We inflate the rect as needed to account for padding included in the cell to accommodate the checkbox
         // shadow" and the check. We don't consider this part of the bounds of the control in WebKit.
         NSCell *cell = sharedCheckboxCell(states, zoomRectSize, zoomFactor);
-        NSControlSize controlSize = [cell controlSize];
+        NSControlSize controlSize = cell.controlSize;
         IntSize zoomedSize = checkboxSizes()[controlSize];
         zoomedSize.setHeight(zoomedSize.height() * zoomFactor);
         zoomedSize.setWidth(zoomedSize.width() * zoomFactor);
@@ -631,7 +631,7 @@ void ThemeMac::inflateControlPaintRect(StyleAppearance appearance, const Control
         // We inflate the rect as needed to account for padding included in the cell to accommodate the radio button
         // shadow". We don't consider this part of the bounds of the control in WebKit.
         NSCell *cell = sharedRadioCell(states, zoomRectSize, zoomFactor);
-        NSControlSize controlSize = [cell controlSize];
+        NSControlSize controlSize = cell.controlSize;
         IntSize zoomedSize = radioSizes()[controlSize];
         zoomedSize.setHeight(zoomedSize.height() * zoomFactor);
         zoomedSize.setWidth(zoomedSize.width() * zoomFactor);
@@ -642,10 +642,10 @@ void ThemeMac::inflateControlPaintRect(StyleAppearance appearance, const Control
     case StyleAppearance::DefaultButton:
     case StyleAppearance::Button: {
         NSButtonCell *cell = button(appearance, states, zoomRectSize, zoomFactor);
-        NSControlSize controlSize = [cell controlSize];
+        NSControlSize controlSize = cell.controlSize;
 
         // We inflate the rect as needed to account for the Aqua button's shadow.
-        if ([cell bezelStyle] == NSBezelStyleRounded) {
+        if (cell.bezelStyle == NSBezelStyleRounded) {
             IntSize zoomedSize = buttonSizes()[controlSize];
             zoomedSize.setHeight(zoomedSize.height() * zoomFactor);
             zoomedSize.setWidth(zoomedRect.width()); // Buttons don't ever constrain width, so the zoomed width can just be honored.
@@ -670,12 +670,12 @@ void ThemeMac::inflateControlPaintRect(StyleAppearance appearance, const Control
 
 bool ThemeMac::userPrefersReducedMotion() const
 {
-    return [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceMotion];
+    return [NSWorkspace sharedWorkspace].accessibilityDisplayShouldReduceMotion;
 }
 
 bool ThemeMac::userPrefersContrast() const
 {
-    return [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldIncreaseContrast];
+    return [NSWorkspace sharedWorkspace].accessibilityDisplayShouldIncreaseContrast;
 }
 
 bool ThemeMac::supportsLargeFormControls()

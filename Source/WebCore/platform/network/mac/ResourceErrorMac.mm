@@ -43,7 +43,7 @@ static bool dueToCompromisingNetworkConnectionIntegrity(NSError *)
 #endif
 
 @interface NSError (WebExtras)
-- (NSString *)_web_localizedDescription;
+@property (nonatomic, readonly, copy) NSString *_web_localizedDescription;
 @end
 
 #if PLATFORM(IOS_FAMILY)
@@ -151,8 +151,8 @@ void ResourceError::mapPlatformError()
     if (!m_platformError)
         return;
 
-    auto domain = [m_platformError domain];
-    auto errorCode = [m_platformError code];
+    auto domain = m_platformError.domain;
+    auto errorCode = m_platformError.code;
 
     if ([domain isEqualToString:NSURLErrorDomain] || [domain isEqualToString:(__bridge NSString *)kCFErrorDomainCFNetwork])
         setType((errorCode == NSURLErrorTimedOut) ? Type::Timeout : (errorCode == NSURLErrorCancelled) ? Type::Cancellation : Type::General);
@@ -165,10 +165,10 @@ void ResourceError::platformLazyInit()
     if (m_dataIsUpToDate)
         return;
 
-    m_domain = [m_platformError domain];
-    m_errorCode = [m_platformError code];
+    m_domain = m_platformError.domain;
+    m_errorCode = m_platformError.code;
 
-    RetainPtr userInfo = [m_platformError userInfo];
+    RetainPtr userInfo = m_platformError.userInfo;
     if (auto *failingURLString = dynamic_objc_cast<NSString>([userInfo valueForKey:@"NSErrorFailingURLStringKey"]))
         m_failingURL = URL { failingURLString };
     else if (auto *failingURL = dynamic_objc_cast<NSURL>([userInfo valueForKey:@"NSErrorFailingURLKey"]))

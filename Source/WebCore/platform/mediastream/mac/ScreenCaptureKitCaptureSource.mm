@@ -77,7 +77,7 @@ using namespace WebCore;
     WeakPtr<ScreenCaptureKitCaptureSource> _callback;
 }
 
-- (instancetype)initWithCallback:(WeakPtr<ScreenCaptureKitCaptureSource>&&)callback;
+- (instancetype)initWithCallback:(WeakPtr<ScreenCaptureKitCaptureSource>&&)callback NS_DESIGNATED_INITIALIZER;
 - (void)disconnect;
 - (void)stream:(SCStream *)stream didStopWithError:(NSError *)error;
 - (void)stream:(SCStream *)stream didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer ofType:(SCStreamOutputType)type;
@@ -244,11 +244,11 @@ void ScreenCaptureKitCaptureSource::sessionDidChangeContent(RetainPtr<SCContentS
 {
     ASSERT(isMainThread());
 
-    if ([session content].type == SCContentFilterTypeNothing)
+    if (session.content.type == SCContentFilterTypeNothing)
         return;
 
     std::optional<CaptureDevice> device;
-    SCContentFilter* content = [session content];
+    SCContentFilter* content = session.content;
     switch (content.type) {
     case SCContentFilterTypeDesktopIndependentWindow: {
         auto *window = content.desktopIndependentWindowInfo.window;
@@ -299,7 +299,7 @@ static void findSharableDevice(RetainPtr<SCShareableContent>&& shareableContent,
     uint32_t index = 0;
     std::optional<ScreenCaptureKitCaptureSource::Content> content;
     if (deviceType == CaptureDevice::DeviceType::Screen) {
-        [[shareableContent displays] enumerateObjectsUsingBlock:makeBlockPtr([&] (SCDisplay *display, NSUInteger, BOOL *stop) {
+        [shareableContent.displays enumerateObjectsUsingBlock:makeBlockPtr([&] (SCDisplay *display, NSUInteger, BOOL *stop) {
             if (display.displayID == deviceID) {
                 content = display;
                 *stop = YES;
@@ -307,7 +307,7 @@ static void findSharableDevice(RetainPtr<SCShareableContent>&& shareableContent,
             ++index;
         }).get()];
     } else if (deviceType == CaptureDevice::DeviceType::Window) {
-        [[shareableContent windows] enumerateObjectsUsingBlock:makeBlockPtr([&] (SCWindow *window, NSUInteger, BOOL *stop) {
+        [shareableContent.windows enumerateObjectsUsingBlock:makeBlockPtr([&] (SCWindow *window, NSUInteger, BOOL *stop) {
             if (window.windowID == deviceID) {
                 content = window;
                 *stop = YES;
@@ -359,18 +359,18 @@ RetainPtr<SCStreamConfiguration> ScreenCaptureKitCaptureSource::streamConfigurat
     ALWAYS_LOG_IF_POSSIBLE(LOGIDENTIFIER);
 
     m_streamConfiguration = adoptNS([PAL::allocSCStreamConfigurationInstance() init]);
-    [m_streamConfiguration setPixelFormat:preferedPixelBufferFormat()];
+    m_streamConfiguration.pixelFormat = preferedPixelBufferFormat();
     [m_streamConfiguration setShowsCursor:YES];
-    [m_streamConfiguration setQueueDepth:6];
-    [m_streamConfiguration setColorSpaceName:kCGColorSpaceSRGB];
-    [m_streamConfiguration setColorMatrix:kCGDisplayStreamYCbCrMatrix_SMPTE_240M_1995];
+    m_streamConfiguration.queueDepth = 6;
+    m_streamConfiguration.colorSpaceName = kCGColorSpaceSRGB;
+    m_streamConfiguration.colorMatrix = kCGDisplayStreamYCbCrMatrix_SMPTE_240M_1995;
 
     if (m_frameRate)
-        [m_streamConfiguration setMinimumFrameInterval:PAL::CMTimeMakeWithSeconds(1 / m_frameRate, 1000)];
+        m_streamConfiguration.minimumFrameInterval = PAL::CMTimeMakeWithSeconds(1 / m_frameRate, 1000);
 
     if (m_width && m_height) {
-        [m_streamConfiguration setWidth:m_width];
-        [m_streamConfiguration setHeight:m_height];
+        m_streamConfiguration.width = m_width;
+        m_streamConfiguration.height = m_height;
     }
 
     return m_streamConfiguration;
@@ -461,10 +461,10 @@ IntSize ScreenCaptureKitCaptureSource::intrinsicSize() const
     if (m_content) {
         auto frame = switchOn(m_content.value(),
             [] (const RetainPtr<SCDisplay> display) -> CGRect {
-                return [display frame];
+                return display.frame;
             },
             [] (const RetainPtr<SCWindow> window) -> CGRect {
-                return [window frame];
+                return window.frame;
             }
         );
 
@@ -482,7 +482,7 @@ IntSize ScreenCaptureKitCaptureSource::intrinsicSize() const
             return;
         }
         if (deviceType == CaptureDevice::DeviceType::Screen) {
-            [[shareableContent displays] enumerateObjectsUsingBlock:makeBlockPtr([&] (SCDisplay *display, NSUInteger, BOOL *stop) {
+            [shareableContent.displays enumerateObjectsUsingBlock:makeBlockPtr([&] (SCDisplay *display, NSUInteger, BOOL *stop) {
                 if (display.displayID == deviceID) {
                     size = { static_cast<int>(display.width), static_cast<int>(display.height) };
                     *stop = YES;
@@ -491,7 +491,7 @@ IntSize ScreenCaptureKitCaptureSource::intrinsicSize() const
             return;
         }
         if (deviceType == CaptureDevice::DeviceType::Window) {
-            [[shareableContent windows] enumerateObjectsUsingBlock:makeBlockPtr([&] (SCWindow *window, NSUInteger, BOOL *stop) {
+            [shareableContent.windows enumerateObjectsUsingBlock:makeBlockPtr([&] (SCWindow *window, NSUInteger, BOOL *stop) {
                 if (window.windowID == deviceID) {
                     size = { static_cast<int>(window.frame.size.width), static_cast<int>(window.frame.size.height) };
                     *stop = YES;
@@ -602,7 +602,7 @@ void ScreenCaptureKitCaptureSource::streamDidOutputSampleBuffer(RetainPtr<CMSamp
         if (!statusNumber)
             return;
 
-        status = (SCFrameStatus)[statusNumber integerValue];
+        status = (SCFrameStatus)statusNumber.integerValue;
         *stop = YES;
     }).get()];
 
@@ -658,10 +658,10 @@ void ScreenCaptureKitCaptureSource::captureDeviceWithPersistentID(CaptureDevice:
 
                 auto device = switchOn(content.value(),
                     [index] (const RetainPtr<SCDisplay> display) -> std::optional<CaptureDevice> {
-                        return CaptureDevice(String::number([display displayID]), CaptureDevice::DeviceType::Screen, makeString("Screen ", index), emptyString(), true);
+                        return CaptureDevice(String::number(display.displayID), CaptureDevice::DeviceType::Screen, makeString("Screen ", index), emptyString(), true);
                     },
                     [] (const RetainPtr<SCWindow> window)  -> std::optional<CaptureDevice> {
-                        return CaptureDevice(String::number([window windowID]), CaptureDevice::DeviceType::Window, [window title], emptyString(), true);
+                        return CaptureDevice(String::number(window.windowID), CaptureDevice::DeviceType::Window, window.title, emptyString(), true);
                     }
                 );
 
@@ -772,16 +772,16 @@ void forEachNSWindow(const Function<bool(NSDictionary *info, unsigned windowID, 
         *stop = NO;
 
         // Menus, the dock, etc have layers greater than 0, skip them.
-        int windowLayer = [(NSNumber *)windowInfo[(__bridge NSString *)kCGWindowLayer] integerValue];
+        int windowLayer = ((NSNumber *)windowInfo[(__bridge NSString *)kCGWindowLayer]).integerValue;
         if (windowLayer)
             return;
 
         // Skip windows that aren't on screen.
-        if (![(NSNumber *)windowInfo[(__bridge NSString *)kCGWindowIsOnscreen] integerValue])
+        if (!((NSNumber *)windowInfo[(__bridge NSString *)kCGWindowIsOnscreen]).integerValue)
             return;
 
         auto *windowTitle = (__bridge NSString *)(windowInfo[(__bridge NSString *)kCGWindowName]);
-        auto windowID = (CGWindowID)[(NSNumber *)windowInfo[(__bridge NSString *)kCGWindowNumber] integerValue];
+        auto windowID = (CGWindowID)((NSNumber *)windowInfo[(__bridge NSString *)kCGWindowNumber]).integerValue;
         if (predicate(windowInfo, windowID, windowTitle))
             *stop = YES;
     }).get()];

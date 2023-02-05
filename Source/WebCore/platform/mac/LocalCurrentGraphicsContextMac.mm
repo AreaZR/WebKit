@@ -38,7 +38,7 @@ LocalCurrentGraphicsContext::LocalCurrentGraphicsContext(GraphicsContext& graphi
     }
 
     CGContextRef cgContext = this->cgContext();
-    if (cgContext == [[NSGraphicsContext currentContext] CGContext])
+    if (cgContext == [NSGraphicsContext currentContext].CGContext)
         return;
 
     m_savedNSGraphicsContext = [NSGraphicsContext currentContext];

@@ -30,10 +30,10 @@ WEBCORE_EXPORT @interface WebEventRegion : NSObject <NSCopying>
 {
     CGPoint p1, p2, p3, p4;
 }
-- (id)initWithPoints:(CGPoint)inP1 :(CGPoint)inP2 :(CGPoint)inP3 :(CGPoint)inP4;
+- (instancetype)initWithPoints:(CGPoint)inP1 :(CGPoint)inP2 :(CGPoint)inP3 :(CGPoint)inP4;
 - (BOOL)hitTest:(CGPoint)point;
-- (CGPoint)p1;
-- (CGPoint)p2;
-- (CGPoint)p3;
-- (CGPoint)p4;
+@property (nonatomic, readonly) CGPoint p1;
+@property (nonatomic, readonly) CGPoint p2;
+@property (nonatomic, readonly) CGPoint p3;
+@property (nonatomic, readonly) CGPoint p4;
 @end

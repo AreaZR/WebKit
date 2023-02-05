@@ -85,7 +85,7 @@ void BlocklistUpdater::reloadIfNecessary()
     blocklistNextCheckTime = timeVal.tv_sec + blocklistCheckTimeInterval;
 
     struct stat statBuf;
-    if (stat([blocklistPath fileSystemRepresentation], &statBuf) == -1)
+    if (stat(blocklistPath.fileSystemRepresentation, &statBuf) == -1)
         return;
 
     if (statBuf.st_mtimespec.tv_sec == blocklistUpdateTime)

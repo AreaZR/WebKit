@@ -41,7 +41,7 @@ namespace WebCore {
 NSAttributedString *attributedStringByStrippingAttachmentCharacters(NSAttributedString *attributedString)
 {
     NSRange attachmentRange;
-    NSString *originalString = [attributedString string];
+    NSString *originalString = attributedString.string;
     static NeverDestroyed attachmentCharString = [] {
         unichar chars[2] = { NSAttachmentCharacter, 0 };
         return adoptNS([[NSString alloc] initWithCharacters:chars length:1]);

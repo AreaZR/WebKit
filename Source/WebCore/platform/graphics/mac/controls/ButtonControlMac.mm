@@ -57,8 +57,8 @@ void ButtonControlMac::updateCellStates(const FloatRect& rect, const ControlStyl
 
     // Only update if we have to, since AppKit does work even if the size is the same.
     auto controlSize = controlSizeForSize(rect.size(), style);
-    if (controlSize != [m_buttonCell controlSize])
-        [m_buttonCell setControlSize:controlSize];
+    if (controlSize != m_buttonCell.controlSize)
+        m_buttonCell.controlSize = controlSize;
 }
 
 } // namespace WebCore

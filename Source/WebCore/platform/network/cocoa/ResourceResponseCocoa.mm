@@ -62,7 +62,7 @@ void ResourceResponse::initNSURLResponse() const
     // FIXME: We lose the status text and the HTTP version here.
     NSMutableDictionary* headerDictionary = [NSMutableDictionary dictionary];
     for (auto& header : m_httpHeaderFields)
-        [headerDictionary setObject:(NSString *)header.value forKey:(NSString *)header.key];
+        headerDictionary[(NSString *)header.key] = (NSString *)header.value;
 
     m_nsResponse = adoptNS([[NSHTTPURLResponse alloc] initWithURL:m_url statusCode:m_httpStatusCode HTTPVersion:(NSString*)kCFHTTPVersion1_1 headerFields:headerDictionary]);
 
@@ -168,16 +168,16 @@ void ResourceResponse::platformLazyInit(InitLevel initLevel)
         auto messageRef = [m_nsResponse isKindOfClass:[NSHTTPURLResponse class]] ? CFURLResponseGetHTTPResponse([ (NSHTTPURLResponse *)m_nsResponse.get() _CFURLResponse]) : nullptr;
 
         if (m_initLevel < CommonFieldsOnly) {
-            m_url = [m_nsResponse URL];
+            m_url = m_nsResponse.URL;
 #if USE(AVIF)
             if (m_url.string().endsWithIgnoringASCIICase(".avif"_s) || m_url.string().endsWithIgnoringASCIICase(".avifs"_s))
                 m_mimeType = "image/avif"_s;
             else
 #endif
-                m_mimeType = [m_nsResponse MIMEType];
-            m_expectedContentLength = [m_nsResponse expectedContentLength];
+                m_mimeType = m_nsResponse.MIMEType;
+            m_expectedContentLength = m_nsResponse.expectedContentLength;
             // Stripping double quotes as a workaround for <rdar://problem/8757088>, can be removed once that is fixed.
-            m_textEncodingName = stripLeadingAndTrailingDoubleQuote([m_nsResponse textEncodingName]);
+            m_textEncodingName = stripLeadingAndTrailingDoubleQuote(m_nsResponse.textEncodingName);
             m_httpStatusCode = messageRef ? CFHTTPMessageGetResponseStatusCode(messageRef) : 0;
             if (messageRef)
                 m_httpHeaderFields = initializeHTTPHeaders(messageRef);
@@ -193,7 +193,7 @@ void ResourceResponse::platformLazyInit(InitLevel initLevel)
 
 String ResourceResponse::platformSuggestedFilename() const
 {
-    return [nsURLResponse() suggestedFilename];
+    return nsURLResponse().suggestedFilename;
 }
 
 bool ResourceResponse::platformCompare(const ResourceResponse& a, const ResourceResponse& b)

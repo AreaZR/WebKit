@@ -222,10 +222,10 @@ static bool lastEventIsMouseUp()
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanCommunicateWithWindowServer));
 
     BEGIN_BLOCK_OBJC_EXCEPTIONS
-    NSEvent *currentEventAfterHandlingMouseDown = [NSApp currentEvent];
+    NSEvent *currentEventAfterHandlingMouseDown = NSApp.currentEvent;
     return EventHandler::currentNSEvent() != currentEventAfterHandlingMouseDown
-        && [currentEventAfterHandlingMouseDown type] == NSEventTypeLeftMouseUp
-        && [currentEventAfterHandlingMouseDown timestamp] >= [EventHandler::currentNSEvent() timestamp];
+        && currentEventAfterHandlingMouseDown.type == NSEventTypeLeftMouseUp
+        && currentEventAfterHandlingMouseDown.timestamp >= EventHandler::currentNSEvent().timestamp;
     END_BLOCK_OBJC_EXCEPTIONS
 
     return false;
@@ -252,7 +252,7 @@ bool EventHandler::passMouseDownEventToWidget(Widget* pWidget)
 
     NSView *nodeView = widget->platformWidget();
     ASSERT([nodeView superview]);
-    NSView *view = [nodeView hitTest:[[nodeView superview] convertPoint:[currentNSEvent() locationInWindow] fromView:nil]];
+    NSView *view = [nodeView hitTest:[nodeView.superview convertPoint:currentNSEvent().locationInWindow fromView:nil]];
     if (!view) {
         // We probably hit the border of a RenderWidget
         return true;
@@ -265,7 +265,7 @@ bool EventHandler::passMouseDownEventToWidget(Widget* pWidget)
     if (page->chrome().client().firstResponder() != view) {
         // Normally [NSWindow sendEvent:] handles setting the first responder.
         // But in our case, the event was sent to the view representing the entire web page.
-        if ([currentNSEvent() clickCount] <= 1 && [view acceptsFirstResponder] && [view needsPanelToBecomeKey])
+        if (currentNSEvent().clickCount <= 1 && view.acceptsFirstResponder && view.needsPanelToBecomeKey)
             page->chrome().client().makeFirstResponder(view);
     }
 
@@ -316,7 +316,7 @@ bool EventHandler::passMouseDownEventToWidget(Widget* pWidget)
 static bool findViewInSubviews(NSView *superview, NSView *target)
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
-    NSEnumerator *e = [[superview subviews] objectEnumerator];
+    NSEnumerator *e = [superview.subviews objectEnumerator];
     NSView *subview;
     while ((subview = [e nextObject])) {
         if (subview == target || findViewInSubviews(subview, target)) {
@@ -389,7 +389,7 @@ bool EventHandler::passSubframeEventToSubframe(MouseEventWithHitTestResults& eve
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
-    switch ([currentNSEvent() type]) {
+    switch (currentNSEvent().type) {
     case NSEventTypeLeftMouseDragged:
     case NSEventTypeOtherMouseDragged:
     case NSEventTypeRightMouseDragged:
@@ -492,12 +492,12 @@ bool EventHandler::passWheelEventToWidget(const PlatformWheelEvent& wheelEvent, 
         return localFrame->eventHandler().handleWheelEvent(wheelEvent, processingSteps);
     }
 
-    if ([currentNSEvent() type] != NSEventTypeScrollWheel || m_sendingEventToSubview)
+    if (currentNSEvent().type != NSEventTypeScrollWheel || m_sendingEventToSubview)
         return false;
 
     ASSERT(nodeView);
     ASSERT([nodeView superview]);
-    NSView *view = [nodeView hitTest:[[nodeView superview] convertPoint:[currentNSEvent() locationInWindow] fromView:nil]];
+    NSView *view = [nodeView hitTest:[nodeView.superview convertPoint:currentNSEvent().locationInWindow fromView:nil]];
     if (!view) {
         // We probably hit the border of a RenderWidget
         return false;
@@ -566,7 +566,7 @@ void EventHandler::mouseUp(NSEvent *event, NSEvent *correspondingPressureEvent)
     // handleMouseDoubleClickEvent. Note also that the third click of
     // a triple click is treated as a single click, but the fourth is then
     // treated as another double click. Hence the "% 2" below.
-    int clickCount = [event clickCount];
+    int clickCount = event.clickCount;
     if (clickCount > 0 && clickCount % 2 == 0)
         handleMouseDoubleClickEvent(currentPlatformMouseEvent());
     else
@@ -597,33 +597,33 @@ void EventHandler::sendFakeEventsAfterWidgetTracking(NSEvent *initiatingEvent)
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
     m_sendingEventToSubview = false;
-    int eventType = [initiatingEvent type];
+    int eventType = initiatingEvent.type;
     if (eventType == NSEventTypeLeftMouseDown || eventType == NSEventTypeKeyDown) {
         ASSERT([NSApp isRunning]);
         NSEvent *fakeEvent = nil;
         if (eventType == NSEventTypeLeftMouseDown) {
             fakeEvent = [NSEvent mouseEventWithType:NSEventTypeLeftMouseUp
-                                           location:[initiatingEvent locationInWindow]
-                                      modifierFlags:[initiatingEvent modifierFlags]
-                                          timestamp:[initiatingEvent timestamp]
-                                       windowNumber:[initiatingEvent windowNumber]
+                                           location:initiatingEvent.locationInWindow
+                                      modifierFlags:initiatingEvent.modifierFlags
+                                          timestamp:initiatingEvent.timestamp
+                                       windowNumber:initiatingEvent.windowNumber
                                             context:nullptr
-                                        eventNumber:[initiatingEvent eventNumber]
-                                         clickCount:[initiatingEvent clickCount]
-                                           pressure:[initiatingEvent pressure]];
+                                        eventNumber:initiatingEvent.eventNumber
+                                         clickCount:initiatingEvent.clickCount
+                                           pressure:initiatingEvent.pressure];
         
             [NSApp postEvent:fakeEvent atStart:YES];
         } else { // eventType == NSEventTypeKeyDown
             fakeEvent = [NSEvent keyEventWithType:NSEventTypeKeyUp
-                                         location:[initiatingEvent locationInWindow]
-                                    modifierFlags:[initiatingEvent modifierFlags]
-                                        timestamp:[initiatingEvent timestamp]
-                                     windowNumber:[initiatingEvent windowNumber]
+                                         location:initiatingEvent.locationInWindow
+                                    modifierFlags:initiatingEvent.modifierFlags
+                                        timestamp:initiatingEvent.timestamp
+                                     windowNumber:initiatingEvent.windowNumber
                                           context:nullptr
-                                       characters:[initiatingEvent characters] 
-                      charactersIgnoringModifiers:[initiatingEvent charactersIgnoringModifiers] 
-                                        isARepeat:[initiatingEvent isARepeat] 
-                                          keyCode:[initiatingEvent keyCode]];
+                                       characters:initiatingEvent.characters 
+                      charactersIgnoringModifiers:initiatingEvent.charactersIgnoringModifiers 
+                                        isARepeat:initiatingEvent.ARepeat 
+                                          keyCode:initiatingEvent.keyCode];
             [NSApp postEvent:fakeEvent atStart:YES];
         }
 
@@ -631,13 +631,13 @@ void EventHandler::sendFakeEventsAfterWidgetTracking(NSEvent *initiatingEvent)
         // them in Cocoa, and because the event stream was stolen by the Carbon menu code we have
         // no up-to-date cache of them anywhere.
         fakeEvent = [NSEvent mouseEventWithType:NSEventTypeMouseMoved
-                                       location:[[view->platformWidget() window]
+                                       location:[view->platformWidget().window
         ALLOW_DEPRECATED_DECLARATIONS_BEGIN
                                   convertScreenToBase:[NSEvent mouseLocation]]
         ALLOW_DEPRECATED_DECLARATIONS_END
-                                  modifierFlags:[initiatingEvent modifierFlags]
-                                      timestamp:[initiatingEvent timestamp]
-                                   windowNumber:[initiatingEvent windowNumber]
+                                  modifierFlags:initiatingEvent.modifierFlags
+                                      timestamp:initiatingEvent.timestamp
+                                   windowNumber:initiatingEvent.windowNumber
                                         context:nullptr
                                     eventNumber:0
                                      clickCount:0

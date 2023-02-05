@@ -37,11 +37,11 @@
 #import <wtf/BlockObjCExceptions.h>
 
 @interface NSScrollView ()
-- (NSEdgeInsets)contentInsets;
+@property (nonatomic, readonly) NSEdgeInsets contentInsets;
 @end
 
 @interface NSWindow (WebWindowDetails)
-- (BOOL)_needsToResetDragMargins;
+@property (nonatomic, readonly) BOOL _needsToResetDragMargins;
 - (void)_setNeedsToResetDragMargins:(BOOL)needs;
 @end
 
@@ -57,7 +57,7 @@ inline NSScrollView<WebCoreFrameScrollView> *ScrollView::scrollView() const
 NSView *ScrollView::documentView() const
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
-    return [scrollView() documentView];
+    return scrollView().documentView;
     END_BLOCK_OBJC_EXCEPTIONS
     return nil;
 }
@@ -70,10 +70,10 @@ void ScrollView::platformAddChild(Widget* child)
     ASSERT(![parentView isDescendantOf:childView]);
     
     // Suppress the resetting of drag margins since we know we can't affect them.
-    NSWindow *window = [parentView window];
+    NSWindow *window = parentView.window;
     BOOL resetDragMargins = [window _needsToResetDragMargins];
     [window _setNeedsToResetDragMargins:NO];
-    if ([childView superview] != parentView)
+    if (childView.superview != parentView)
         [parentView addSubview:childView];
     [window _setNeedsToResetDragMargins:resetDragMargins];
     END_BLOCK_OBJC_EXCEPTIONS
@@ -102,7 +102,7 @@ void ScrollView::platformSetCanBlitOnScroll(bool canBlitOnScroll)
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    [[scrollView() contentView] setCopiesOnScroll:canBlitOnScroll];
+    scrollView().contentView.copiesOnScroll = canBlitOnScroll;
     ALLOW_DEPRECATED_DECLARATIONS_END
     END_BLOCK_OBJC_EXCEPTIONS
 }
@@ -110,7 +110,7 @@ void ScrollView::platformSetCanBlitOnScroll(bool canBlitOnScroll)
 bool ScrollView::platformCanBlitOnScroll() const
 {
     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    return [[scrollView() contentView] copiesOnScroll];
+    return scrollView().contentView.copiesOnScroll;
     ALLOW_DEPRECATED_DECLARATIONS_END
 }
 
@@ -159,10 +159,10 @@ IntSize ScrollView::platformVisibleContentSize(bool includeScrollbars) const
 IntRect ScrollView::platformVisibleContentRectIncludingObscuredArea(bool includeScrollbars) const
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
-    IntRect visibleContentRectIncludingObscuredArea = enclosingIntRect([scrollView() documentVisibleRect]);
+    IntRect visibleContentRectIncludingObscuredArea = enclosingIntRect(scrollView().documentVisibleRect);
 
     if (includeScrollbars) {
-        IntSize frameSize = IntSize([scrollView() frame].size);
+        IntSize frameSize = IntSize(scrollView().frame.size);
         visibleContentRectIncludingObscuredArea.setSize(frameSize);
     }
 
@@ -240,7 +240,7 @@ IntRect ScrollView::platformContentsToScreen(const IntRect& rect) const
         NSRect tempRect = rect;
         tempRect = [documentView convertRect:tempRect toView:nil];
         ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-        tempRect.origin = [[documentView window] convertBaseToScreen:tempRect.origin];
+        tempRect.origin = [documentView.window convertBaseToScreen:tempRect.origin];
         ALLOW_DEPRECATED_DECLARATIONS_END
         return enclosingIntRect(tempRect);
     }
@@ -253,7 +253,7 @@ IntPoint ScrollView::platformScreenToContents(const IntPoint& point) const
     BEGIN_BLOCK_OBJC_EXCEPTIONS
     if (NSView* documentView = this->documentView()) {
         ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-        NSPoint windowCoord = [[documentView window] convertScreenToBase: point];
+        NSPoint windowCoord = [documentView.window convertScreenToBase: point];
         ALLOW_DEPRECATED_DECLARATIONS_END
         return IntPoint([documentView convertPoint:windowCoord fromView:nil]);
     }
@@ -263,7 +263,7 @@ IntPoint ScrollView::platformScreenToContents(const IntPoint& point) const
 
 bool ScrollView::platformIsOffscreen() const
 {
-    return ![platformWidget() window] || ![[platformWidget() window] isVisible];
+    return !platformWidget().window || !platformWidget().window.visible;
 }
 
 static inline NSScrollerKnobStyle toNSScrollerKnobStyle(ScrollbarOverlayStyle style)
@@ -280,7 +280,7 @@ static inline NSScrollerKnobStyle toNSScrollerKnobStyle(ScrollbarOverlayStyle st
 
 void ScrollView::platformSetScrollbarOverlayStyle(ScrollbarOverlayStyle overlayStyle)
 {
-    [scrollView() setScrollerKnobStyle:toNSScrollerKnobStyle(overlayStyle)];
+    scrollView().scrollerKnobStyle = toNSScrollerKnobStyle(overlayStyle);
 }
 
 void ScrollView::platformSetScrollOrigin(const IntPoint& origin, bool updatePositionAtAll, bool updatePositionSynchronously)

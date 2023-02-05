@@ -32,12 +32,12 @@ namespace WebCore {
 
 long mediaKeyErrorSystemCode(NSError *error)
 {
-    NSInteger code = [error code];
+    NSInteger code = error.code;
 
     if (code == AVErrorUnknown) {
         NSError* underlyingError = [error.userInfo valueForKey:NSUnderlyingErrorKey];
         if (underlyingError && [underlyingError isKindOfClass:[NSError class]])
-            return [underlyingError code];
+            return underlyingError.code;
     }
 
     return code;

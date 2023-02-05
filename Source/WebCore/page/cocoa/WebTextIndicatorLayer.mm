@@ -177,55 +177,55 @@ static bool indicatorWantsFadeIn(const WebCore::TextIndicator& indicator)
         bounceLayerRect.move(_margin.width, _margin.height);
 
         RetainPtr<CALayer> bounceLayer = adoptNS([[CALayer alloc] init]);
-        [bounceLayer setDelegate:[WebActionDisablingCALayerDelegate shared]];
-        [bounceLayer setFrame:bounceLayerRect];
-        [bounceLayer setOpacity:0];
+        bounceLayer.delegate = [WebActionDisablingCALayerDelegate shared];
+        bounceLayer.frame = bounceLayerRect;
+        bounceLayer.opacity = 0;
         [bounceLayers addObject:bounceLayer.get()];
 
         WebCore::FloatRect yellowHighlightRect(WebCore::FloatPoint(), bounceLayerRect.size());
 
 #if PLATFORM(MAC)
         RetainPtr<CALayer> dropShadowLayer = adoptNS([[CALayer alloc] init]);
-        [dropShadowLayer setDelegate:[WebActionDisablingCALayerDelegate shared]];
-        [dropShadowLayer setShadowColor:dropShadowColor.get()];
-        [dropShadowLayer setShadowRadius:WebCore::dropShadowBlurRadius];
-        [dropShadowLayer setShadowOffset:CGSizeMake(dropShadowOffsetX, dropShadowOffsetY)];
-        [dropShadowLayer setShadowPath:translatedPath.platformPath()];
-        [dropShadowLayer setShadowOpacity:1];
-        [dropShadowLayer setFrame:yellowHighlightRect];
+        dropShadowLayer.delegate = [WebActionDisablingCALayerDelegate shared];
+        dropShadowLayer.shadowColor = dropShadowColor.get();
+        dropShadowLayer.shadowRadius = WebCore::dropShadowBlurRadius;
+        dropShadowLayer.shadowOffset = CGSizeMake(dropShadowOffsetX, dropShadowOffsetY);
+        dropShadowLayer.shadowPath = translatedPath.platformPath();
+        dropShadowLayer.shadowOpacity = 1;
+        dropShadowLayer.frame = yellowHighlightRect;
         [bounceLayer addSublayer:dropShadowLayer.get()];
         [bounceLayer setValue:dropShadowLayer.get() forKey:dropShadowLayerKey];
 
         RetainPtr<CALayer> rimShadowLayer = adoptNS([[CALayer alloc] init]);
-        [rimShadowLayer setDelegate:[WebActionDisablingCALayerDelegate shared]];
-        [rimShadowLayer setFrame:yellowHighlightRect];
-        [rimShadowLayer setShadowColor:rimShadowColor.get()];
-        [rimShadowLayer setShadowRadius:WebCore::rimShadowBlurRadius];
-        [rimShadowLayer setShadowPath:translatedPath.platformPath()];
-        [rimShadowLayer setShadowOffset:CGSizeZero];
-        [rimShadowLayer setShadowOpacity:1];
-        [rimShadowLayer setFrame:yellowHighlightRect];
+        rimShadowLayer.delegate = [WebActionDisablingCALayerDelegate shared];
+        rimShadowLayer.frame = yellowHighlightRect;
+        rimShadowLayer.shadowColor = rimShadowColor.get();
+        rimShadowLayer.shadowRadius = WebCore::rimShadowBlurRadius;
+        rimShadowLayer.shadowPath = translatedPath.platformPath();
+        rimShadowLayer.shadowOffset = CGSizeZero;
+        rimShadowLayer.shadowOpacity = 1;
+        rimShadowLayer.frame = yellowHighlightRect;
         [bounceLayer addSublayer:rimShadowLayer.get()];
         [bounceLayer setValue:rimShadowLayer.get() forKey:rimShadowLayerKey];
 #endif // PLATFORM(MAC)
         
         RetainPtr<CALayer> textLayer = adoptNS([[CALayer alloc] init]);
-        [textLayer setBackgroundColor:highlightColor.get()];
-        [textLayer setBorderColor:borderColor.get()];
-        [textLayer setBorderWidth:borderWidth];
-        [textLayer setDelegate:[WebActionDisablingCALayerDelegate shared]];
+        textLayer.backgroundColor = highlightColor.get();
+        textLayer.borderColor = borderColor.get();
+        textLayer.borderWidth = borderWidth;
+        textLayer.delegate = [WebActionDisablingCALayerDelegate shared];
         if (contentsImage)
-            [textLayer setContents:(__bridge id)contentsImage->platformImage().get()];
+            textLayer.contents = (__bridge id)contentsImage->platformImage().get();
 
         RetainPtr<CAShapeLayer> maskLayer = adoptNS([[CAShapeLayer alloc] init]);
-        [maskLayer setPath:translatedPath.platformPath()];
-        [textLayer setMask:maskLayer.get()];
+        maskLayer.path = translatedPath.platformPath();
+        textLayer.mask = maskLayer.get();
 
         WebCore::FloatRect imageRect = pathBoundingRect;
-        [textLayer setContentsRect:CGRectMake(imageRect.x() / contentsImageLogicalSize.width(), imageRect.y() / contentsImageLogicalSize.height(), imageRect.width() / contentsImageLogicalSize.width(), imageRect.height() / contentsImageLogicalSize.height())];
-        [textLayer setContentsGravity:kCAGravityCenter];
-        [textLayer setContentsScale:_textIndicator->contentImageScaleFactor()];
-        [textLayer setFrame:yellowHighlightRect];
+        textLayer.contentsRect = CGRectMake(imageRect.x() / contentsImageLogicalSize.width(), imageRect.y() / contentsImageLogicalSize.height(), imageRect.width() / contentsImageLogicalSize.width(), imageRect.height() / contentsImageLogicalSize.height());
+        textLayer.contentsGravity = kCAGravityCenter;
+        textLayer.contentsScale = _textIndicator->contentImageScaleFactor();
+        textLayer.frame = yellowHighlightRect;
         [bounceLayer setValue:textLayer.get() forKey:textLayerKey];
         [bounceLayer addSublayer:textLayer.get()];
     }
@@ -239,12 +239,12 @@ static bool indicatorWantsFadeIn(const WebCore::TextIndicator& indicator)
 static RetainPtr<CAKeyframeAnimation> createBounceAnimation(CFTimeInterval duration)
 {
     RetainPtr<CAKeyframeAnimation> bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform"];
-    [bounceAnimation setValues:@[
+    bounceAnimation.values = @[
         [NSValue valueWithCATransform3D:CATransform3DIdentity],
         [NSValue valueWithCATransform3D:CATransform3DMakeScale(WebCore::midBounceScale, WebCore::midBounceScale, 1)],
         [NSValue valueWithCATransform3D:CATransform3DIdentity]
-        ]];
-    [bounceAnimation setDuration:duration];
+        ];
+    bounceAnimation.duration = duration;
 
     return bounceAnimation;
 }
@@ -253,10 +253,10 @@ static RetainPtr<CABasicAnimation> createContentCrossfadeAnimation(CFTimeInterva
 {
     RetainPtr<CABasicAnimation> crossfadeAnimation = [CABasicAnimation animationWithKeyPath:@"contents"];
     auto contentsImage = textIndicator.contentImage()->nativeImage();
-    [crossfadeAnimation setToValue:(__bridge id)contentsImage->platformImage().get()];
-    [crossfadeAnimation setFillMode:kCAFillModeForwards];
+    crossfadeAnimation.toValue = (__bridge id)contentsImage->platformImage().get();
+    crossfadeAnimation.fillMode = kCAFillModeForwards;
     [crossfadeAnimation setRemovedOnCompletion:NO];
-    [crossfadeAnimation setDuration:duration];
+    crossfadeAnimation.duration = duration;
 
     return crossfadeAnimation;
 }
@@ -264,11 +264,11 @@ static RetainPtr<CABasicAnimation> createContentCrossfadeAnimation(CFTimeInterva
 static RetainPtr<CABasicAnimation> createShadowFadeAnimation(CFTimeInterval duration)
 {
     RetainPtr<CABasicAnimation> fadeShadowInAnimation = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
-    [fadeShadowInAnimation setFromValue:@0];
-    [fadeShadowInAnimation setToValue:@1];
-    [fadeShadowInAnimation setFillMode:kCAFillModeForwards];
+    fadeShadowInAnimation.fromValue = @0;
+    fadeShadowInAnimation.toValue = @1;
+    fadeShadowInAnimation.fillMode = kCAFillModeForwards;
     [fadeShadowInAnimation setRemovedOnCompletion:NO];
-    [fadeShadowInAnimation setDuration:duration];
+    fadeShadowInAnimation.duration = duration;
 
     return fadeShadowInAnimation;
 }
@@ -276,11 +276,11 @@ static RetainPtr<CABasicAnimation> createShadowFadeAnimation(CFTimeInterval dura
 static RetainPtr<CABasicAnimation> createFadeInAnimation(CFTimeInterval duration)
 {
     RetainPtr<CABasicAnimation> fadeInAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-    [fadeInAnimation setFromValue:@0];
-    [fadeInAnimation setToValue:@1];
-    [fadeInAnimation setFillMode:kCAFillModeForwards];
+    fadeInAnimation.fromValue = @0;
+    fadeInAnimation.toValue = @1;
+    fadeInAnimation.fillMode = kCAFillModeForwards;
     [fadeInAnimation setRemovedOnCompletion:NO];
-    [fadeInAnimation setDuration:duration];
+    fadeInAnimation.duration = duration;
 
     return fadeInAnimation;
 }
@@ -346,11 +346,11 @@ static RetainPtr<CABasicAnimation> createFadeInAnimation(CFTimeInterval duration
 - (void)hideWithCompletionHandler:(void(^)(void))completionHandler
 {
     RetainPtr<CABasicAnimation> fadeAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
-    [fadeAnimation setFromValue:@1];
-    [fadeAnimation setToValue:@0];
-    [fadeAnimation setFillMode:kCAFillModeForwards];
+    fadeAnimation.fromValue = @1;
+    fadeAnimation.toValue = @0;
+    fadeAnimation.fillMode = kCAFillModeForwards;
     [fadeAnimation setRemovedOnCompletion:NO];
-    [fadeAnimation setDuration:fadeOutAnimationDuration];
+    fadeAnimation.duration = fadeOutAnimationDuration;
 
     [CATransaction begin];
     [CATransaction setCompletionBlock:completionHandler];

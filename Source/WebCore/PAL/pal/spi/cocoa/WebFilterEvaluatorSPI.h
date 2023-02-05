@@ -43,11 +43,11 @@ enum {
 
 @interface WebFilterEvaluator ()
 + (BOOL)isManagedSession;
-- (BOOL)wasBlocked;
+@property (nonatomic, readonly) BOOL wasBlocked;
 - (NSData *)addData:(NSData *)receivedData;
-- (NSData *)dataComplete;
-- (OSStatus)filterState;
-- (id)initWithResponse:(NSURLResponse *)response;
+@property (nonatomic, readonly, copy) NSData *dataComplete;
+@property (nonatomic, readonly) OSStatus filterState;
+- (instancetype)initWithResponse:(NSURLResponse *)response;
 #if TARGET_OS_IPHONE
 - (void)unblockWithCompletion:(void (^)(BOOL unblocked, NSError *error))completion;
 #endif

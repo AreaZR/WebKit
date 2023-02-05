@@ -41,8 +41,8 @@ void SearchControlMac::updateCellStates(const FloatRect& rect, const ControlStyl
 {
     ControlMac::updateCellStates(rect, style);
 
-    [m_searchFieldCell setPlaceholderString:@""];
-    [m_searchFieldCell setControlSize:controlSizeForFont(style)];
+    m_searchFieldCell.placeholderString = @"";
+    m_searchFieldCell.controlSize = controlSizeForFont(style);
 
     // Update the various states we respond to.
     updateEnabledState(m_searchFieldCell.get(), style);

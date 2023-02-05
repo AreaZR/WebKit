@@ -45,7 +45,7 @@ void Chrome::focusNSView(NSView* view)
     if (firstResponder == view)
         return;
 
-    if (![view window] || ![view superview] || ![view acceptsFirstResponder])
+    if (!view.window || !view.superview || !view.acceptsFirstResponder)
         return;
 
     client().makeFirstResponder(view);
@@ -54,7 +54,7 @@ void Chrome::focusNSView(NSView* view)
     // remove the view from its superview while it's being made
     // first responder. This confuses AppKit so we must restore
     // the old first responder.
-    if (![view superview])
+    if (!view.superview)
         client().makeFirstResponder(firstResponder);
 
     END_BLOCK_OBJC_EXCEPTIONS

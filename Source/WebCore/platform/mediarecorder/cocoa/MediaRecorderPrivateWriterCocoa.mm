@@ -54,7 +54,7 @@
     WebCore::MediaRecorderPrivateWriter* m_writer;
 }
 
-- (instancetype)initWithWriter:(WebCore::MediaRecorderPrivateWriter&)writer;
+- (instancetype)initWithWriter:(WebCore::MediaRecorderPrivateWriter&)writer NS_DESIGNATED_INITIALIZER;
 - (void)close;
 
 @end
@@ -75,14 +75,14 @@
 - (void)assetWriter:(AVAssetWriter *)assetWriter didProduceFragmentedHeaderData:(NSData *)fragmentedHeaderData
 {
     UNUSED_PARAM(assetWriter);
-    m_writer->appendData(static_cast<const uint8_t*>([fragmentedHeaderData bytes]), [fragmentedHeaderData length]);
+    m_writer->appendData(static_cast<const uint8_t*>(fragmentedHeaderData.bytes), fragmentedHeaderData.length);
 }
 
 - (void)assetWriter:(AVAssetWriter *)assetWriter didProduceFragmentedMediaData:(NSData *)fragmentedMediaData fragmentedMediaDataReport:(AVFragmentedMediaDataReport *)fragmentedMediaDataReport
 {
     UNUSED_PARAM(assetWriter);
     UNUSED_PARAM(fragmentedMediaDataReport);
-    m_writer->appendData(static_cast<const uint8_t*>([fragmentedMediaData bytes]), [fragmentedMediaData length]);
+    m_writer->appendData(static_cast<const uint8_t*>(fragmentedMediaData.bytes), fragmentedMediaData.length);
 }
 
 - (void)close
@@ -157,7 +157,7 @@ bool MediaRecorderPrivateWriter::initialize(const MediaRecorderPrivateOptions& o
     }
 
     m_writerDelegate = adoptNS([[WebAVAssetWriterDelegate alloc] initWithWriter: *this]);
-    [m_writer setDelegate:m_writerDelegate.get()];
+    m_writer.delegate = m_writerDelegate.get();
 
     if (m_hasAudio) {
         m_audioCompressor = AudioSampleBufferCompressor::create(compressedAudioOutputBufferCallback, this);
@@ -214,7 +214,7 @@ void MediaRecorderPrivateWriter::startAssetWriter()
 {
     if (m_hasVideo) {
         m_videoAssetWriterInput = adoptNS([PAL::allocAVAssetWriterInputInstance() initWithMediaType:AVMediaTypeVideo outputSettings:nil sourceFormatHint:m_videoFormatDescription.get()]);
-        [m_videoAssetWriterInput setExpectsMediaDataInRealTime:true];
+        m_videoAssetWriterInput.expectsMediaDataInRealTime = true;
         if (m_videoTransform)
             m_videoAssetWriterInput.get().transform = *m_videoTransform;
 
@@ -227,7 +227,7 @@ void MediaRecorderPrivateWriter::startAssetWriter()
 
     if (m_hasAudio) {
         m_audioAssetWriterInput = adoptNS([PAL::allocAVAssetWriterInputInstance() initWithMediaType:AVMediaTypeAudio outputSettings:nil sourceFormatHint:m_audioFormatDescription.get()]);
-        [m_audioAssetWriterInput setExpectsMediaDataInRealTime:true];
+        m_audioAssetWriterInput.expectsMediaDataInRealTime = true;
         if (![m_writer canAddInput:m_audioAssetWriterInput.get()]) {
             RELEASE_LOG_ERROR(MediaStream, "MediaRecorderPrivateWriter::startAssetWriter failed canAddInput for audio");
             return;
@@ -261,10 +261,10 @@ bool MediaRecorderPrivateWriter::appendCompressedAudioSampleBufferIfPossible()
         return true;
     }
 
-    while (!m_pendingAudioSampleQueue.isEmpty() && [m_audioAssetWriterInput isReadyForMoreMediaData])
+    while (!m_pendingAudioSampleQueue.isEmpty() && m_audioAssetWriterInput.readyForMoreMediaData)
         [m_audioAssetWriterInput appendSampleBuffer:m_pendingAudioSampleQueue.takeFirst().get()];
 
-    if (![m_audioAssetWriterInput isReadyForMoreMediaData]) {
+    if (!m_audioAssetWriterInput.readyForMoreMediaData) {
         m_pendingAudioSampleQueue.append(WTFMove(buffer));
         return true;
     }
@@ -287,10 +287,10 @@ bool MediaRecorderPrivateWriter::appendCompressedVideoSampleBufferIfPossible()
         return true;
     }
 
-    while (!m_pendingVideoFrameQueue.isEmpty() && [m_videoAssetWriterInput isReadyForMoreMediaData])
+    while (!m_pendingVideoFrameQueue.isEmpty() && m_videoAssetWriterInput.readyForMoreMediaData)
         appendCompressedVideoSampleBuffer(m_pendingVideoFrameQueue.takeFirst().get());
 
-    if (![m_videoAssetWriterInput isReadyForMoreMediaData]) {
+    if (!m_videoAssetWriterInput.readyForMoreMediaData) {
         m_pendingVideoFrameQueue.append(WTFMove(buffer));
         return true;
     }
@@ -337,7 +337,7 @@ void MediaRecorderPrivateWriter::flushCompressedSampleBuffers(Function<void()>&&
     bool hasPendingVideoSamples = !m_pendingVideoFrameQueue.isEmpty();
 
     if (m_hasEncodedVideoSamples) {
-        hasPendingVideoSamples |= ![m_videoAssetWriterInput isReadyForMoreMediaData];
+        hasPendingVideoSamples |= !m_videoAssetWriterInput.readyForMoreMediaData;
         if (!hasPendingVideoSamples)
             appendEndsPreviousSampleDurationMarker(m_videoAssetWriterInput.get(), m_lastVideoPresentationTime, m_lastVideoDecodingTime);
     }
@@ -356,13 +356,13 @@ void MediaRecorderPrivateWriter::flushCompressedSampleBuffers(Function<void()>&&
             return;
         }
 
-        while (!audioSampleQueue.isEmpty() && [m_audioAssetWriterInput isReadyForMoreMediaData])
+        while (!audioSampleQueue.isEmpty() && m_audioAssetWriterInput.readyForMoreMediaData)
             [m_audioAssetWriterInput appendSampleBuffer:audioSampleQueue.takeFirst().get()];
 
-        while (!videoSampleQueue.isEmpty() && [m_videoAssetWriterInput isReadyForMoreMediaData])
+        while (!videoSampleQueue.isEmpty() && m_videoAssetWriterInput.readyForMoreMediaData)
             appendCompressedVideoSampleBuffer(videoSampleQueue.takeFirst().get());
 
-        if (!audioSampleQueue.isEmpty() || !videoSampleQueue.isEmpty() || (hasPendingVideoSamples && ![m_videoAssetWriterInput isReadyForMoreMediaData]))
+        if (!audioSampleQueue.isEmpty() || !videoSampleQueue.isEmpty() || (hasPendingVideoSamples && !m_videoAssetWriterInput.readyForMoreMediaData))
             return;
 
         if (hasPendingAudioSamples)

@@ -224,13 +224,13 @@ void ResourceUsageOverlay::platformInitialize()
     m_containerLayer = adoptNS([[CALayer alloc] init]);
     [m_containerLayer addSublayer:m_layer.get()];
 
-    [m_containerLayer setAnchorPoint:CGPointZero];
-    [m_containerLayer setBounds:CGRectMake(0, 0, normalWidth, normalHeight)];
+    m_containerLayer.anchorPoint = CGPointZero;
+    m_containerLayer.bounds = CGRectMake(0, 0, normalWidth, normalHeight);
 
-    [m_layer setAnchorPoint:CGPointZero];
-    [m_layer setContentsScale:2.0];
-    [m_layer setBackgroundColor:createColor(0, 0, 0, 0.8).get()];
-    [m_layer setBounds:CGRectMake(0, 0, normalWidth, normalHeight)];
+    m_layer.anchorPoint = CGPointZero;
+    m_layer.contentsScale = 2.0;
+    m_layer.backgroundColor = createColor(0, 0, 0, 0.8).get();
+    m_layer.bounds = CGRectMake(0, 0, normalWidth, normalHeight);
 
     overlay().layer().setContentsToPlatformLayer(m_layer.get(), GraphicsLayer::ContentsLayerPurpose::None);
 
@@ -240,10 +240,10 @@ void ResourceUsageOverlay::platformInitialize()
         // FIXME: It shouldn't be necessary to update the bounds on every single thread loop iteration,
         // but something is causing them to become 0x0.
         [CATransaction begin];
-        CALayer *containerLayer = [m_layer superlayer];
+        CALayer *containerLayer = m_layer.superlayer;
         CGRect rect = CGRectMake(0, 0, ResourceUsageOverlay::normalWidth, ResourceUsageOverlay::normalHeight);
-        [m_layer setBounds:rect];
-        [containerLayer setBounds:rect];
+        m_layer.bounds = rect;
+        containerLayer.bounds = rect;
         [m_layer setNeedsDisplay];
         [CATransaction commit];
     });

@@ -317,7 +317,7 @@ RetainPtr<CMSampleBufferRef> AudioSampleBufferCompressor::sampleBufferWithNumPac
 
     auto sampleBuffer = adoptCF(rawSampleBuffer);
 
-    if ([m_gdrCountNum intValue])
+    if (m_gdrCountNum.intValue)
         PAL::CMSetAttachment(sampleBuffer.get(), PAL::kCMSampleBufferAttachmentKey_GradualDecoderRefresh, (__bridge CFTypeRef)m_gdrCountNum.get(), kCMAttachmentMode_ShouldPropagate);
 
     return sampleBuffer;

@@ -67,11 +67,11 @@
     AVStreamDataParser* _parser;
 }
 @property (assign) WebCore::SourceBufferParserAVFObjC* parent;
-- (id)initWithParser:(AVStreamDataParser*)parser parent:(WebCore::SourceBufferParserAVFObjC*)parent;
+- (instancetype)initWithParser:(AVStreamDataParser*)parser parent:(WebCore::SourceBufferParserAVFObjC*)parent NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation WebAVStreamDataParserListener
-- (id)initWithParser:(AVStreamDataParser*)parser parent:(WebCore::SourceBufferParserAVFObjC*)parent
+- (instancetype)initWithParser:(AVStreamDataParser*)parser parent:(WebCore::SourceBufferParserAVFObjC*)parent
 {
     self = [super init];
     if (!self)
@@ -186,8 +186,8 @@ private:
         , m_isAudio([track hasMediaCharacteristic:AVMediaCharacteristicAudible])
         , m_isText([track hasMediaCharacteristic:AVMediaCharacteristicLegible])
     {
-        NSArray* formatDescriptions = [track formatDescriptions];
-        CMFormatDescriptionRef description = [formatDescriptions count] ? (__bridge CMFormatDescriptionRef)[formatDescriptions objectAtIndex:0] : 0;
+        NSArray* formatDescriptions = track.formatDescriptions;
+        CMFormatDescriptionRef description = formatDescriptions.count ? (__bridge CMFormatDescriptionRef)formatDescriptions[0] : 0;
         if (description) {
             m_originalCodec = PAL::softLink_CoreMedia_CMFormatDescriptionGetMediaSubType(description);
             CFStringRef originalFormatKey = PAL::canLoad_CoreMedia_kCMFormatDescriptionExtension_ProtectedContentOriginalFormat() ? PAL::get_CoreMedia_kCMFormatDescriptionExtension_ProtectedContentOriginalFormat() : CFSTR("CommonEncryptionOriginalFormat");
@@ -310,12 +310,12 @@ void SourceBufferParserAVFObjC::didParseStreamDataAsAsset(AVAsset* asset)
         InitializationSegment segment;
 
         if ([asset respondsToSelector:@selector(overallDurationHint)])
-            segment.duration = PAL::toMediaTime([asset overallDurationHint]);
+            segment.duration = PAL::toMediaTime(asset.overallDurationHint);
 
         if (segment.duration.isInvalid() || segment.duration == MediaTime::zeroTime())
-            segment.duration = PAL::toMediaTime([asset duration]);
+            segment.duration = PAL::toMediaTime(asset.duration);
 
-        for (AVAssetTrack* track in [asset tracks]) {
+        for (AVAssetTrack* track in asset.tracks) {
             if ([track hasMediaCharacteristic:AVMediaCharacteristicLegible]) {
                 // FIXME(125161): Handle in-band text tracks.
                 continue;

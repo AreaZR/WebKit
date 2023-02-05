@@ -170,7 +170,7 @@ void PlaybackSessionModelMediaElement::updateForEventName(const WTF::AtomString&
     if (all
         || eventName == eventNames().timeupdateEvent) {
         auto currentTime = this->currentTime();
-        auto anchorTime = [[NSProcessInfo processInfo] systemUptime];
+        auto anchorTime = [NSProcessInfo processInfo].systemUptime;
         for (auto client : m_clients)
             client->currentTimeChanged(currentTime, anchorTime);
     }

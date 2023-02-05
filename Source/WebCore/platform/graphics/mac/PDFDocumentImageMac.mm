@@ -56,12 +56,12 @@ void PDFDocumentImage::computeBoundsForCurrentPage()
     PDFPage *pdfPage = [m_document pageAtIndex:0];
 
     m_cropBox = [pdfPage boundsForBox:kPDFDisplayBoxCropBox];
-    m_rotationDegrees = [pdfPage rotation];
+    m_rotationDegrees = pdfPage.rotation;
 }
 
 unsigned PDFDocumentImage::pageCount() const
 {
-    return [m_document pageCount];
+    return m_document.pageCount;
 }
 
 void PDFDocumentImage::drawPDFPage(GraphicsContext& context)

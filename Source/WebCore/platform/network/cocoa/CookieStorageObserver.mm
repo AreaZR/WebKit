@@ -46,7 +46,7 @@
 @interface WebCookieObserverAdapter : NSObject {
     WebCore::CookieStorageObserver* observer;
 }
-- (instancetype)initWithObserver:(WebCore::CookieStorageObserver&)theObserver;
+- (instancetype)initWithObserver:(WebCore::CookieStorageObserver&)theObserver NS_DESIGNATED_INITIALIZER;
 - (void)cookiesChangedNotificationHandler:(NSNotification *)notification;
 
 @end

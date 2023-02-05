@@ -32,7 +32,7 @@ namespace WebCore {
 
 static ProtectionSpace::ServerType type(NSURLProtectionSpace *space)
 {
-    if ([space isProxy]) {
+    if (space.isProxy) {
         NSString *proxyType = space.proxyType;
         if ([proxyType isEqualToString:NSURLProtectionSpaceHTTPProxy])
             return ProtectionSpace::ServerType::ProxyHTTP;

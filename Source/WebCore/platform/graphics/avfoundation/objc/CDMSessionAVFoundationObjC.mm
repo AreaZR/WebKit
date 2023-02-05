@@ -109,7 +109,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
     ALWAYS_LOG(LOGIDENTIFIER);
 
-    auto keyRequestBuffer = ArrayBuffer::create([keyRequest bytes], [keyRequest length]);
+    auto keyRequestBuffer = ArrayBuffer::create(keyRequest.bytes, keyRequest.length);
     unsigned byteLength = keyRequestBuffer->byteLength();
     return Uint8Array::tryCreate(WTFMove(keyRequestBuffer), 0, byteLength);
 }
@@ -121,7 +121,7 @@ void CDMSessionAVFoundationObjC::releaseKeys()
 bool CDMSessionAVFoundationObjC::update(Uint8Array* key, RefPtr<Uint8Array>& nextMessage, unsigned short& errorCode, uint32_t& systemCode)
 {
     RetainPtr<NSData> keyData = adoptNS([[NSData alloc] initWithBytes:key->baseAddress() length:key->byteLength()]);
-    [[m_request dataRequest] respondWithData:keyData.get()];
+    [m_request.dataRequest respondWithData:keyData.get()];
     [m_request finishLoading];
     errorCode = MediaPlayer::NoError;
     systemCode = 0;

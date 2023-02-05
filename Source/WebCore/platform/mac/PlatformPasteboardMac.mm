@@ -79,7 +79,7 @@ PlatformPasteboard::PlatformPasteboard(const String& pasteboardName)
 
 void PlatformPasteboard::getTypes(Vector<String>& types) const
 {
-    types = makeVector<String>([m_pasteboard types]);
+    types = makeVector<String>(m_pasteboard.types);
 }
 
 RefPtr<SharedBuffer> PlatformPasteboard::bufferForType(const String& pasteboardType) const
@@ -94,7 +94,7 @@ int PlatformPasteboard::numberOfFiles() const
 {
     Vector<String> files;
 
-    NSArray *pasteboardTypes = [m_pasteboard types];
+    NSArray *pasteboardTypes = m_pasteboard.types;
     if ([pasteboardTypes containsObject:legacyFilesPromisePasteboardType()]) {
         // FIXME: legacyFilesPromisePasteboardType() contains file types, not path names, but in
         // this case we are only concerned with the count of them. The count of types should equal
@@ -155,7 +155,7 @@ static Vector<String> urlStringsFromPasteboard(NSPasteboard *pasteboard)
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
             if (id propertyList = [item propertyListForType:(__bridge NSString *)kUTTypeURL]) {
                 if (auto urlFromItem = adoptNS([[NSURL alloc] initWithPasteboardPropertyList:propertyList ofType:(__bridge NSString *)kUTTypeURL]))
-                    urlStrings.uncheckedAppend([urlFromItem absoluteString]);
+                    urlStrings.uncheckedAppend(urlFromItem.absoluteString);
             }
 ALLOW_DEPRECATED_DECLARATIONS_END
         }
@@ -199,7 +199,7 @@ ALLOW_DEPRECATED_DECLARATIONS_BEGIN
         return urlStringsFromPasteboard(m_pasteboard.get());
 ALLOW_DEPRECATED_DECLARATIONS_END
 
-    NSArray<NSPasteboardItem *> *items = [m_pasteboard pasteboardItems];
+    NSArray<NSPasteboardItem *> *items = m_pasteboard.pasteboardItems;
     Vector<String> strings;
     strings.reserveInitialCapacity(items.count);
     if (items.count > 1 && !typeIdentifier.isNull()) {
@@ -241,7 +241,7 @@ Vector<String> PlatformPasteboard::typesSafeForDOMToReadAndWrite(const String& o
         }
     }
 
-    NSArray<NSString *> *allTypes = [m_pasteboard types];
+    NSArray<NSString *> *allTypes = m_pasteboard.types;
     for (NSString *type in allTypes) {
         if ([type isEqualToString:@(PasteboardCustomData::cocoaType().characters())])
             continue;
@@ -299,7 +299,7 @@ int64_t PlatformPasteboard::write(const PasteboardCustomData& data)
 
 int64_t PlatformPasteboard::changeCount() const
 {
-    return [m_pasteboard changeCount];
+    return m_pasteboard.changeCount;
 }
 
 String PlatformPasteboard::platformPasteboardTypeForSafeTypeForDOMToReadAndWrite(const String& domType, IncludeImageTypes includeImageTypes)
@@ -332,11 +332,11 @@ URL PlatformPasteboard::url()
 int64_t PlatformPasteboard::copy(const String& fromPasteboard)
 {
     NSPasteboard* pasteboard = [NSPasteboard pasteboardWithName:fromPasteboard];
-    NSArray* types = [pasteboard types];
+    NSArray* types = pasteboard.types;
 
     [m_pasteboard addTypes:types owner:nil];
-    for (NSUInteger i = 0; i < [types count]; i++) {
-        NSString* type = [types objectAtIndex:i];
+    for (NSUInteger i = 0; i < types.count; i++) {
+        NSString* type = types[i];
         if (![m_pasteboard setData:[pasteboard dataForType:type] forType:type])
             return 0;
     }
@@ -370,7 +370,7 @@ int64_t PlatformPasteboard::setBufferForType(SharedBuffer* buffer, const String&
 
 int64_t PlatformPasteboard::setURL(const PasteboardURL& pasteboardURL)
 {
-    auto urlString = [(NSURL *)pasteboardURL.url absoluteString];
+    auto urlString = ((NSURL *)pasteboardURL.url).absoluteString;
     if (!urlString)
         return 0;
 
@@ -399,12 +399,12 @@ int64_t PlatformPasteboard::setStringForType(const String& string, const String&
     if (pasteboardType == String(legacyURLPasteboardType())) {
         // We cannot just use -NSPasteboard writeObjects:], because -declareTypes has been already called, implicitly creating an item.
         NSURL *url = [NSURL URLWithString:string];
-        if ([[m_pasteboard types] containsObject:legacyURLPasteboardType()]) {
-            NSURL *base = [url baseURL];
+        if ([m_pasteboard.types containsObject:legacyURLPasteboardType()]) {
+            NSURL *base = url.baseURL;
             if (base)
-                didWriteData = [m_pasteboard setPropertyList:@[[url relativeString], [base absoluteString]] forType:legacyURLPasteboardType()];
+                didWriteData = [m_pasteboard setPropertyList:@[url.relativeString, base.absoluteString] forType:legacyURLPasteboardType()];
             else if (url)
-                didWriteData = [m_pasteboard setPropertyList:@[[url absoluteString], @""] forType:legacyURLPasteboardType()];
+                didWriteData = [m_pasteboard setPropertyList:@[url.absoluteString, @""] forType:legacyURLPasteboardType()];
             else
                 didWriteData = [m_pasteboard setPropertyList:@[@"", @""] forType:legacyURLPasteboardType()];
 
@@ -413,14 +413,14 @@ int64_t PlatformPasteboard::setStringForType(const String& string, const String&
         }
 
         ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-        if ([[m_pasteboard types] containsObject:(NSString *)kUTTypeURL]) {
-            didWriteData = [m_pasteboard setString:[url absoluteString] forType:(NSString *)kUTTypeURL];
+        if ([m_pasteboard.types containsObject:(NSString *)kUTTypeURL]) {
+            didWriteData = [m_pasteboard setString:url.absoluteString forType:(NSString *)kUTTypeURL];
             if (!didWriteData)
                 return 0;
         }
 
-        if ([[m_pasteboard types] containsObject:(NSString *)kUTTypeFileURL] && [url isFileURL]) {
-            didWriteData = [m_pasteboard setString:[url absoluteString] forType:(NSString *)kUTTypeFileURL];
+        if ([m_pasteboard.types containsObject:(NSString *)kUTTypeFileURL] && url.fileURL) {
+            didWriteData = [m_pasteboard setString:url.absoluteString forType:(NSString *)kUTTypeFileURL];
             if (!didWriteData)
                 return 0;
         }
@@ -501,12 +501,12 @@ URL PlatformPasteboard::readURL(size_t index, String& title) const
         url = adoptNS([[NSURL alloc] initWithPasteboardPropertyList:propertyList ofType:NSPasteboardTypeURL]);
     else if (NSString *absoluteString = [item stringForType:NSPasteboardTypeURL])
         url = [NSURL URLWithString:absoluteString];
-    return { [url isFileURL] ? nil : url.get() };
+    return { url.fileURL ? nil : url.get() };
 }
 
 int PlatformPasteboard::count() const
 {
-    return [m_pasteboard pasteboardItems].count;
+    return m_pasteboard.pasteboardItems.count;
 }
 
 static RetainPtr<NSPasteboardItem> createPasteboardItem(const PasteboardCustomData& data)
@@ -545,12 +545,12 @@ int64_t PlatformPasteboard::write(const Vector<PasteboardCustomData>& itemData)
     [m_pasteboard writeObjects:createNSArray(itemData, [] (auto& data) {
         return createPasteboardItem(data);
     }).get()];
-    return [m_pasteboard changeCount];
+    return m_pasteboard.changeCount;
 }
 
 std::optional<PasteboardItemInfo> PlatformPasteboard::informationForItemAtIndex(size_t index, int64_t changeCount)
 {
-    if (changeCount != [m_pasteboard changeCount])
+    if (changeCount != m_pasteboard.changeCount)
         return std::nullopt;
 
     NSPasteboardItem *item = itemAtIndex(index);
@@ -558,7 +558,7 @@ std::optional<PasteboardItemInfo> PlatformPasteboard::informationForItemAtIndex(
         return std::nullopt;
 
     PasteboardItemInfo info;
-    NSArray<NSPasteboardType> *platformTypes = [item types];
+    NSArray<NSPasteboardType> *platformTypes = item.types;
     auto containsFileURL = [platformTypes containsObject:NSPasteboardTypeFileURL] ? ContainsFileURL::Yes : ContainsFileURL::No;
     ListHashSet<String> webSafeTypes;
     info.platformTypesByFidelity.reserveInitialCapacity(platformTypes.count);
@@ -577,7 +577,7 @@ std::optional<PasteboardItemInfo> PlatformPasteboard::informationForItemAtIndex(
 
 NSPasteboardItem *PlatformPasteboard::itemAtIndex(size_t index) const
 {
-    NSArray<NSPasteboardItem *> *items = [m_pasteboard pasteboardItems];
+    NSArray<NSPasteboardItem *> *items = m_pasteboard.pasteboardItems;
     return index >= items.count ? nil : items[index];
 }
 

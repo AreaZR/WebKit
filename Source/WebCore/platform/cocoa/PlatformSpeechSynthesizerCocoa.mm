@@ -77,7 +77,7 @@ static float getAVSpeechUtteranceMaximumSpeechRate()
     RetainPtr<AVSpeechSynthesizer> m_synthesizer;
 }
 
-- (WebSpeechSynthesisWrapper *)initWithSpeechSynthesizer:(WebCore::PlatformSpeechSynthesizer*)synthesizer;
+- (WebSpeechSynthesisWrapper *)initWithSpeechSynthesizer:(WebCore::PlatformSpeechSynthesizer*)synthesizer NS_DESIGNATED_INITIALIZER;
 - (void)speakUtterance:(RefPtr<WebCore::PlatformSpeechSynthesisUtterance>&&)utterance;
 
 @end
@@ -114,7 +114,7 @@ static float getAVSpeechUtteranceMaximumSpeechRate()
     BEGIN_BLOCK_OBJC_EXCEPTIONS
     if (!m_synthesizer) {
         m_synthesizer = adoptNS([PAL::allocAVSpeechSynthesizerInstance() init]);
-        [m_synthesizer setDelegate:self];
+        m_synthesizer.delegate = self;
     }
     
     // Choose the best voice, by first looking at the utterance voice, then the utterance language,
@@ -138,10 +138,10 @@ static float getAVSpeechUtteranceMaximumSpeechRate()
 
     AVSpeechUtterance *avUtterance = [PAL::getAVSpeechUtteranceClass() speechUtteranceWithString:utterance->text()];
 
-    [avUtterance setRate:[self mapSpeechRateToPlatformRate:utterance->rate()]];
-    [avUtterance setVolume:utterance->volume()];
-    [avUtterance setPitchMultiplier:utterance->pitch()];
-    [avUtterance setVoice:avVoice];
+    avUtterance.rate = [self mapSpeechRateToPlatformRate:utterance->rate()];
+    avUtterance.volume = utterance->volume();
+    avUtterance.pitchMultiplier = utterance->pitch();
+    avUtterance.voice = avVoice;
     utterance->setWrapper(avUtterance);
     m_utterance = WTFMove(utterance);
 
@@ -280,10 +280,10 @@ void PlatformSpeechSynthesizer::initializeVoiceList()
 
     BEGIN_BLOCK_OBJC_EXCEPTIONS
     for (AVSpeechSynthesisVoice *voice in [PAL::getAVSpeechSynthesisVoiceClass() speechVoices]) {
-        NSString *language = [voice language];
+        NSString *language = voice.language;
         bool isDefault = true;
-        NSString *voiceURI = [voice identifier];
-        NSString *name = [voice name];
+        NSString *voiceURI = voice.identifier;
+        NSString *name = voice.name;
         // Only show built-in voices when requesting through WebKit to reduce fingerprinting surface area.
 #if HAVE(AVSPEECHSYNTHESIS_SYSTEMVOICE)
         // FIXME: Remove respondsToSelector check when is available on all SDKs.

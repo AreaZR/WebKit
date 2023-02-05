@@ -66,7 +66,7 @@ AVAssetTrack* VideoTrackPrivateMediaSourceAVFObjC::assetTrack() const
 
 FloatSize VideoTrackPrivateMediaSourceAVFObjC::naturalSize() const
 {
-    return FloatSize([assetTrack() naturalSize]);
+    return FloatSize(assetTrack().naturalSize);
 }
 
 }

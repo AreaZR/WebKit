@@ -35,7 +35,7 @@
 - (void)_setState:(NSInteger)value animated:(BOOL)animated;
 - (void)_setHighlighted:(BOOL)flag animated:(BOOL)animated;
 - (void)_renderCurrentAnimationFrameInContext:(CGContextRef)ctxt atLocation:(NSPoint)where;
-- (BOOL)_stateAnimationRunning;
+@property (nonatomic, readonly) BOOL _stateAnimationRunning;
 @end
 
 #endif

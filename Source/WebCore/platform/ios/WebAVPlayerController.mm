@@ -119,9 +119,9 @@ static double WebAVPlayerControllerLiveStreamSeekableTimeRangeMinimumDuration = 
 {
     // Only use the proxy object for key paths identifying undefined properties on WebAVPlayerController.
 
-    NSObject *target = [_playerController playerControllerProxy];
+    NSObject *target = _playerController.playerControllerProxy;
 
-    NSString *propertyNameFromKeyPath = [[keyPath componentsSeparatedByString:@"."] firstObject];
+    NSString *propertyNameFromKeyPath = [keyPath componentsSeparatedByString:@"."].firstObject;
     if (!propertyNameFromKeyPath.length)
         return target;
 
@@ -291,7 +291,7 @@ Class webAVPlayerControllerClass()
 
 - (BOOL)isPlaying
 {
-    return [self rate];
+    return self.rate;
 }
 
 - (void)setPlaying:(BOOL)playing
@@ -346,7 +346,7 @@ Class webAVPlayerControllerClass()
     if (!fromJavaScript && self.delegate && self.delegate->defaultPlaybackRate() != _defaultPlaybackRate)
         self.delegate->setDefaultPlaybackRate(_defaultPlaybackRate);
 
-    if ([self isPlaying])
+    if (self.playing)
         [self setRate:_defaultPlaybackRate fromJavaScript:fromJavaScript];
 }
 
@@ -429,7 +429,7 @@ Class webAVPlayerControllerClass()
 
 - (void)seekByTimeInterval:(NSTimeInterval)interval toleranceBefore:(NSTimeInterval)before toleranceAfter:(NSTimeInterval)after
 {
-    NSTimeInterval targetTime = [[self timing] currentValue] + interval;
+    NSTimeInterval targetTime = self.timing.currentValue + interval;
     [self seekToTime:targetTime toleranceBefore:before toleranceAfter:after];
 }
 
@@ -450,8 +450,8 @@ Class webAVPlayerControllerClass()
 
 - (BOOL)hasLiveStreamingContent
 {
-    if ([self status] == AVPlayerControllerStatusReadyToPlay)
-        return [self contentDuration] == std::numeric_limits<float>::infinity();
+    if (self.status == AVPlayerControllerStatusReadyToPlay)
+        return self.contentDuration == std::numeric_limits<float>::infinity();
     return NO;
 }
 
@@ -464,11 +464,11 @@ Class webAVPlayerControllerClass()
 {
     NSTimeInterval maxTime = NAN;
 
-    NSTimeInterval duration = [self contentDuration];
+    NSTimeInterval duration = self.contentDuration;
     if (!isnan(duration) && !isinf(duration))
         maxTime = duration;
-    else if ([self hasSeekableLiveStreamingContent] && [self maxTiming])
-        maxTime = [[self maxTiming] currentValue];
+    else if ([self hasSeekableLiveStreamingContent] && self.maxTiming)
+        maxTime = self.maxTiming.currentValue;
 
     return maxTime;
 }
@@ -482,8 +482,8 @@ Class webAVPlayerControllerClass()
 {
     NSTimeInterval minTime = 0.0;
 
-    if ([self hasSeekableLiveStreamingContent] && [self minTiming])
-        minTime = [[self minTiming] currentValue];
+    if ([self hasSeekableLiveStreamingContent] && self.minTiming)
+        minTime = self.minTiming.currentValue;
 
     return minTime;
 }
@@ -499,11 +499,11 @@ Class webAVPlayerControllerClass()
 
     UNUSED_PARAM(sender);
     BOOL isTimeWithinSeekableTimeRanges = NO;
-    CMTime currentTime = CMTimeMakeWithSeconds([[self timing] currentValue], 1000);
+    CMTime currentTime = CMTimeMakeWithSeconds(self.timing.currentValue, 1000);
     CMTime thirtySecondsBeforeCurrentTime = CMTimeSubtract(currentTime, PAL::CMTimeMake(30, 1));
 
-    for (NSValue *seekableTimeRangeValue in [self seekableTimeRanges]) {
-        if (CMTimeRangeContainsTime([seekableTimeRangeValue CMTimeRangeValue], thirtySecondsBeforeCurrentTime)) {
+    for (NSValue *seekableTimeRangeValue in self.seekableTimeRanges) {
+        if (CMTimeRangeContainsTime(seekableTimeRangeValue.CMTimeRangeValue, thirtySecondsBeforeCurrentTime)) {
             isTimeWithinSeekableTimeRanges = YES;
             break;
         }
@@ -520,8 +520,8 @@ Class webAVPlayerControllerClass()
     UNUSED_PARAM(sender);
     NSTimeInterval timeAtEndOfSeekableTimeRanges = NAN;
 
-    for (NSValue *seekableTimeRangeValue in [self seekableTimeRanges]) {
-        CMTimeRange seekableTimeRange = [seekableTimeRangeValue CMTimeRangeValue];
+    for (NSValue *seekableTimeRangeValue in self.seekableTimeRanges) {
+        CMTimeRange seekableTimeRange = seekableTimeRangeValue.CMTimeRangeValue;
         NSTimeInterval endOfSeekableTimeRange = CMTimeGetSeconds(CMTimeRangeGetEnd(seekableTimeRange));
         if (isnan(timeAtEndOfSeekableTimeRanges) || endOfSeekableTimeRange > timeAtEndOfSeekableTimeRanges)
             timeAtEndOfSeekableTimeRanges = endOfSeekableTimeRange;
@@ -548,7 +548,7 @@ Class webAVPlayerControllerClass()
 
 - (BOOL)canScanForward
 {
-    return [self canPlay];
+    return self.canPlay;
 }
 
 + (NSSet *)keyPathsForValuesAffectingCanScanForward
@@ -590,8 +590,8 @@ Class webAVPlayerControllerClass()
 
     CMTime minimumTime = kCMTimeIndefinite;
 
-    for (NSValue *value in [self seekableTimeRanges])
-        minimumTime = CMTimeMinimum([value CMTimeRangeValue].start, minimumTime);
+    for (NSValue *value in self.seekableTimeRanges)
+        minimumTime = CMTimeMinimum(value.CMTimeRangeValue.start, minimumTime);
 
     return CMTIME_IS_NUMERIC(minimumTime);
 }
@@ -619,8 +619,8 @@ Class webAVPlayerControllerClass()
 
     CMTime maximumTime = kCMTimeIndefinite;
 
-    for (NSValue *value in [self seekableTimeRanges])
-        maximumTime = CMTimeMaximum(CMTimeRangeGetEnd([value CMTimeRangeValue]), maximumTime);
+    for (NSValue *value in self.seekableTimeRanges)
+        maximumTime = CMTimeMaximum(CMTimeRangeGetEnd(value.CMTimeRangeValue), maximumTime);
 
     return CMTIME_IS_NUMERIC(maximumTime);
 }
@@ -654,7 +654,7 @@ Class webAVPlayerControllerClass()
 
 - (BOOL)hasMediaSelectionOptions
 {
-    return [self hasAudioMediaSelectionOptions] || [self hasLegibleMediaSelectionOptions];
+    return self.hasAudioMediaSelectionOptions || self.hasLegibleMediaSelectionOptions;
 }
 
 + (NSSet *)keyPathsForValuesAffectingHasMediaSelectionOptions
@@ -664,7 +664,7 @@ Class webAVPlayerControllerClass()
 
 - (BOOL)hasAudioMediaSelectionOptions
 {
-    return [[self audioMediaSelectionOptions] count] > 1;
+    return self.audioMediaSelectionOptions.count > 1;
 }
 
 + (NSSet *)keyPathsForValuesAffectingHasAudioMediaSelectionOptions
@@ -675,7 +675,7 @@ Class webAVPlayerControllerClass()
 - (BOOL)hasLegibleMediaSelectionOptions
 {
     const NSUInteger numDefaultLegibleOptions = 2;
-    return [[self legibleMediaSelectionOptions] count] > numDefaultLegibleOptions;
+    return self.legibleMediaSelectionOptions.count > numDefaultLegibleOptions;
 }
 
 + (NSSet *)keyPathsForValuesAffectingHasLegibleMediaSelectionOptions
@@ -739,7 +739,7 @@ Class webAVPlayerControllerClass()
 
 - (BOOL)isPlayingOnExternalScreen
 {
-    return [self isExternalPlaybackActive] || [self isPlayingOnSecondScreen];
+    return self.externalPlaybackActive || self.playingOnSecondScreen;
 }
 
 + (NSSet *)keyPathsForValuesAffectingPlayingOnExternalScreen
@@ -754,7 +754,7 @@ Class webAVPlayerControllerClass()
 
 - (BOOL)isPictureInPicturePossible
 {
-    return _allowsPictureInPicture && ![self isExternalPlaybackActive];
+    return _allowsPictureInPicture && !self.externalPlaybackActive;
 }
 
 - (BOOL)isPictureInPictureInterrupted
@@ -822,8 +822,8 @@ Class webAVPlayerControllerClass()
         NSArray *oldArray = change[NSKeyValueChangeOldKey];
         NSArray *newArray = change[NSKeyValueChangeNewKey];
         if ([oldArray isKindOfClass:[NSArray class]] && [newArray isKindOfClass:[NSArray class]]) {
-            CMTimeRange oldSeekableTimeRange = [oldArray count] > 0 ? [[oldArray firstObject] CMTimeRangeValue] : kCMTimeRangeInvalid;
-            CMTimeRange newSeekableTimeRange = [newArray count] > 0 ? [[newArray firstObject] CMTimeRangeValue] : kCMTimeRangeInvalid;
+            CMTimeRange oldSeekableTimeRange = oldArray.count > 0 ? [oldArray.firstObject CMTimeRangeValue] : kCMTimeRangeInvalid;
+            CMTimeRange newSeekableTimeRange = newArray.count > 0 ? [newArray.firstObject CMTimeRangeValue] : kCMTimeRangeInvalid;
             if (!CMTimeRangeEqual(oldSeekableTimeRange, newSeekableTimeRange)) {
                 if (CMTIMERANGE_IS_VALID(newSeekableTimeRange) && CMTIMERANGE_IS_VALID(oldSeekableTimeRange) && _liveStreamEventModePossible && !CMTimeRangeContainsTime(newSeekableTimeRange, oldSeekableTimeRange.start))
                     _liveStreamEventModePossible = NO;
@@ -856,51 +856,51 @@ Class webAVPlayerControllerClass()
     AVValueTiming *newMaxTiming = nil;
 
     // For live streams value timings for the min and max times are needed.
-    if ([self hasLiveStreamingContent] && ([[self seekableTimeRanges] count] > 0)) {
-        CMTimeRange seekableTimeRange = [[[self seekableTimeRanges] firstObject] CMTimeRangeValue];
+    if ([self hasLiveStreamingContent] && (self.seekableTimeRanges.count > 0)) {
+        CMTimeRange seekableTimeRange = [self.seekableTimeRanges.firstObject CMTimeRangeValue];
         if (CMTIMERANGE_IS_VALID(seekableTimeRange)) {
-            NSTimeInterval oldMinTime = [[self minTiming] currentValue];
-            NSTimeInterval oldMaxTime = [[self maxTiming] currentValue];
+            NSTimeInterval oldMinTime = self.minTiming.currentValue;
+            NSTimeInterval oldMaxTime = self.maxTiming.currentValue;
             NSTimeInterval newMinTime = CMTimeGetSeconds(seekableTimeRange.start);
-            NSTimeInterval newMaxTime = CMTimeGetSeconds(seekableTimeRange.start) + CMTimeGetSeconds(seekableTimeRange.duration) + (CACurrentMediaTime() - [self seekableTimeRangesLastModifiedTime]);
+            NSTimeInterval newMaxTime = CMTimeGetSeconds(seekableTimeRange.start) + CMTimeGetSeconds(seekableTimeRange.duration) + (CACurrentMediaTime() - self.seekableTimeRangesLastModifiedTime);
             double newMinTimingRate = _liveStreamEventModePossible ? 0.0 : 1.0;
             BOOL minTimingNeedsUpdate = YES;
             BOOL maxTimingNeedsUpdate = YES;
 
-            if (isfinite([self liveUpdateInterval]) && [self liveUpdateInterval] > WebAVPlayerControllerLiveStreamMinimumTargetDuration) {
+            if (isfinite(self.liveUpdateInterval) && self.liveUpdateInterval > WebAVPlayerControllerLiveStreamMinimumTargetDuration) {
                 // Only update the timing if the new time differs by one segment duration plus the hysteresis delta.
-                minTimingNeedsUpdate = isnan(oldMinTime) || (fabs(oldMinTime - newMinTime) > [self liveUpdateInterval] + WebAVPlayerControllerLiveStreamSeekableTimeRangeDurationHysteresisDelta) || ([[self minTiming] rate] != newMinTimingRate);
-                maxTimingNeedsUpdate = isnan(oldMaxTime) || (fabs(oldMaxTime - newMaxTime) > [self liveUpdateInterval] + WebAVPlayerControllerLiveStreamSeekableTimeRangeDurationHysteresisDelta);
+                minTimingNeedsUpdate = isnan(oldMinTime) || (fabs(oldMinTime - newMinTime) > self.liveUpdateInterval + WebAVPlayerControllerLiveStreamSeekableTimeRangeDurationHysteresisDelta) || (self.minTiming.rate != newMinTimingRate);
+                maxTimingNeedsUpdate = isnan(oldMaxTime) || (fabs(oldMaxTime - newMaxTime) > self.liveUpdateInterval + WebAVPlayerControllerLiveStreamSeekableTimeRangeDurationHysteresisDelta);
             }
 
             if (minTimingNeedsUpdate || maxTimingNeedsUpdate) {
                 newMinTiming = [getAVValueTimingClass() valueTimingWithAnchorValue:newMinTime anchorTimeStamp:[getAVValueTimingClass() currentTimeStamp] rate:newMinTimingRate];
                 newMaxTiming = [getAVValueTimingClass() valueTimingWithAnchorValue:newMaxTime anchorTimeStamp:[getAVValueTimingClass() currentTimeStamp] rate:1.0];
             } else {
-                newMinTiming = [self minTiming];
-                newMaxTiming = [self maxTiming];
+                newMinTiming = self.minTiming;
+                newMaxTiming = self.maxTiming;
             }
         }
     }
 
     if (!newMinTiming)
-        newMinTiming = [getAVValueTimingClass() valueTimingWithAnchorValue:[self minTime] anchorTimeStamp:NAN rate:0.0];
+        newMinTiming = [getAVValueTimingClass() valueTimingWithAnchorValue:self.minTime anchorTimeStamp:NAN rate:0.0];
 
     if (!newMaxTiming)
-        newMaxTiming = [getAVValueTimingClass() valueTimingWithAnchorValue:[self maxTime] anchorTimeStamp:NAN rate:0.0];
+        newMaxTiming = [getAVValueTimingClass() valueTimingWithAnchorValue:self.maxTime anchorTimeStamp:NAN rate:0.0];
 
-    [self setMinTiming:newMinTiming];
-    [self setMaxTiming:newMaxTiming];
+    self.minTiming = newMinTiming;
+    self.maxTiming = newMaxTiming;
 }
 
 - (BOOL)hasSeekableLiveStreamingContent
 {
     BOOL hasSeekableLiveStreamingContent = NO;
 
-    if ([self hasLiveStreamingContent] && [self minTiming] && [self maxTiming] && isfinite([self liveUpdateInterval]) && [self liveUpdateInterval] > WebAVPlayerControllerLiveStreamMinimumTargetDuration && ([self seekableTimeRangesLastModifiedTime] != 0.0)) {
+    if ([self hasLiveStreamingContent] && self.minTiming && self.maxTiming && isfinite(self.liveUpdateInterval) && self.liveUpdateInterval > WebAVPlayerControllerLiveStreamMinimumTargetDuration && (self.seekableTimeRangesLastModifiedTime != 0.0)) {
         NSTimeInterval timeStamp = [getAVValueTimingClass() currentTimeStamp];
-        NSTimeInterval minTime = [[self minTiming] valueForTimeStamp:timeStamp];
-        NSTimeInterval maxTime = [[self maxTiming] valueForTimeStamp:timeStamp];
+        NSTimeInterval minTime = [self.minTiming valueForTimeStamp:timeStamp];
+        NSTimeInterval maxTime = [self.maxTiming valueForTimeStamp:timeStamp];
         hasSeekableLiveStreamingContent = ((maxTime - minTime) > WebAVPlayerControllerLiveStreamSeekableTimeRangeMinimumDuration);
     }
 

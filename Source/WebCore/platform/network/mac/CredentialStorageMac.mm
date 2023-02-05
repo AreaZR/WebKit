@@ -41,7 +41,7 @@ Credential CredentialStorage::getFromPersistentStorage(const ProtectionSpace& pr
 HashSet<SecurityOriginData> CredentialStorage::originsWithSessionCredentials()
 {
     HashSet<SecurityOriginData> origins;
-    auto allCredentials = [[NSURLCredentialStorage sharedCredentialStorage] allCredentials];
+    auto allCredentials = [NSURLCredentialStorage sharedCredentialStorage].allCredentials;
     for (NSURLProtectionSpace* key in allCredentials.keyEnumerator) {
         for (NSURLProtectionSpace* space in allCredentials) {
             auto credentials = allCredentials[space];
@@ -59,7 +59,7 @@ HashSet<SecurityOriginData> CredentialStorage::originsWithSessionCredentials()
 void CredentialStorage::removeSessionCredentialsWithOrigins(const Vector<SecurityOriginData>& origins)
 {
     auto sharedStorage = [NSURLCredentialStorage sharedCredentialStorage];
-    auto allCredentials = [sharedStorage allCredentials];
+    auto allCredentials = sharedStorage.allCredentials;
     for (auto& origin : origins) {
         for (NSURLProtectionSpace* space in allCredentials) {
             if (origin.protocol == String(space.protocol)
@@ -80,7 +80,7 @@ void CredentialStorage::removeSessionCredentialsWithOrigins(const Vector<Securit
 void CredentialStorage::clearSessionCredentials()
 {
     auto sharedStorage = [NSURLCredentialStorage sharedCredentialStorage];
-    auto allCredentials = [sharedStorage allCredentials];
+    auto allCredentials = sharedStorage.allCredentials;
     for (NSURLProtectionSpace* space in allCredentials.keyEnumerator) {
         auto credentials = allCredentials[space];
         for (NSString* user in credentials) {

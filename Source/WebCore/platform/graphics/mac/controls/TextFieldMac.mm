@@ -80,7 +80,7 @@ void TextFieldMac::draw(GraphicsContext& context, const FloatRoundedRect& border
         
         auto *view = m_controlFactory.drawingView(borderRect.rect(), style);
         
-        [m_textFieldCell.get() setEnabled:enabled];
+        m_textFieldCell.get().enabled = enabled;
         [m_textFieldCell.get() drawWithFrame:NSRect(paintRect) inView:view];
         [m_textFieldCell.get() setControlView:nil];
     }

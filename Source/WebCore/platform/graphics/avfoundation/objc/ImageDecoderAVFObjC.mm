@@ -71,7 +71,7 @@
     Lock _dataLock;
 }
 @property (readonly) NSData* data;
-- (id)initWithParent:(WebCore::ImageDecoderAVFObjC*)parent;
+- (instancetype)initWithParent:(WebCore::ImageDecoderAVFObjC*)parent NS_DESIGNATED_INITIALIZER;
 - (void)setExpectedContentSize:(long long)expectedContentSize;
 - (void)updateData:(NSData *)data complete:(BOOL)complete;
 - (BOOL)canFulfillRequest:(AVAssetResourceLoadingRequest *)loadingRequest;
@@ -81,7 +81,7 @@
 @end
 
 @implementation WebCoreSharedBufferResourceLoaderDelegate
-- (id)initWithParent:(WebCore::ImageDecoderAVFObjC*)parent
+- (instancetype)initWithParent:(WebCore::ImageDecoderAVFObjC*)parent
 {
     if (!(self = [super init]))
         return nil;
@@ -371,7 +371,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
         return nil;
     }
 
-    return [videoTracks objectAtIndex:firstEnabledIndex];
+    return videoTracks[firstEnabledIndex];
 }
 
 void ImageDecoderAVFObjC::readSamples()

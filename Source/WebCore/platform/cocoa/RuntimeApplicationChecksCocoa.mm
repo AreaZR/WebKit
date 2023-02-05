@@ -66,7 +66,7 @@ String applicationBundleIdentifier()
     if (identifier.isNull())
         identifier = bundleIdentifier();
     ASSERT_WITH_MESSAGE(!isInAuxiliaryProcess() || !!identifier, "applicationBundleIsEqualTo() and applicationBundleStartsWith() must not be called before setApplicationBundleIdentifier() in auxiliary processes");
-    return identifier.isNull() ? String([[NSBundle mainBundle] bundleIdentifier]) : identifier;
+    return identifier.isNull() ? String([NSBundle mainBundle].bundleIdentifier) : identifier;
 }
 
 void setApplicationBundleIdentifier(const String& identifier)

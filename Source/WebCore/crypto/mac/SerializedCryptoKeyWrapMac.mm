@@ -69,10 +69,10 @@ static NSString* masterKeyAccountNameForCurrentApplication()
 #if PLATFORM(IOS_FAMILY)
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
 #else
-    NSString *bundleIdentifier = [[NSRunningApplication currentApplication] bundleIdentifier];
+    NSString *bundleIdentifier = [NSRunningApplication currentApplication].bundleIdentifier;
 #endif
     if (!bundleIdentifier)
-        bundleIdentifier = [NSString stringWithCString:*_NSGetProgname() encoding:NSASCIIStringEncoding];
+        bundleIdentifier = @(*_NSGetProgname());
     return [NSString stringWithFormat:@"com.apple.WebKit.WebCrypto.master+%@", bundleIdentifier];
 }
 
@@ -93,7 +93,7 @@ static std::optional<Vector<uint8_t>> createAndStoreMasterKey()
         applicationName = [mainBundle bundleIdentifier];
     NSString *localizedItemName = webCryptoMasterKeyKeychainLabel(applicationName);
 #else
-    NSString *localizedItemName = webCryptoMasterKeyKeychainLabel([[NSRunningApplication currentApplication] localizedName]);
+    NSString *localizedItemName = webCryptoMasterKeyKeychainLabel([NSRunningApplication currentApplication].localizedName);
 #endif
 
     OSStatus status;
@@ -245,7 +245,7 @@ bool wrapSerializedCryptoKey(const Vector<uint8_t>& masterKey, const Vector<uint
     RELEASE_ASSERT(tagLength == 16);
 
     auto dictionary = @{
-        versionKey: [NSNumber numberWithUnsignedInteger:currentSerializationVersion],
+        versionKey: @(currentSerializationVersion),
         wrappedKEKKey: [NSData dataWithBytes:wrappedKEK.data() length:wrappedKEK.size()],
         encryptedKeyKey: [NSData dataWithBytes:encryptedKey.data() length:encryptedKey.size()],
         tagKey: [NSData dataWithBytes:tag length:tagLength]
@@ -265,23 +265,23 @@ bool unwrapSerializedCryptoKey(const Vector<uint8_t>& masterKey, const Vector<ui
     if (!dictionary)
         return false;
 
-    id versionObject = [dictionary objectForKey:versionKey];
+    id versionObject = dictionary[versionKey];
     if (![versionObject isKindOfClass:[NSNumber class]])
         return false;
     if ([versionObject unsignedIntegerValue] > currentSerializationVersion)
         return false;
 
-    id wrappedKEKObject = [dictionary objectForKey:wrappedKEKKey];
+    id wrappedKEKObject = dictionary[wrappedKEKKey];
     if (![wrappedKEKObject isKindOfClass:[NSData class]])
         return false;
     Vector<uint8_t> wrappedKEK = vectorFromNSData(wrappedKEKObject);
 
-    id encryptedKeyObject = [dictionary objectForKey:encryptedKeyKey];
+    id encryptedKeyObject = dictionary[encryptedKeyKey];
     if (![encryptedKeyObject isKindOfClass:[NSData class]])
         return false;
     Vector<uint8_t> encryptedKey = vectorFromNSData(encryptedKeyObject);
 
-    id tagObject = [dictionary objectForKey:tagKey];
+    id tagObject = dictionary[tagKey];
     if (![tagObject isKindOfClass:[NSData class]])
         return false;
     Vector<uint8_t> tag = vectorFromNSData(tagObject);

@@ -228,7 +228,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VKCRemoveBackgroundResult : NSObject
 @property (nonatomic, readonly) CGRect cropRect;
-- (CGImageRef)createCGImage;
+@property (nonatomic, readonly) CGImageRef _Nonnull createCGImage CF_RETURNS_NOT_RETAINED;
 @end
 
 @interface VKCRemoveBackgroundRequest : NSObject

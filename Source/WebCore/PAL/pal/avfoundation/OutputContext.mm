@@ -66,13 +66,13 @@ bool OutputContext::supportsMultipleOutputDevices()
 {
     return [m_context respondsToSelector:@selector(supportsMultipleOutputDevices)]
         && [m_context respondsToSelector:@selector(outputDevices)]
-        && [m_context supportsMultipleOutputDevices];
+        && m_context.supportsMultipleOutputDevices;
 }
 
 String OutputContext::deviceName()
 {
     if (!supportsMultipleOutputDevices())
-        return [m_context deviceName];
+        return m_context.deviceName;
 
     StringBuilder builder;
     auto devices = outputDevices();
@@ -91,12 +91,12 @@ String OutputContext::deviceName()
 Vector<OutputDevice> OutputContext::outputDevices() const
 {
     if (![m_context respondsToSelector:@selector(outputDevices)]) {
-        if (auto *outputDevice = [m_context outputDevice])
+        if (auto *outputDevice = m_context.outputDevice)
             return { retainPtr(outputDevice) };
         return { };
     }
 
-    auto *avOutputDevices = [m_context outputDevices];
+    auto *avOutputDevices = m_context.outputDevices;
     Vector<OutputDevice> outputDevices;
     outputDevices.reserveInitialCapacity(avOutputDevices.count);
     for (AVOutputDevice *device in avOutputDevices)

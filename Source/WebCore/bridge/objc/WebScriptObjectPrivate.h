@@ -49,17 +49,17 @@ namespace WebCore {
 
 @interface WebScriptObject (Private)
 + (id)_convertValueToObjcValue:(JSC::JSValue)value originRootObject:(JSC::Bindings::RootObject*)originRootObject rootObject:(JSC::Bindings::RootObject*)rootObject;
-+ (id)scriptObjectForJSObject:(JSObjectRef)jsObject originRootObject:(JSC::Bindings::RootObject*)originRootObject rootObject:(JSC::Bindings::RootObject*)rootObject;
-- (id)_init;
++ (instancetype)scriptObjectForJSObject:(JSObjectRef)jsObject originRootObject:(JSC::Bindings::RootObject*)originRootObject rootObject:(JSC::Bindings::RootObject*)rootObject;
+@property (nonatomic, readonly, strong) id _init;
 - (id)_initWithJSObject:(JSC::JSObject*)imp originRootObject:(RefPtr<JSC::Bindings::RootObject>&&)originRootObject rootObject:(RefPtr<JSC::Bindings::RootObject>&&)rootObject;
 - (void)_setImp:(JSC::JSObject*)imp originRootObject:(RefPtr<JSC::Bindings::RootObject>&&)originRootObject rootObject:(RefPtr<JSC::Bindings::RootObject>&&)rootObject;
 - (void)_setOriginRootObject:(RefPtr<JSC::Bindings::RootObject>&&)originRootObject andRootObject:(RefPtr<JSC::Bindings::RootObject>&&)rootObject;
 - (void)_initializeScriptDOMNodeImp;
-- (JSC::JSObject*)_imp;
-- (BOOL)_hasImp;
-- (JSC::Bindings::RootObject*)_rootObject;
-- (JSC::Bindings::RootObject*)_originRootObject;
-- (JSGlobalContextRef)_globalContextRef;
+@property (nonatomic, readonly) JSC::JSObject *_imp;
+@property (nonatomic, readonly) BOOL _hasImp;
+@property (nonatomic, readonly) JSC::Bindings::RootObject *_rootObject;
+@property (nonatomic, readonly) JSC::Bindings::RootObject *_originRootObject;
+@property (nonatomic, readonly) JSGlobalContextRef _globalContextRef;
 @end
 
 @interface WebScriptObject (StagedForPublic)

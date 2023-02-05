@@ -171,7 +171,7 @@ void disconnectWindowWrapper(WebScriptObject *windowWrapper)
 #endif
 }
 
-+ (id)scriptObjectForJSObject:(JSObjectRef)jsObject originRootObject:(RootObject*)originRootObject rootObject:(RootObject*)rootObject
++ (instancetype)scriptObjectForJSObject:(JSObjectRef)jsObject originRootObject:(RootObject*)originRootObject rootObject:(RootObject*)rootObject
 {
     ASSERT(jsObject);
     auto& wrapped = *toJS(jsObject);
@@ -333,10 +333,10 @@ void disconnectWindowWrapper(WebScriptObject *windowWrapper)
 
 static void getListFromNSArray(JSC::JSGlobalObject* lexicalGlobalObject, NSArray *array, RootObject* rootObject, MarkedArgumentBuffer& aList)
 {
-    int i, numObjects = array ? [array count] : 0;
+    int i, numObjects = array ? array.count : 0;
     
     for (i = 0; i < numObjects; i++) {
-        id anObject = [array objectAtIndex:i];
+        id anObject = array[i];
         aList.append(convertObjcValueToValue(lexicalGlobalObject, &anObject, ObjcObjectType, rootObject));
     }
 }
@@ -596,7 +596,7 @@ static void getListFromNSArray(JSC::JSGlobalObject* lexicalGlobalObject, NSArray
         return @(value.asNumber());
 
     if (value.isBoolean())
-        return [NSNumber numberWithBool:value.asBoolean()];
+        return @(value.asBoolean());
 
     if (value.isUndefined())
         return [WebUndefined undefined];

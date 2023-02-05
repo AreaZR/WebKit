@@ -78,7 +78,7 @@ const void* const webViewVisualIdentificationOverlayKey = &webViewVisualIdentifi
 #if USE(APPKIT)
     _view = adoptNS([[NSView alloc] initWithFrame:webView.bounds]);
     [_view setWantsLayer:YES];
-    [_view setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+    _view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 #else
     _view = adoptNS([PAL::allocUIViewInstance() initWithFrame:webView.bounds]);
     [_view setUserInteractionEnabled:NO];
@@ -91,23 +91,23 @@ const void* const webViewVisualIdentificationOverlayKey = &webViewVisualIdentifi
 #endif
 
     _layer = adoptNS([[CATiledLayer alloc] init]);
-    [_layer setName:@"WebViewVisualIdentificationOverlay"];
-    [_layer setFrame:CGRectMake(0, 0, [_view bounds].size.width, [_view bounds].size.height)];
+    _layer.name = @"WebViewVisualIdentificationOverlay";
+    _layer.frame = CGRectMake(0, 0, _view.bounds.size.width, _view.bounds.size.height);
     auto viewColor = isDeprecated ? WebCore::Color::red.colorWithAlphaByte(50) : WebCore::Color::blue.colorWithAlphaByte(32);
-    [_layer setBackgroundColor:cachedCGColor(viewColor).get()];
-    [_layer setZPosition:999];
-    [_layer setDelegate:self];
+    _layer.backgroundColor = cachedCGColor(viewColor).get();
+    _layer.zPosition = 999;
+    _layer.delegate = self;
     [_layer web_disableAllActions];
-    [[_view layer] addSublayer:_layer.get()];
+    [_view.layer addSublayer:_layer.get()];
 
-    [[_view layer] addObserver:self forKeyPath:@"bounds" options:0 context:boundsObservationContext];
+    [_view.layer addObserver:self forKeyPath:@"bounds" options:0 context:boundsObservationContext];
 
     return self;
 }
 
 - (void)dealloc
 {
-    [[_view layer] removeObserver:self forKeyPath:@"bounds" context:boundsObservationContext];
+    [_view.layer removeObserver:self forKeyPath:@"bounds" context:boundsObservationContext];
 
     [super dealloc];
 }
@@ -118,7 +118,7 @@ const void* const webViewVisualIdentificationOverlayKey = &webViewVisualIdentifi
     UNUSED_PARAM(object);
     UNUSED_PARAM(change);
     if (context == boundsObservationContext) {
-        [_layer setFrame:CGRectMake(0, 0, [_view bounds].size.width, [_view bounds].size.height)];
+        _layer.frame = CGRectMake(0, 0, _view.bounds.size.width, _view.bounds.size.height);
         [_layer setNeedsDisplay];
     }
 }

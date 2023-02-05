@@ -64,7 +64,7 @@ std::unique_ptr<PluginBlocklist> PluginBlocklist::create(NSDictionary *propertyL
     auto systemVersionDictionary = adoptCF(_CFCopySystemVersionDictionary());
     CFStringRef osVersion = static_cast<CFStringRef>(CFDictionaryGetValue(systemVersionDictionary.get(), _kCFSystemVersionProductVersionKey));
 
-    NSDictionary *dictionary = [propertyList objectForKey:@"PlugInBlocklist"];
+    NSDictionary *dictionary = propertyList[@"PlugInBlocklist"];
 
     NSMutableDictionary *bundleIDToMinimumSecureVersion = [NSMutableDictionary dictionary];
     NSMutableDictionary *bundleIDToMinimumCompatibleVersion = [NSMutableDictionary dictionary];
@@ -72,12 +72,12 @@ std::unique_ptr<PluginBlocklist> PluginBlocklist::create(NSDictionary *propertyL
     NSMutableSet *bundleIDsWithAvailableUpdates = [NSMutableSet set];
     
     for (NSString *osVersionComponent in splitOSVersion((__bridge NSString *)osVersion)) {
-        NSDictionary *bundleIDs = [dictionary objectForKey:osVersionComponent];
+        NSDictionary *bundleIDs = dictionary[osVersionComponent];
         if (!bundleIDs)
             continue;
 
         for (NSString *bundleID in bundleIDs) {
-            NSDictionary *versionInfo = [bundleIDs objectForKey:bundleID];
+            NSDictionary *versionInfo = bundleIDs[bundleID];
             assert(versionInfo);
 
             if (![versionInfo isKindOfClass:[NSDictionary class]])
@@ -87,18 +87,18 @@ std::unique_ptr<PluginBlocklist> PluginBlocklist::create(NSDictionary *propertyL
             [bundleIDToMinimumCompatibleVersion removeObjectForKey:bundleID];
             [bundleIDToBlockedVersions removeObjectForKey:bundleID];
 
-            if (NSArray *blockedVersions = [versionInfo objectForKey:@"BlockedPlugInBundleVersions"])
-                [bundleIDToBlockedVersions setObject:blockedVersions forKey:bundleID];
+            if (NSArray *blockedVersions = versionInfo[@"BlockedPlugInBundleVersions"])
+                bundleIDToBlockedVersions[bundleID] = blockedVersions;
 
-            if (NSString *minimumSecureVersion = [versionInfo objectForKey:@"MinimumPlugInBundleVersion"])
-                [bundleIDToMinimumSecureVersion setObject:minimumSecureVersion forKey:bundleID];
+            if (NSString *minimumSecureVersion = versionInfo[@"MinimumPlugInBundleVersion"])
+                bundleIDToMinimumSecureVersion[bundleID] = minimumSecureVersion;
 
-            if (NSString *minimumCompatibleVersion = [versionInfo objectForKey:@"MinimumCompatiblePlugInBundleVersion"])
-                [bundleIDToMinimumCompatibleVersion setObject:minimumCompatibleVersion forKey:bundleID];
+            if (NSString *minimumCompatibleVersion = versionInfo[@"MinimumCompatiblePlugInBundleVersion"])
+                bundleIDToMinimumCompatibleVersion[bundleID] = minimumCompatibleVersion;
 
-            if (NSNumber *updateAvailable = [versionInfo objectForKey:@"PlugInUpdateAvailable"]) {
+            if (NSNumber *updateAvailable = versionInfo[@"PlugInUpdateAvailable"]) {
                 // A missing PlugInUpdateAvailable key means that there is a plug-in update available.
-                if (!updateAvailable || [updateAvailable boolValue])
+                if (!updateAvailable || updateAvailable.boolValue)
                     [bundleIDsWithAvailableUpdates addObject:bundleID];
             }
         }
@@ -117,7 +117,7 @@ NSArray *PluginBlocklist::splitOSVersion(NSString *osVersion)
 
     NSMutableArray *result = [NSMutableArray array];
 
-    for (NSUInteger i = 0; i < [components count]; ++i) {
+    for (NSUInteger i = 0; i < components.count; ++i) {
         NSString *versionString = [[components subarrayWithRange:NSMakeRange(0, i + 1)] componentsJoinedByString:@"."];
 
         [result addObject:versionString];
@@ -133,19 +133,19 @@ PluginBlocklist::LoadPolicy PluginBlocklist::loadPolicyForPlugin(NSString *bundl
         return LoadPolicy::LoadNormally;
 
     // First, check for explicitly blocked versions.
-    for (NSString *blockedVersion in [m_bundleIDToBlockedVersions objectForKey:bundleIdentifier]) {
+    for (NSString *blockedVersion in m_bundleIDToBlockedVersions[bundleIdentifier]) {
         if ([blockedVersion isEqualToString:bundleVersionString])
             return LoadPolicy::BlockedForSecurity;
     }
 
     // Then, check if there's a forced minimum version for security issues.
-    if (NSString *minimumSecureVersion = [m_bundleIDToMinimumSecureVersion objectForKey:bundleIdentifier]) {
+    if (NSString *minimumSecureVersion = m_bundleIDToMinimumSecureVersion[bundleIdentifier]) {
         if ([bundleVersionString compare:minimumSecureVersion options:NSNumericSearch] == NSOrderedAscending)
             return LoadPolicy::BlockedForSecurity;
     }
 
     // Then, check if there's a forced minimum version for compatibility issues.
-    if (NSString *minimumCompatibleVersion = [m_bundleIDToMinimumCompatibleVersion objectForKey:bundleIdentifier]) {
+    if (NSString *minimumCompatibleVersion = m_bundleIDToMinimumCompatibleVersion[bundleIdentifier]) {
         if ([bundleVersionString compare:minimumCompatibleVersion options:NSNumericSearch] == NSOrderedAscending)
             return LoadPolicy::BlockedForCompatibility;
     }

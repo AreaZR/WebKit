@@ -94,7 +94,7 @@ typedef NSUInteger NSOverlayScrollerState;
 @required
 - (NSRect)convertRectToBacking:(NSRect)aRect;
 - (NSRect)convertRectFromBacking:(NSRect)aRect;
-- (CALayer *)layer;
+@property (nonatomic, readonly, strong) CALayer *layer;
 - (void)scrollerImp:(NSScrollerImp *)scrollerImp animateKnobAlphaTo:(CGFloat)newKnobAlpha duration:(NSTimeInterval)duration;
 - (void)scrollerImp:(NSScrollerImp *)scrollerImp animateTrackAlphaTo:(CGFloat)newTrackAlpha duration:(NSTimeInterval)duration;
 - (void)scrollerImp:(NSScrollerImp *)scrollerImp overlayScrollerStateChangedTo:(NSOverlayScrollerState)newOverlayScrollerState;
@@ -119,7 +119,7 @@ typedef NSUInteger NSOverlayScrollerState;
 - (void)hideOverlayScrollers;
 - (void)lockOverlayScrollerState:(NSOverlayScrollerState)state;
 - (void)unlockOverlayScrollerState;
-- (BOOL)overlayScrollerStateIsLocked;
+@property (nonatomic, readonly) BOOL overlayScrollerStateIsLocked;
 - (void)contentAreaScrolled;
 - (void)contentAreaScrolledInDirection:(NSPoint)direction;
 - (void)contentAreaWillDraw;

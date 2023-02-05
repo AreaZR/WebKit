@@ -78,7 +78,7 @@ JSC::JSValue SerializedPlatformDataCueMac::deserialize(JSC::JSGlobalObject* lexi
     JSContext *jsContext = [JSContext contextWithJSGlobalContextRef:jsGlobalContextRef];
     JSValue *serializedValue = jsValueWithValueInContext(m_nativeValue.get(), jsContext);
 
-    return toJS(lexicalGlobalObject, [serializedValue JSValueRef]);
+    return toJS(lexicalGlobalObject, serializedValue.JSValueRef);
 #else
     UNUSED_PARAM(lexicalGlobalObject);
     return JSC::jsNull();
@@ -149,9 +149,9 @@ static JSValue *jsValueWithValueInContext(id value, JSContext *context)
 
 static JSValue *jsValueWithDataInContext(NSData *data, JSContext *context)
 {
-    auto dataArray = ArrayBuffer::tryCreate([data bytes], [data length]);
+    auto dataArray = ArrayBuffer::tryCreate(data.bytes, data.length);
 
-    auto* lexicalGlobalObject = toJS([context JSGlobalContextRef]);
+    auto* lexicalGlobalObject = toJS(context.JSGlobalContextRef);
     JSC::JSValue array = toJS(lexicalGlobalObject, JSC::jsCast<JSDOMGlobalObject*>(lexicalGlobalObject), dataArray.get());
 
     return [JSValue valueWithJSValueRef:toRef(lexicalGlobalObject, array) inContext:context];
@@ -161,17 +161,17 @@ static JSValue *jsValueWithArrayInContext(NSArray *array, JSContext *context)
 {
     JSValueRef exception = 0;
     JSValue *result = [JSValue valueWithNewArrayInContext:context];
-    JSObjectRef resultObject = JSValueToObject([context JSGlobalContextRef], [result JSValueRef], &exception);
+    JSObjectRef resultObject = JSValueToObject(context.JSGlobalContextRef, result.JSValueRef, &exception);
     if (exception)
         return [JSValue valueWithUndefinedInContext:context];
 
-    NSUInteger count = [array count];
+    NSUInteger count = array.count;
     for (NSUInteger i = 0; i < count; ++i) {
-        JSValue *value = jsValueWithValueInContext([array objectAtIndex:i], context);
+        JSValue *value = jsValueWithValueInContext(array[i], context);
         if (!value)
             continue;
 
-        JSObjectSetPropertyAtIndex([context JSGlobalContextRef], resultObject, (unsigned)i, [value JSValueRef], &exception);
+        JSObjectSetPropertyAtIndex(context.JSGlobalContextRef, resultObject, (unsigned)i, value.JSValueRef, &exception);
         if (exception)
             continue;
     }
@@ -183,7 +183,7 @@ static JSValue *jsValueWithDictionaryInContext(NSDictionary *dictionary, JSConte
 {
     JSValueRef exception = 0;
     JSValue *result = [JSValue valueWithNewObjectInContext:context];
-    JSObjectRef resultObject = JSValueToObject([context JSGlobalContextRef], [result JSValueRef], &exception);
+    JSObjectRef resultObject = JSValueToObject(context.JSGlobalContextRef, result.JSValueRef, &exception);
     if (exception)
         return [JSValue valueWithUndefinedInContext:context];
 
@@ -191,12 +191,12 @@ static JSValue *jsValueWithDictionaryInContext(NSDictionary *dictionary, JSConte
         if (![key isKindOfClass:[NSString class]])
             continue;
 
-        JSValue *value = jsValueWithValueInContext([dictionary objectForKey:key], context);
+        JSValue *value = jsValueWithValueInContext(dictionary[key], context);
         if (!value)
             continue;
 
         auto name = OpaqueJSString::tryCreate(key);
-        JSObjectSetProperty([context JSGlobalContextRef], resultObject, name.get(), [value JSValueRef], 0, &exception);
+        JSObjectSetProperty(context.JSGlobalContextRef, resultObject, name.get(), value.JSValueRef, 0, &exception);
         if (exception)
             continue;
     }
@@ -212,12 +212,12 @@ static JSValue *jsValueWithAVMetadataItemInContext(AVMetadataItem *item, JSConte
 static RetainPtr<NSDictionary> NSDictionaryWithAVMetadataItem(AVMetadataItem *item)
 {
     auto dictionary = adoptNS([[NSMutableDictionary alloc] init]);
-    NSDictionary *extras = [item extraAttributes];
+    NSDictionary *extras = item.extraAttributes;
 
     for (id key in [extras keyEnumerator]) {
         if (![key isKindOfClass:[NSString class]])
             continue;
-        id value = [extras objectForKey:key];
+        id value = extras[key];
         NSString *keyString = key;
 
         if ([key isEqualToString:@"MIMEtype"])
@@ -225,7 +225,7 @@ static RetainPtr<NSDictionary> NSDictionaryWithAVMetadataItem(AVMetadataItem *it
         else if ([key isEqualToString:@"dataTypeNamespace"] || [key isEqualToString:@"pictureType"])
             continue;
         else if ([key isEqualToString:@"dataType"]) {
-            id dataTypeNamespace = [extras objectForKey:@"dataTypeNamespace"];
+            id dataTypeNamespace = extras[@"dataTypeNamespace"];
             if (!dataTypeNamespace || ![dataTypeNamespace isKindOfClass:[NSString class]] || ![dataTypeNamespace isEqualToString:@"org.iana.media-type"])
                 continue;
             keyString = @"type";
@@ -235,17 +235,17 @@ static RetainPtr<NSDictionary> NSDictionaryWithAVMetadataItem(AVMetadataItem *it
             keyString = [key lowercaseString];
         }
 
-        [dictionary setObject:value forKey:keyString];
+        dictionary[keyString] = value;
     }
 
     if (item.key)
-        [dictionary setObject:item.key forKey:@"key"];
+        dictionary[@"key"] = item.key;
 
     if (item.locale)
-        [dictionary setObject:item.locale forKey:@"locale"];
+        dictionary[@"locale"] = item.locale;
 
     if (item.value)
-        [dictionary setObject:item.value forKey:@"data"];
+        dictionary[@"data"] = item.value;
 
     return WTFMove(dictionary);
 }

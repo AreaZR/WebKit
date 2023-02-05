@@ -189,7 +189,7 @@ void ContentFilterUnblockHandler::requestUnblockAsync(DecisionHandlerFunction de
 #if ENABLE(CONTENT_FILTERING_IN_NETWORKING_PROCESS)
 void ContentFilterUnblockHandler::setUnblockedAfterRequest(bool unblocked)
 {
-    m_unblockedAfterRequest = [NSNumber numberWithBool:unblocked];
+    m_unblockedAfterRequest = @(unblocked);
 }
 #endif
 

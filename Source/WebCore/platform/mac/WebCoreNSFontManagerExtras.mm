@@ -108,7 +108,7 @@ FontAttributeChanges computedFontAttributeChanges(NSFontManager *fontManager, id
     FontAttributeChanges changes;
 
     auto shadow = adoptNS([[NSShadow alloc] init]);
-    [shadow setShadowOffset:NSMakeSize(1, 1)];
+    shadow.shadowOffset = NSMakeSize(1, 1);
 
     NSFont *originalFontA = firstFontConversionSpecimen(fontManager);
     NSDictionary *originalAttributesA = @{ NSFontAttributeName : originalFontA };
@@ -125,25 +125,25 @@ FontAttributeChanges computedFontAttributeChanges(NSFontManager *fontManager, id
     NSDictionary *convertedAttributesA = [attributeConverter convertAttributes:originalAttributesA];
     NSDictionary *convertedAttributesB = [attributeConverter convertAttributes:originalAttributesB];
 
-    NSColor *convertedBackgroundColorA = [convertedAttributesA objectForKey:NSBackgroundColorAttributeName];
-    if (convertedBackgroundColorA == [convertedAttributesB objectForKey:NSBackgroundColorAttributeName])
+    NSColor *convertedBackgroundColorA = convertedAttributesA[NSBackgroundColorAttributeName];
+    if (convertedBackgroundColorA == convertedAttributesB[NSBackgroundColorAttributeName])
         changes.setBackgroundColor(colorFromCocoaColor(convertedBackgroundColorA ?: NSColor.clearColor));
 
-    changes.setFontChanges(computedFontChanges(fontManager, originalFontA, [convertedAttributesA objectForKey:NSFontAttributeName], [convertedAttributesB objectForKey:NSFontAttributeName]));
+    changes.setFontChanges(computedFontChanges(fontManager, originalFontA, convertedAttributesA[NSFontAttributeName], convertedAttributesB[NSFontAttributeName]));
 
-    NSColor *convertedForegroundColorA = [convertedAttributesA objectForKey:NSForegroundColorAttributeName];
-    if (convertedForegroundColorA == [convertedAttributesB objectForKey:NSForegroundColorAttributeName])
+    NSColor *convertedForegroundColorA = convertedAttributesA[NSForegroundColorAttributeName];
+    if (convertedForegroundColorA == convertedAttributesB[NSForegroundColorAttributeName])
         changes.setForegroundColor(colorFromCocoaColor(convertedForegroundColorA ?: NSColor.blackColor));
 
-    NSShadow *convertedShadow = [convertedAttributesA objectForKey:NSShadowAttributeName];
+    NSShadow *convertedShadow = convertedAttributesA[NSShadowAttributeName];
     if (convertedShadow) {
         FloatSize offset { LayoutUnit::fromFloatRound(static_cast<float>(convertedShadow.shadowOffset.width)).toFloat(), LayoutUnit::fromFloatRound(static_cast<float>(convertedShadow.shadowOffset.height)).toFloat() };
         changes.setShadow({ colorFromCocoaColor(convertedShadow.shadowColor ?: NSColor.blackColor), offset, convertedShadow.shadowBlurRadius });
-    } else if (![convertedAttributesB objectForKey:NSShadowAttributeName])
+    } else if (!convertedAttributesB[NSShadowAttributeName])
         changes.setShadow({ });
 
-    int convertedSuperscriptA = [[convertedAttributesA objectForKey:NSSuperscriptAttributeName] intValue];
-    if (convertedSuperscriptA == [[convertedAttributesB objectForKey:NSSuperscriptAttributeName] intValue]) {
+    int convertedSuperscriptA = [convertedAttributesA[NSSuperscriptAttributeName] intValue];
+    if (convertedSuperscriptA == [convertedAttributesB[NSSuperscriptAttributeName] intValue]) {
         if (convertedSuperscriptA > 0)
             changes.setVerticalAlign(VerticalAlignChange::Superscript);
         else if (convertedSuperscriptA < 0)
@@ -152,12 +152,12 @@ FontAttributeChanges computedFontAttributeChanges(NSFontManager *fontManager, id
             changes.setVerticalAlign(VerticalAlignChange::Baseline);
     }
 
-    int convertedStrikeThroughA = [[convertedAttributesA objectForKey:NSStrikethroughStyleAttributeName] intValue];
-    if (convertedStrikeThroughA == [[convertedAttributesB objectForKey:NSStrikethroughStyleAttributeName] intValue])
+    int convertedStrikeThroughA = [convertedAttributesA[NSStrikethroughStyleAttributeName] intValue];
+    if (convertedStrikeThroughA == [convertedAttributesB[NSStrikethroughStyleAttributeName] intValue])
         changes.setStrikeThrough(convertedStrikeThroughA != NSUnderlineStyleNone);
 
-    int convertedUnderlineA = [[convertedAttributesA objectForKey:NSUnderlineStyleAttributeName] intValue];
-    if (convertedUnderlineA == [[convertedAttributesB objectForKey:NSUnderlineStyleAttributeName] intValue])
+    int convertedUnderlineA = [convertedAttributesA[NSUnderlineStyleAttributeName] intValue];
+    if (convertedUnderlineA == [convertedAttributesB[NSUnderlineStyleAttributeName] intValue])
         changes.setUnderline(convertedUnderlineA != NSUnderlineStyleNone);
 
     return changes;

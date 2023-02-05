@@ -56,7 +56,7 @@ namespace WebCore {
 
 IntSize dragImageSize(RetainPtr<NSImage> image)
 {
-    return (IntSize)[image size];
+    return (IntSize)image.size;
 }
 
 void deleteDragImage(RetainPtr<NSImage>)
@@ -67,14 +67,14 @@ void deleteDragImage(RetainPtr<NSImage>)
 
 RetainPtr<NSImage> scaleDragImage(RetainPtr<NSImage> image, FloatSize scale)
 {
-    NSSize originalSize = [image size];
+    NSSize originalSize = image.size;
     NSSize newSize = NSMakeSize((originalSize.width * scale.width()), (originalSize.height * scale.height()));
     newSize.width = roundf(newSize.width);
     newSize.height = roundf(newSize.height);
     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
     [image setScalesWhenResized:YES];
     ALLOW_DEPRECATED_DECLARATIONS_END
-    [image setSize:newSize];
+    image.size = newSize;
     return image;
 }
     
@@ -83,10 +83,10 @@ RetainPtr<NSImage> dissolveDragImageToFraction(RetainPtr<NSImage> image, float d
     if (!image)
         return nil;
 
-    RetainPtr<NSImage> dissolvedImage = adoptNS([[NSImage alloc] initWithSize:[image size]]);
+    RetainPtr<NSImage> dissolvedImage = adoptNS([[NSImage alloc] initWithSize:image.size]);
     
     [dissolvedImage lockFocus];
-    [image drawAtPoint:NSZeroPoint fromRect:NSMakeRect(0, 0, [image size].width, [image size].height) operation:NSCompositingOperationCopy fraction:delta];
+    [image drawAtPoint:NSZeroPoint fromRect:NSMakeRect(0, 0, image.size.width, image.size.height) operation:NSCompositingOperationCopy fraction:delta];
     [dissolvedImage unlockFocus];
 
     return dissolvedImage;
@@ -119,7 +119,7 @@ RetainPtr<NSImage> createDragImageFromImage(Image* image, ImageOrientation orien
             transform = CGAffineTransformScale(transform, 1, -1);
 
             RetainPtr<NSAffineTransform> cocoaTransform = adoptNS([[NSAffineTransform alloc] init]);
-            [cocoaTransform setTransformStruct:*(NSAffineTransformStruct*)&transform];
+            cocoaTransform.transformStruct = *(NSAffineTransformStruct*)&transform;
             [cocoaTransform concat];
 
             FloatRect imageRect(FloatPoint(), imageSize);
@@ -133,7 +133,7 @@ RetainPtr<NSImage> createDragImageFromImage(Image* image, ImageOrientation orien
 
     FloatSize imageSize = image->size();
     auto dragImage = image->snapshotNSImage();
-    [dragImage setSize:(NSSize)imageSize];
+    dragImage.size = (NSSize)imageSize;
     return dragImage;
 }
     
@@ -193,7 +193,7 @@ LinkImageLayout::LinkImageLayout(URL& url, const String& titleString)
 {
     NSString *title = nsStringNilIfEmpty(titleString);
     NSURL *cocoaURL = url;
-    NSString *absoluteURLString = [cocoaURL absoluteString];
+    NSString *absoluteURLString = cocoaURL.absoluteString;
 
     NSString *domain = absoluteURLString;
 #if HAVE(URL_FORMATTING)
@@ -322,7 +322,7 @@ DragImageRef createDragImageForColor(const Color& color, const FloatRect&, float
     [dragImage lockFocus];
 
     NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(0, 0, ColorSwatchWidth, ColorSwatchWidth) xRadius:ColorSwatchCornerRadius yRadius:ColorSwatchCornerRadius];
-    [path setLineWidth:ColorSwatchStrokeSize];
+    path.lineWidth = ColorSwatchStrokeSize;
 
     [cocoaColor(color) setFill];
     [path fill];

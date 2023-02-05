@@ -56,7 +56,7 @@
     RetainPtr<CALayer> _rootLayer;
 }
 
-- (id)initWithCallback:(Function<void()>&&) callback;
+- (instancetype)initWithCallback:(Function<void()>&&) callback NS_DESIGNATED_INITIALIZER;
 - (void)invalidate;
 - (void)begin:(CALayer*) layer;
 - (void)stop;
@@ -64,7 +64,7 @@
 
 @implementation WebRootSampleBufferBoundsChangeListener
 
-- (id)initWithCallback:(Function<void()>&&) callback
+- (instancetype)initWithCallback:(Function<void()>&&) callback
 {
     if (!(self = [super init]))
         return nil;

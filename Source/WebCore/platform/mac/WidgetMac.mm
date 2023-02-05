@@ -45,7 +45,7 @@
 #import <wtf/RetainPtr.h>
 
 @interface NSWindow (WebWindowDetails)
-- (BOOL)_needsToResetDragMargins;
+@property (nonatomic, readonly) BOOL _needsToResetDragMargins;
 - (void)_setNeedsToResetDragMargins:(BOOL)needs;
 @end
 
@@ -64,8 +64,8 @@ static void safeRemoveFromSuperview(NSView *view)
 {
     // If the view is the first responder, then set the window's first responder to nil so
     // we don't leave the window pointing to a view that's no longer in it.
-    NSWindow *window = [view window];
-    NSResponder *firstResponder = [window firstResponder];
+    NSWindow *window = view.window;
+    NSResponder *firstResponder = window.firstResponder;
     if ([firstResponder isKindOfClass:[NSView class]] && [(NSView *)firstResponder isDescendantOf:view])
         [window makeFirstResponder:nil];
 
@@ -143,7 +143,7 @@ IntRect Widget::frameRect() const
         return m_frame;
 
     BEGIN_BLOCK_OBJC_EXCEPTIONS
-    return enclosingIntRect([getOuterView() frame]);
+    return enclosingIntRect(getOuterView().frame);
     END_BLOCK_OBJC_EXCEPTIONS
     
     return m_frame;
@@ -179,7 +179,7 @@ NSView *Widget::getOuterView() const
     // If this widget's view is a WebCoreFrameScrollView then we
     // resize its containing view, a WebFrameView.
     if ([view conformsToProtocol:@protocol(WebCoreFrameScrollView)]) {
-        view = [view superview];
+        view = view.superview;
         ASSERT(view);
     }
 
@@ -209,11 +209,11 @@ void Widget::paint(GraphicsContext& p, const IntRect& r, SecurityOriginPaintPoli
 
     NSGraphicsContext *currentContext = [NSGraphicsContext currentContext];
     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    if (currentContext == [[view window] graphicsContext] || ![currentContext isDrawingToScreen]) {
+    if (currentContext == view.window.graphicsContext || !currentContext.drawingToScreen) {
         ALLOW_DEPRECATED_DECLARATIONS_END
         // This is the common case of drawing into a window or an inclusive layer, or printing.
         BEGIN_BLOCK_OBJC_EXCEPTIONS
-        [view displayRectIgnoringOpacity:[view convertRect:r fromView:[view superview]]];
+        [view displayRectIgnoringOpacity:[view convertRect:r fromView:view.superview]];
         END_BLOCK_OBJC_EXCEPTIONS
         return;
     }
@@ -231,7 +231,7 @@ void Widget::paint(GraphicsContext& p, const IntRect& r, SecurityOriginPaintPoli
         NSScrollView *scrollView = static_cast<NSScrollView *>(innerView);
         // -copiesOnScroll will return NO whenever the content view is not fully opaque.
         ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-        if ([scrollView drawsBackground] && ![[scrollView contentView] copiesOnScroll])
+        if (scrollView.drawsBackground && !scrollView.contentView.copiesOnScroll)
             [scrollView setDrawsBackground:NO];
         else
             scrollView = 0;
@@ -242,8 +242,8 @@ void Widget::paint(GraphicsContext& p, const IntRect& r, SecurityOriginPaintPoli
     ASSERT(cgContext == [currentContext CGContext]);
     CGContextSaveGState(cgContext);
 
-    NSRect viewFrame = [view frame];
-    NSRect viewBounds = [view bounds];
+    NSRect viewFrame = view.frame;
+    NSRect viewBounds = view.bounds;
 
     // Set up the translation and (flipped) orientation of the graphics context. In normal drawing, AppKit does it as it descends down
     // the view hierarchy. Since Widget::paint is always called with a context that has a flipped coordinate system, and
@@ -254,7 +254,7 @@ void Widget::paint(GraphicsContext& p, const IntRect& r, SecurityOriginPaintPoli
     BEGIN_BLOCK_OBJC_EXCEPTIONS
     {
         NSGraphicsContext *nsContext = [NSGraphicsContext graphicsContextWithCGContext:cgContext flipped:NO];
-        [view displayRectIgnoringOpacity:[view convertRect:r fromView:[view superview]] inContext:nsContext];
+        [view displayRectIgnoringOpacity:[view convertRect:r fromView:view.superview] inContext:nsContext];
     }
     END_BLOCK_OBJC_EXCEPTIONS
 

@@ -144,7 +144,7 @@ static FragmentAndResources createFragment(Frame& frame, NSAttributedString *str
 #endif
 
     NSArray *subresources = nil;
-    NSString *fragmentString = [string _htmlDocumentFragmentString:NSMakeRange(0, [string length]) documentAttributes:attributesForAttributedStringConversion() subresources:&subresources];
+    NSString *fragmentString = [string _htmlDocumentFragmentString:NSMakeRange(0, string.length) documentAttributes:attributesForAttributedStringConversion() subresources:&subresources];
     auto fragment = DocumentFragment::create(document);
     auto dummyBodyToForceInBodyInsertionMode = HTMLBodyElement::create(document);
     fragment->parseHTML(fragmentString, dummyBodyToForceInBodyInsertionMode.ptr(), { });
@@ -669,7 +669,7 @@ bool WebContentReader::readPlainText(const String& text)
     if (!allowPlainText)
         return false;
 
-    addFragment(createFragmentFromText(context, [text precomposedStringWithCanonicalMapping]));
+    addFragment(createFragmentFromText(context, text.precomposedStringWithCanonicalMapping));
 
     madeFragmentFromPlainText = true;
     return true;
@@ -824,8 +824,8 @@ bool WebContentReader::readURL(const URL& url, const String& title)
     auto anchor = HTMLAnchorElement::create(document.get());
     anchor->setAttributeWithoutSynchronization(HTMLNames::hrefAttr, AtomString { url.string() });
 
-    NSString *linkText = title.isEmpty() ? [(NSURL *)url absoluteString] : (NSString *)title;
-    anchor->appendChild(document->createTextNode([linkText precomposedStringWithCanonicalMapping]));
+    NSString *linkText = title.isEmpty() ? ((NSURL *)url).absoluteString : (NSString *)title;
+    anchor->appendChild(document->createTextNode(linkText.precomposedStringWithCanonicalMapping));
 
     auto newFragment = document->createDocumentFragment();
     if (fragment)

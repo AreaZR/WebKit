@@ -63,7 +63,7 @@ InbandTextTrackPrivate::Kind InbandTextTrackPrivateAVFObjC::kind() const
     if (!m_mediaSelectionOption)
         return Kind::None;
 
-    NSString *mediaType = [m_mediaSelectionOption mediaType];
+    NSString *mediaType = m_mediaSelectionOption.mediaType;
     
     if ([mediaType isEqualToString:AVMediaTypeClosedCaption])
         return Kind::Captions;
@@ -90,7 +90,7 @@ bool InbandTextTrackPrivateAVFObjC::isClosedCaptions() const
     if (!m_mediaSelectionOption)
         return false;
     
-    return [[m_mediaSelectionOption mediaType] isEqualToString:AVMediaTypeClosedCaption];
+    return [m_mediaSelectionOption.mediaType isEqualToString:AVMediaTypeClosedCaption];
 }
 
 bool InbandTextTrackPrivateAVFObjC::isSDH() const
@@ -98,7 +98,7 @@ bool InbandTextTrackPrivateAVFObjC::isSDH() const
     if (!m_mediaSelectionOption)
         return false;
     
-    if (![[m_mediaSelectionOption mediaType] isEqualToString:AVMediaTypeSubtitle])
+    if (![m_mediaSelectionOption.mediaType isEqualToString:AVMediaTypeSubtitle])
         return false;
 
     if ([m_mediaSelectionOption hasMediaCharacteristic:AVMediaCharacteristicTranscribesSpokenDialogForAccessibility] && [m_mediaSelectionOption hasMediaCharacteristic:AVMediaCharacteristicDescribesMusicAndSoundForAccessibility])
@@ -138,15 +138,15 @@ AtomString InbandTextTrackPrivateAVFObjC::label() const
 
     NSString *title = 0;
 
-    NSArray *titles = [PAL::getAVMetadataItemClass() metadataItemsFromArray:[m_mediaSelectionOption commonMetadata] withKey:AVMetadataCommonKeyTitle keySpace:AVMetadataKeySpaceCommon];
-    if ([titles count]) {
+    NSArray *titles = [PAL::getAVMetadataItemClass() metadataItemsFromArray:m_mediaSelectionOption.commonMetadata withKey:AVMetadataCommonKeyTitle keySpace:AVMetadataKeySpaceCommon];
+    if (titles.count) {
         // If possible, return a title in one of the user's preferred languages.
         NSArray *titlesForPreferredLanguages = [PAL::getAVMetadataItemClass() metadataItemsFromArray:titles filteredAndSortedAccordingToPreferredLanguages:[NSLocale preferredLanguages]];
-        if ([titlesForPreferredLanguages count])
-            title = [[titlesForPreferredLanguages objectAtIndex:0] stringValue];
+        if (titlesForPreferredLanguages.count)
+            title = [titlesForPreferredLanguages[0] stringValue];
 
         if (!title)
-            title = [[titles objectAtIndex:0] stringValue];
+            title = [titles[0] stringValue];
     }
 
     return title ? AtomString(title) : emptyAtom();
@@ -157,12 +157,12 @@ AtomString InbandTextTrackPrivateAVFObjC::language() const
     if (!m_mediaSelectionOption)
         return emptyAtom();
 
-    return [[m_mediaSelectionOption locale] localeIdentifier];
+    return m_mediaSelectionOption.locale.localeIdentifier;
 }
 
 bool InbandTextTrackPrivateAVFObjC::isDefault() const
 {
-    return [m_mediaSelectionGroup defaultOption] == m_mediaSelectionOption.get();
+    return m_mediaSelectionGroup.defaultOption == m_mediaSelectionOption.get();
 }
 
 } // namespace WebCore

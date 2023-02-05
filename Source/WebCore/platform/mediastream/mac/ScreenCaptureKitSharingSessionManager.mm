@@ -43,7 +43,7 @@ using namespace WebCore;
     Vector<RetainPtr<SCContentSharingSession>> _sessions;
 }
 
-- (instancetype)initWithCallback:(ScreenCaptureKitSharingSessionManager*)callback;
+- (instancetype)initWithCallback:(ScreenCaptureKitSharingSessionManager*)callback NS_DESIGNATED_INITIALIZER;
 - (void)disconnect;
 - (void)startObservingSession:(SCContentSharingSession *)session;
 - (void)stopObservingSession:(SCContentSharingSession *)session;
@@ -75,7 +75,7 @@ using namespace WebCore;
 {
     ASSERT(!_sessions.contains(session));
     _sessions.append(RetainPtr { session });
-    [session setDelegate:self];
+    session.delegate = self;
 }
 
 - (void)stopObservingSession:(SCContentSharingSession *)session
@@ -207,7 +207,7 @@ void ScreenCaptureKitSharingSessionManager::sessionDidChangeContent(RetainPtr<SC
 
     m_promptWatchdogTimer = nullptr;
 
-    if ([session content].type == SCContentFilterTypeNothing) {
+    if (session.content.type == SCContentFilterTypeNothing) {
         sessionDidEnd(session);
         return;
     }
@@ -225,7 +225,7 @@ void ScreenCaptureKitSharingSessionManager::sessionDidChangeContent(RetainPtr<SC
         return;
 
     std::optional<CaptureDevice> device;
-    SCContentFilter* content = [session content];
+    SCContentFilter* content = session.content;
     switch (content.type) {
     case SCContentFilterTypeDesktopIndependentWindow: {
         auto *window = content.desktopIndependentWindowInfo.window;
@@ -302,7 +302,7 @@ RetainPtr<SCContentSharingSession> ScreenCaptureKitSharingSessionManager::takeSh
     RELEASE_LOG(WebRTC, "ScreenCaptureKitSharingSessionManager::takeSharingSessionForFilter");
 
     auto index = m_pendingCaptureSessions.findIf([filter](auto pendingSession) {
-        return [filter isEqual:[pendingSession content]];
+        return [filter isEqual:pendingSession.content];
     });
     ASSERT(index != notFound);
     if (index == notFound) {
