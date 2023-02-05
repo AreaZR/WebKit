@@ -220,8 +220,8 @@
 			isa = PBXGroup;
 			children = (
 				1C2D0E02296A455C00BE33A3 /* libdav1d.a */,
-				1C2D0E06296A455C00BE33A3 /* libdav1d_bitdepth_16.a */,
 				1C2D0E04296A455C00BE33A3 /* libdav1d_bitdepth_8.a */,
+				1C2D0E06296A455C00BE33A3 /* libdav1d_bitdepth_16.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -668,7 +668,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = NO;
-				LastUpgradeCheck = 1400;
+				LastUpgradeCheck = 1420;
 				TargetAttributes = {
 					1C4FAE8E28FC83DC00FFE212 = {
 						CreatedOnToolsVersion = 14.0;
@@ -764,6 +764,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C4FAF4428FC855100FFE212 /* DebugRelease.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				ENABLE_TESTABILITY = YES;
 			};
 			name = Debug;
 		};
@@ -771,6 +773,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C4FAF4428FC855100FFE212 /* DebugRelease.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 			};
 			name = Release;
 		};
@@ -792,6 +795,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C4FAF4228FC854300FFE212 /* Base.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 			};
 			name = Production;
 		};

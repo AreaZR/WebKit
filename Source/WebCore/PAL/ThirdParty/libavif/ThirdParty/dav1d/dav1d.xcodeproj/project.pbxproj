@@ -1056,7 +1056,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = NO;
-				LastUpgradeCheck = 1400;
+				LastUpgradeCheck = 1420;
 				TargetAttributes = {
 					1C4FACD428FC70C000FFE212 = {
 						CreatedOnToolsVersion = 14.0;
@@ -1180,6 +1180,8 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C4FACE328FC70EC00FFE212 /* DebugRelease.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				ENABLE_TESTABILITY = YES;
 			};
 			name = Debug;
 		};
@@ -1187,6 +1189,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C4FACE328FC70EC00FFE212 /* DebugRelease.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 			};
 			name = Release;
 		};
@@ -1208,6 +1211,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C4FACE428FC70EC00FFE212 /* Base.xcconfig */;
 			buildSettings = {
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 			};
 			name = Production;
 		};
