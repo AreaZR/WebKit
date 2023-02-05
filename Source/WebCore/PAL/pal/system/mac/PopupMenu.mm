@@ -53,20 +53,26 @@ void popUpMenu(NSMenu *menu, NSPoint location, float width, NSView *view, int se
     }
 
     // These numbers were extracted from visual inspection as the menu animates shut.
-    NSSize labelOffset = NSMakeSize(11, 1);
+    NSSize labelOffset;
     if (menu.userInterfaceLayoutDirection == NSUserInterfaceLayoutDirectionRightToLeft)
         labelOffset = NSMakeSize(24, 1);
+    else
+       labelOffset = NSMakeSize(11, 1);
 
-    auto options = adoptNS([@{
+    if (usesCustomAppearance) {
+        [[menu _menuImpl] popUpMenu:menu atLocation:location width:width forView:view withSelectedItem:selectedItem withFont:font withFlags:0 withOptions: @{
+        NSPopUpMenuPopupButtonBounds : [NSValue valueWithRect:adjustedPopupBounds],
+        NSPopUpMenuPopupButtonLabelOffset : [NSValue valueWithSize:labelOffset],
+        NSPopUpMenuPopupButtonSize : @(controlSize),
+        NSPopUpMenuPopupButtonWidget : @""
+    }];
+     }  else {
+    [[menu _menuImpl] popUpMenu:menu atLocation:location width:width forView:view withSelectedItem:selectedItem withFont:font withFlags:NSPopUpMenuIsPopupButton withOptions:@{
         NSPopUpMenuPopupButtonBounds : [NSValue valueWithRect:adjustedPopupBounds],
         NSPopUpMenuPopupButtonLabelOffset : [NSValue valueWithSize:labelOffset],
         NSPopUpMenuPopupButtonSize : @(controlSize)
-    } mutableCopy]);
-
-    if (usesCustomAppearance)
-        options[NSPopUpMenuPopupButtonWidget] = @"";
-
-    [[menu _menuImpl] popUpMenu:menu atLocation:location width:width forView:view withSelectedItem:selectedItem withFont:font withFlags:(usesCustomAppearance ? 0 : NSPopUpMenuIsPopupButton) withOptions:options.get()];
+    }];
+    }
 }
 
 } // namespace PAL

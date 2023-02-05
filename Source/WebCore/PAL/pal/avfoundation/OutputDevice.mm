@@ -47,14 +47,14 @@ OutputDevice::OutputDevice(RetainPtr<AVOutputDevice>&& device)
 String OutputDevice::name() const
 {
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    return m_device.name;
+    return m_device.get().name;
 ALLOW_DEPRECATED_DECLARATIONS_END
 }
 
 uint8_t OutputDevice::deviceFeatures() const
 {
-    auto avDeviceFeatures = m_device.deviceFeatures;
-    uint8_t deviceFeatures { 0 };
+    auto avDeviceFeatures = m_device.get().deviceFeatures;
+    uint8_t deviceFeatures = 0;
     if (avDeviceFeatures & AVOutputDeviceFeatureAudio)
         deviceFeatures |= (uint8_t)DeviceFeatures::Audio;
     if (avDeviceFeatures & AVOutputDeviceFeatureScreen)
@@ -68,7 +68,7 @@ bool OutputDevice::supportsSpatialAudio() const
 {
 #if HAVE(AVOUTPUTDEVICE_SPATIALAUDIO)
     if (![m_device respondsToSelector:@selector(supportsHeadTrackedSpatialAudio)]
-        || !m_device.supportsHeadTrackedSpatialAudio)
+        || !m_device.get().supportsHeadTrackedSpatialAudio)
         return false;
 
     return ![m_device respondsToSelector:@selector(allowsHeadTrackedSpatialAudio)]

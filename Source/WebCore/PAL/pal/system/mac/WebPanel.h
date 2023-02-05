@@ -29,7 +29,7 @@
 
 PAL_EXPORT @interface WebPanel : NSPanel
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 
