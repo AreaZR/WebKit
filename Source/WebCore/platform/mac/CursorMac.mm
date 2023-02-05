@@ -223,8 +223,8 @@ static RetainPtr<NSCursor> createCustomCursor(Image* image, const IntPoint& hotS
     }
 
     // Scale the image and its representation to match retina resolution.
-    nsImage.size = expandedSize;
-    nsImage.representations[0].size = expandedSize;
+    nsImage.get().size = expandedSize;
+    nsImage.get().representations[0].size = expandedSize;
 #endif
 
     return adoptNS([[NSCursor alloc] initWithImage:nsImage.get() hotSpot:hotSpot]);

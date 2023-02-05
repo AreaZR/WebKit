@@ -50,7 +50,7 @@ static NSString *externalOutputDevicePickedKeyName = @"externalOutputDevicePicke
     WeakPtr<AVOutputDeviceMenuControllerTargetPicker> m_callback;
 }
 
-- (instancetype)initWithCallback:(WeakPtr<AVOutputDeviceMenuControllerTargetPicker>&&)callback NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithCallback:(WeakPtr<AVOutputDeviceMenuControllerTargetPicker>&&)callback NS_DESIGNATED_INITIALIZER NS_UNAVAILABLE;
 - (void)clearCallback;
 - (void)observeValueForKeyPath:(id)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 @end

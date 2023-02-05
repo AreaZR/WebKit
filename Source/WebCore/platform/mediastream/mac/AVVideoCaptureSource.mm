@@ -144,7 +144,7 @@ AVVideoCaptureSource::~AVVideoCaptureSource()
     if (!m_session)
         return;
 
-    if (m_session.running)
+    if (m_session.get().running)
         [m_session stopRunning];
 
     clearSession();
@@ -192,7 +192,7 @@ void AVVideoCaptureSource::startProducingData()
             return;
     }
 
-    bool isRunning = !!m_session.running;
+    bool isRunning = !!m_session.get().running;
     ALWAYS_LOG_IF(loggerPtr(), LOGIDENTIFIER, isRunning);
     if (isRunning)
         return;
@@ -380,7 +380,7 @@ void AVVideoCaptureSource::setSessionSizeAndFrameRate()
                 (__bridge NSString *)kCVPixelBufferHeightKey: @(avPreset->size.height()),
                 (__bridge NSString *)kCVPixelBufferIOSurfacePropertiesKey : @{ }
             };
-            m_videoOutput.videoSettings = settingsDictionary;
+            m_videoOutput.get().videoSettings = settingsDictionary;
 #endif
 
             if (frameRateRange) {
@@ -523,7 +523,7 @@ bool AVVideoCaptureSource::setupCaptureSession()
     m_videoOutput = adoptNS([PAL::allocAVCaptureVideoDataOutputInstance() init]);
     auto settingsDictionary = adoptNS([[NSMutableDictionary alloc] initWithObjectsAndKeys: @(avVideoCapturePixelBufferFormat()), kCVPixelBufferPixelFormatTypeKey, nil]);
 
-    m_videoOutput.videoSettings = settingsDictionary.get();
+    m_videoOutput.get().videoSettings = settingsDictionary.get();
     [m_videoOutput setAlwaysDiscardsLateVideoFrames:YES];
     [m_videoOutput setSampleBufferDelegate:m_objcObserver.get() queue:globaVideoCaptureSerialQueue()];
 
@@ -627,7 +627,7 @@ void AVVideoCaptureSource::captureDeviceSuspendedDidChange()
 {
 #if !PLATFORM(IOS_FAMILY)
     scheduleDeferredTask([this, logIdentifier = LOGIDENTIFIER] {
-        m_interrupted = m_device.suspended;
+        m_interrupted = m_device.get().suspended;
         ALWAYS_LOG_IF(loggerPtr(), logIdentifier, !!m_interrupted);
 
         updateVerifyCapturingTimer();
@@ -702,7 +702,7 @@ void AVVideoCaptureSource::captureSessionEndInterruption(RetainPtr<NSNotificatio
 void AVVideoCaptureSource::deviceDisconnected(RetainPtr<NSNotification> notification)
 {
     ALWAYS_LOG_IF(loggerPtr(), LOGIDENTIFIER);
-    if (this->device() == notification.object)
+    if (this->device() == notification.get().object)
         captureFailed();
 }
 
@@ -772,7 +772,7 @@ void AVVideoCaptureSource::deviceDisconnected(RetainPtr<NSNotification> notifica
     if (m_callback->loggerPtr()) {
         auto identifier = Logger::LogSiteIdentifier("AVVideoCaptureSource", "observeValueForKeyPath", m_callback->logIdentifier());
         RetainPtr<NSString> valueString = adoptNS([[NSString alloc] initWithFormat:@"%@", newValue]);
-        m_callback->logger().logAlways(m_callback->logChannel(), identifier, willChange ? "will" : "did", " change '", [keyPath UTF8String], "' to ", valueString.UTF8String);
+        m_callback->logger().logAlways(m_callback->logChannel(), identifier, willChange ? "will" : "did", " change '", [keyPath UTF8String], "' to ", valueString.get().UTF8String);
     }
 #endif
 
