@@ -477,7 +477,7 @@ void AXObjectCache::postTextStateChangePlatformNotification(AXCoreObject* object
     if (!object)
         return;
 
-    auto userInfo = adoptNS([[NSMutableDictionary alloc] initWithCapacity:5]);
+    NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] initWithCapacity:5];
     if (m_isSynchronizingSelection)
         userInfo[NSAccessibilityTextStateSyncKey] = @YES;
     if (intent.type != AXTextStateChangeTypeUnknown) {
@@ -520,10 +520,13 @@ void AXObjectCache::postTextStateChangePlatformNotification(AXCoreObject* object
     }
 
     if (auto root = rootWebArea()) {
-        AXPostNotificationWithUserInfo(rootWebArea()->wrapper(), NSAccessibilitySelectedTextChangedNotification, userInfo.get());
+        AXPostNotificationWithUserInfo(rootWebArea()->wrapper(), NSAccessibilitySelectedTextChangedNotification, userInfo);
         if (root->wrapper() != object->wrapper())
-            AXPostNotificationWithUserInfo(object->wrapper(), NSAccessibilitySelectedTextChangedNotification, userInfo.get());
+            AXPostNotificationWithUserInfo(object->wrapper(), NSAccessibilitySelectedTextChangedNotification, userInfo);
     }
+#if !__has_feature(objc_arc)
+    [userInfo release];
+#endif
 }
 
 static void addTextMarkerFor(NSMutableDictionary* change, AXCoreObject& object, const VisiblePosition& position)
@@ -544,18 +547,22 @@ template <typename TextMarkerTargetType>
 static NSDictionary *textReplacementChangeDictionary(AXCoreObject& object, AXTextEditType type, const String& string, TextMarkerTargetType& markerTarget)
 {
     NSString *text = (NSString *)string;
-    NSUInteger length = text.length.length.length;
+    NSUInteger length = text.length;
     if (!length)
         return nil;
-    auto change = adoptNS([[NSMutableDictionary alloc] initWithCapacity:4]);
-    change[] = [] = [NSAccessibilityTextEditType] = @(platformEditTypeForWebCoreEditType(type));
+    NSMutableDictionary *change = [[NSMutableDictionary alloc] initWithCapacity:4];
+    change[NSAccessibilityTextEditType] = @(platformEditTypeForWebCoreEditType(type));
     if (length > AXValueChangeTruncationLength) {
-        change[] = [] = [NSAccessibilityTextChangeValueLength] = @(length);
+        change[NSAccessibilityTextChangeValueLength] = @(length);
         text = [text substringToIndex:AXValueChangeTruncationLength];
     }
-    change[] = [] = [NSAccessibilityTextChangeValue] = text;
+    change[NSAccessibilityTextChangeValue] = text;
     addTextMarkerFor(change.get(), object, markerTarget);
-    return change.autorelease();
+#if !__has_feature(objc_arc)
+    return [change autorelease];
+#else
+    return change;
+#endif
 }
 
 void AXObjectCache::postTextStateChangePlatformNotification(AccessibilityObject* object, AXTextEditType type, const String& text, const VisiblePosition& position)
@@ -568,7 +575,7 @@ void AXObjectCache::postTextStateChangePlatformNotification(AccessibilityObject*
 
 static void postUserInfoForChanges(AXCoreObject& rootWebArea, AXCoreObject& object, NSMutableArray* changes, std::optional<PageIdentifier> pageID)
 {
-    auto userInfo = adoptNS([[NSMutableDictionary alloc] initWithCapacity:4]);
+    NSMutableDictionary * userInfo = [[NSMutableDictionary alloc] initWithCapacity:4];
     userInfo[NSAccessibilityTextStateChangeTypeKey] = @(platformChangeTypeForWebCoreChangeType(AXTextStateChangeTypeEdit));
     if (changes.count)
         userInfo[NSAccessibilityTextChangeValues] = changes;
@@ -580,9 +587,12 @@ static void postUserInfoForChanges(AXCoreObject& rootWebArea, AXCoreObject& obje
 #endif
     }
 
-    AXPostNotificationWithUserInfo(rootWebArea.wrapper(), NSAccessibilityValueChangedNotification, userInfo.get());
+    AXPostNotificationWithUserInfo(rootWebArea.wrapper(), NSAccessibilityValueChangedNotification, userInfo);
     if (rootWebArea.wrapper() != object.wrapper())
-        AXPostNotificationWithUserInfo(object.wrapper(), NSAccessibilityValueChangedNotification, userInfo.get());
+        AXPostNotificationWithUserInfo(object.wrapper(), NSAccessibilityValueChangedNotification, userInfo);
+#if !__has_feature(objc_arc)
+    [userInfo release];
+#else
 }
 
 void AXObjectCache::postTextReplacementPlatformNotification(AXCoreObject* object, AXTextEditType deletionType, const String& deletedText, AXTextEditType insertionType, const String& insertedText, const VisiblePosition& position)

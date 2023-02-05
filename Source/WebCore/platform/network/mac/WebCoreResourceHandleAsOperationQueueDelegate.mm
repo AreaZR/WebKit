@@ -143,7 +143,7 @@ static bool scheduledWithCustomRunLoopMode(const std::optional<SchedulePairHashS
 
         ResourceResponse response(redirectResponse.get());
         ResourceRequest redirectRequest = newRequest.get();
-        if (newRequest.HTTPBodyStream) {
+        if (newRequest.get().HTTPBodyStream) {
             ASSERT(m_handle->firstRequest().httpBody());
             redirectRequest.setHTTPBody(m_handle->firstRequest().httpBody());
         }
@@ -190,7 +190,7 @@ ALLOW_DEPRECATED_IMPLEMENTATIONS_END
 
     auto work = [self, protectedSelf = retainPtr(self), challenge = retainPtr(challenge)] () mutable {
         if (!m_handle) {
-            [challenge.sender cancelAuthenticationChallenge:challenge.get()];
+            [challenge.get().sender cancelAuthenticationChallenge:challenge.get()];
             return;
         }
         m_handle->didReceiveAuthenticationChallenge(core(challenge.get()));
@@ -335,13 +335,13 @@ ALLOW_DEPRECATED_IMPLEMENTATIONS_END
             return;
 
         if (auto metrics = m_handle->networkLoadMetrics()) {
-            if (double responseEndTime = [timingData[@"_kCFNTimingDataResponseEnd"] doubleValue])
+            if (double responseEndTime = [timingData.get()[@"_kCFNTimingDataResponseEnd"] doubleValue])
                 metrics->responseEnd = WallTime::fromRawSeconds(adoptNS([[NSDate alloc] initWithTimeIntervalSinceReferenceDate:responseEndTime]).get().timeIntervalSince1970).approximateMonotonicTime();
             else
                 metrics->responseEnd = metrics->responseStart;
-            metrics->protocol = (NSString *)timingData[@"_kCFNTimingDataNetworkProtocolName"];
-            metrics->responseBodyBytesReceived = [timingData[@"_kCFNTimingDataResponseBodyBytesReceived"] unsignedLongLongValue];
-            metrics->responseBodyDecodedSize = [timingData[@"_kCFNTimingDataResponseBodyBytesDecoded"] unsignedLongLongValue];
+            metrics->protocol = (NSString *)timingData.get()[@"_kCFNTimingDataNetworkProtocolName"];
+            metrics->responseBodyBytesReceived = [timingData.get()[@"_kCFNTimingDataResponseBodyBytesReceived"] unsignedLongLongValue];
+            metrics->responseBodyDecodedSize = [timingData.get()[@"_kCFNTimingDataResponseBodyBytesDecoded"] unsignedLongLongValue];
             metrics->markComplete();
             m_handle->client()->didFinishLoading(m_handle, *metrics);
         } else {

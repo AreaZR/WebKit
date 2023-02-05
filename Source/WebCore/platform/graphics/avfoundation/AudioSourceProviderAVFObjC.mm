@@ -184,7 +184,7 @@ void AudioSourceProviderAVFObjC::destroyMixIfNeeded()
         Locker locker { m_tapStorage->lock };
         if (m_avPlayerItem)
             [m_avPlayerItem setAudioMix:nil];
-        m_avAudioMix.inputParameters = @[ ];
+        m_avAudioMix.get().inputParameters = @[ ];
         m_avAudioMix.clear();
         m_tap.clear();
         m_tapStorage->_this = nullptr;
@@ -229,12 +229,12 @@ void AudioSourceProviderAVFObjC::createMixIfNeeded()
     m_avAudioMix = adoptNS([PAL::allocAVMutableAudioMixInstance() init]);
 
     RetainPtr<AVMutableAudioMixInputParameters> parameters = adoptNS([PAL::allocAVMutableAudioMixInputParametersInstance() init]);
-    parameters.audioTapProcessor = m_tap.get();
+    parameters.get().audioTapProcessor = m_tap.get();
 
     CMPersistentTrackID trackID = m_avAssetTrack.get().trackID;
-    parameters.trackID = trackID;
+    parameters.get().trackID = trackID;
     
-    m_avAudioMix.inputParameters = @[parameters.get()];
+    m_avAudioMix.get().inputParameters = @[parameters.get()];
     m_avPlayerItem.audioMix = m_avAudioMix.get();
     m_weakFactory.initializeIfNeeded(*this);
 }
@@ -359,7 +359,7 @@ void AudioSourceProviderAVFObjC::process(MTAudioProcessingTapRef tap, CMItemCoun
     if (rangeStart.isInvalid())
         return;
 
-    MediaTime currentTime = PAL::toMediaTime(PAL::CMTimebaseGetTime(m_avPlayerItem.timebase));
+    MediaTime currentTime = PAL::toMediaTime(PAL::CMTimebaseGetTime(m_avPlayerItem.get().timebase));
     if (currentTime.isInvalid())
         return;
 

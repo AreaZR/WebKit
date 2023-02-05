@@ -99,7 +99,7 @@ void AVTrackPrivateAVFObjCImpl::initializeAssetTrack()
 bool AVTrackPrivateAVFObjCImpl::enabled() const
 {
     if (m_playerItemTrack)
-        return m_playerItemTrack.enabled;
+        return m_playerItemTrack.get().enabled;
     if (m_mediaSelectionOption)
         return m_mediaSelectionOption->selected();
     ASSERT_NOT_REACHED();
@@ -109,7 +109,7 @@ bool AVTrackPrivateAVFObjCImpl::enabled() const
 void AVTrackPrivateAVFObjCImpl::setEnabled(bool enabled)
 {
     if (m_playerItemTrack)
-        m_playerItemTrack.enabled = enabled;
+        m_playerItemTrack.get().enabled = enabled;
     else if (m_mediaSelectionOption)
         m_mediaSelectionOption->setSelected(enabled);
     else
@@ -177,9 +177,9 @@ VideoTrackPrivate::Kind AVTrackPrivateAVFObjCImpl::videoKind() const
 int AVTrackPrivateAVFObjCImpl::index() const
 {
     if (m_assetTrack)
-        return [m_assetTrack.asset.tracks indexOfObject:m_assetTrack.get()];
+        return [m_assetTrack.get().asset.tracks indexOfObject:m_assetTrack.get()];
     if (m_mediaSelectionOption)
-        return m_playerItem.asset.tracks.count + m_mediaSelectionOption->index();
+        return m_playerItem.get().asset.tracks.count + m_mediaSelectionOption->index();
     ASSERT_NOT_REACHED();
     return 0;
 }
@@ -187,7 +187,7 @@ int AVTrackPrivateAVFObjCImpl::index() const
 AtomString AVTrackPrivateAVFObjCImpl::id() const
 {
     if (m_assetTrack)
-        return AtomString::number(m_assetTrack.trackID);
+        return AtomString::number(m_assetTrack.get().trackID);
     if (m_mediaSelectionOption)
         return [[m_mediaSelectionOption->avMediaSelectionOption() optionID] stringValue];
     ASSERT_NOT_REACHED();
@@ -198,7 +198,7 @@ AtomString AVTrackPrivateAVFObjCImpl::label() const
 {
     NSArray *commonMetadata = nil;
     if (m_assetTrack)
-        commonMetadata = m_assetTrack.commonMetadata;
+        commonMetadata = m_assetTrack.get().commonMetadata;
     else if (m_mediaSelectionOption)
         commonMetadata = m_mediaSelectionOption->avMediaSelectionOption().commonMetadata;
     else
@@ -285,7 +285,7 @@ PlatformAudioTrackConfiguration AVTrackPrivateAVFObjCImpl::audioTrackConfigurati
 int AVTrackPrivateAVFObjCImpl::trackID() const
 {
     if (m_assetTrack)
-        return m_assetTrack.trackID;
+        return m_assetTrack.get().trackID;
     if (m_mediaSelectionOption)
         return [[m_mediaSelectionOption->avMediaSelectionOption() optionID] intValue];
     ASSERT_NOT_REACHED();
