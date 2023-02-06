@@ -81,7 +81,8 @@ static NSDate * __nullable networkLoadMetricsDate(MonotonicTime time)
     WebCore::NetworkLoadMetrics _metrics;
 }
 
-- (instancetype)_initWithMetrics:(WebCore::NetworkLoadMetrics&&)metrics
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)_initWithMetrics:(WebCore::NetworkLoadMetrics&&)metrics NS_DESIGNATED_INITIALIZER
 {
     ASSERT(isMainThread());
     if (!(self = [super init]))
@@ -231,7 +232,8 @@ static NSDate * __nullable networkLoadMetricsDate(MonotonicTime time)
     RetainPtr<WebCoreNSURLSessionTaskTransactionMetrics> _transactionMetrics;
 }
 
-- (instancetype)_initWithMetrics:(WebCore::NetworkLoadMetrics&&)metrics
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)_initWithMetrics:(WebCore::NetworkLoadMetrics&&)metrics NS_DESIGNATED_INITIALIZER
 {
     ASSERT(isMainThread());
 
@@ -280,7 +282,8 @@ NS_ASSUME_NONNULL_END
 #pragma mark - WebCoreNSURLSession
 
 @implementation WebCoreNSURLSession
-- (instancetype)initWithResourceLoader:(PlatformMediaResourceLoader&)loader delegate:(id<NSURLSessionTaskDelegate>)inDelegate delegateQueue:(NSOperationQueue*)inQueue
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithResourceLoader:(PlatformMediaResourceLoader&)loader delegate:(id<NSURLSessionTaskDelegate>)inDelegate delegateQueue:(NSOperationQueue*)inQueue NS_DESIGNATED_INITIALIZER
 {
     self = [super init];
     if (!self)
@@ -712,7 +715,8 @@ void WebCoreNSURLSessionDataTaskClient::loadFinished(PlatformMediaResource& reso
 #pragma mark - WebCoreNSURLSessionDataTask
 
 @implementation WebCoreNSURLSessionDataTask
-- (instancetype)initWithSession:(WebCoreNSURLSession *)session identifier:(NSUInteger)identifier request:(NSURLRequest *)request
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithSession:(WebCoreNSURLSession *)session identifier:(NSUInteger)identifier request:(NSURLRequest *)request NS_DESIGNATED_INITIALIZER
 {
     self.taskIdentifier = identifier;
     self.session = session;
@@ -753,7 +757,7 @@ void WebCoreNSURLSessionDataTaskClient::loadFinished(PlatformMediaResource& reso
     if ([retainedSession rangeResponseGenerator].willHandleRequest(self, self.originalRequest))
         return;
 
-    _resource = retainedSession.loader.requestResource(self.originalRequest, PlatformMediaResourceLoader::LoadOption::DisallowCaching);
+    _resource = retainedSession.get().loader.requestResource(self.originalRequest, PlatformMediaResourceLoader::LoadOption::DisallowCaching);
     if (_resource) {
         _resource->setClient(adoptRef(*new WebCoreNSURLSessionDataTaskClient(self)));
         return;
@@ -944,7 +948,7 @@ void WebCoreNSURLSessionDataTaskClient::loadFinished(PlatformMediaResource& reso
     ASSERT_UNUSED(resource, !resource || resource == _resource);
     RetainPtr<WebCoreNSURLSession> strongSession { self.session };
     [strongSession addDelegateOperation:[strongSelf = RetainPtr { self }, data = WTFMove(data)] {
-        strongSelf.get().countOfBytesReceived += data.length;
+        strongSelf.get().countOfBytesReceived += data.getlength;
         id<NSURLSessionDataDelegate> dataDelegate = (id<NSURLSessionDataDelegate>)strongSelf.get().session.delegate;
         if ([dataDelegate respondsToSelector:@selector(URLSession:dataTask:didReceiveData:)])
             [dataDelegate URLSession:(NSURLSession *)strongSelf.get().session dataTask:(NSURLSessionDataTask *)strongSelf.get() didReceiveData:data.get()];

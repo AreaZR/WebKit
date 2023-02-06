@@ -633,12 +633,12 @@ void MediaPlayerPrivateAVFoundationObjC::createAVPlayerLayer()
     ALWAYS_LOG(LOGIDENTIFIER);
 
     m_videoLayer = adoptNS([PAL::allocAVPlayerLayerInstance() init]);
-    m_videoLayer.player = m_avPlayer.get();
+    m_videoLayer.get().player = m_avPlayer.get();
 
-    m_videoLayer.name = @"MediaPlayerPrivate AVPlayerLayer";
+    m_videoLayer.get().name = @"MediaPlayerPrivate AVPlayerLayer";
     [m_videoLayer addObserver:m_objcObserver.get() forKeyPath:@"readyForDisplay" options:NSKeyValueObservingOptionNew context:(void *)MediaPlayerAVFoundationObservationContextAVPlayerLayer];
     updateVideoLayerGravity();
-    m_videoLayer.contentsScale = player()->playerContentsScale();
+    m_videoLayer.get().contentsScale = player()->playerContentsScale();
     m_videoLayerManager->setVideoLayer(m_videoLayer.get(), player()->presentationSize());
 
 #if PLATFORM(IOS_FAMILY) && !PLATFORM(WATCHOS) && !PLATFORM(APPLETV)
@@ -1085,7 +1085,7 @@ void MediaPlayerPrivateAVFoundationObjC::createAVPlayer()
 #endif
 
     if ([m_videoLayer respondsToSelector:@selector(setToneMapToStandardDynamicRange:)])
-        m_videoLayer.toneMapToStandardDynamicRange = player()->shouldDisableHDR();
+        m_videoLayer.get().toneMapToStandardDynamicRange = player()->shouldDisableHDR();
 
 #if ENABLE(WIRELESS_PLAYBACK_TARGET)
     updateDisableExternalPlayback();
@@ -1400,7 +1400,7 @@ void MediaPlayerPrivateAVFoundationObjC::platformSetVisible(bool isVisible)
 
     [CATransaction begin];
     [CATransaction setDisableActions:YES];    
-    m_videoLayer.hidden = !isVisible;
+    m_videoLayer.get().hidden = !isVisible;
     [CATransaction commit];
 }
     
@@ -2251,7 +2251,7 @@ void MediaPlayerPrivateAVFoundationObjC::updateVideoLayerGravity(ShouldAnimate s
     }
 #endif
 
-    if (m_videoLayer.videoGravity == videoGravity)
+    if (m_videoLayer.get().videoGravity == videoGravity)
         return;
 
     bool shouldDisableActions = shouldAnimate == ShouldAnimate::No;
@@ -2259,7 +2259,7 @@ void MediaPlayerPrivateAVFoundationObjC::updateVideoLayerGravity(ShouldAnimate s
 
     [CATransaction begin];
     [CATransaction setDisableActions:shouldDisableActions];
-    m_videoLayer.videoGravity = videoGravity;
+    m_videoLayer.get().videoGravity = videoGravity;
     [CATransaction commit];
 
     syncTextTrackBounds();
@@ -3865,7 +3865,7 @@ void MediaPlayerPrivateAVFoundationObjC::setShouldDisableHDR(bool shouldDisable)
         return;
 
     ALWAYS_LOG(LOGIDENTIFIER, shouldDisable);
-    m_videoLayer.toneMapToStandardDynamicRange = shouldDisable;
+    m_videoLayer.get().toneMapToStandardDynamicRange = shouldDisable;
 }
 
 void MediaPlayerPrivateAVFoundationObjC::audioOutputDeviceChanged()

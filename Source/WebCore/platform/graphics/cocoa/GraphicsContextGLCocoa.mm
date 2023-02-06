@@ -686,8 +686,8 @@ GraphicsContextGLCocoa::IOSurfaceTextureAttachment GraphicsContextGLCocoa::attac
         return std::nullopt;
     }
 
-    GCGLuint textureWidth = texture.width;
-    GCGLuint textureHeight = texture.height;
+    GCGLuint textureWidth = texture.get().width;
+    GCGLuint textureHeight = texture.get().height;
 
     // FIXME: Does the texture have the correct usage mode?
 

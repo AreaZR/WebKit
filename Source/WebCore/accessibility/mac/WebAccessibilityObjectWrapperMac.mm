@@ -1060,10 +1060,10 @@ static NSString* nsStringForReplacedNode(Node* replacedNode)
                 Node* replacedNode = it.node();
                 NSString *attachmentString = nsStringForReplacedNode(replacedNode);
                 if (attachmentString) {
-                    NSRange attrStringRange = NSMakeRange(attrString.length, attachmentString.length);
+                    NSRange attrStringRange = NSMakeRange(attrString.get().length, attachmentString.length);
 
                     // append the placeholder string
-                    [attrString.mutableString appendString:attachmentString];
+                    [attrString.get().mutableString appendString:attachmentString];
 
                     // remove all inherited attributes
                     [attrString setAttributes:nil range:attrStringRange];

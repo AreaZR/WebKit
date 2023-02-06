@@ -562,7 +562,7 @@ void CDMInstanceFairPlayStreamingAVFObjC::sessionIdentifierChanged(NSData *)
 void CDMInstanceFairPlayStreamingAVFObjC::groupSessionIdentifierChanged(AVContentKeyReportGroup* group, NSData *sessionIdentifier)
 {
 #if HAVE(AVCONTENTKEYREPORTGROUP)
-    if (group == m_session.defaultContentKeyGroup) {
+    if (group == m_session.get().defaultContentKeyGroup) {
         INFO_LOG(LOGIDENTIFIER, "- default unused group identifier changed; dropping");
         return;
     }
@@ -1090,7 +1090,7 @@ void CDMInstanceSessionFairPlayStreamingAVFObjC::removeSessionData(const String&
             return;
         }
 
-        id propertyList = expiredSessionsCount == 1 ? expiredSessionsArray.firstObject : expiredSessionsArray.get();
+        id propertyList = expiredSessionsCount == 1 ? expiredSessionsArray.get().firstObject : expiredSessionsArray.get();
 
         RetainPtr<NSData> expiredSessionsData = [NSPropertyListSerialization dataWithPropertyList:propertyList format:NSPropertyListBinaryFormat_v1_0 options:kCFPropertyListImmutable error:nullptr];
 

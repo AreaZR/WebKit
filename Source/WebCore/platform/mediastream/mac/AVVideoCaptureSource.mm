@@ -710,7 +710,9 @@ void AVVideoCaptureSource::deviceDisconnected(RetainPtr<NSNotification> notifica
 
 @implementation WebCoreAVVideoCaptureSourceObserver
 
-- (instancetype)initWithCallback:(AVVideoCaptureSource*)callback
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithCallback:(AVVideoCaptureSource*)callback NS_DESIGNATED_INITIALIZER
 {
     self = [super init];
     if (!self)
