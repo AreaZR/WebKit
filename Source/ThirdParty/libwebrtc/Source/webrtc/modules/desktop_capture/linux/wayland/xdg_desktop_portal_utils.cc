@@ -181,12 +181,12 @@ void TearDownSession(absl::string_view session_handle,
     }
   }
 
-  if (cancellable) {
+  if (cancellable != nullptr) {
     g_cancellable_cancel(cancellable);
     g_object_unref(cancellable);
   }
 
-  if (!!proxy) {
+  if (proxy != nullptr) {
     g_object_unref(proxy);
   }
 }
