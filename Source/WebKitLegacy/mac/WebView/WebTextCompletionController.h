@@ -38,10 +38,10 @@
     NSString *_originalString;
     int prefixLength;
 }
-- (id)initWithWebView:(WebView *)view HTMLView:(WebHTMLView *)htmlView;
+- (instancetype)initWithWebView:(WebView *)view HTMLView:(WebHTMLView *)htmlView NS_DESIGNATED_INITIALIZER;
 - (void)doCompletion;
 - (void)endRevertingChange:(BOOL)revertChange moveLeft:(BOOL)goLeft;
-- (BOOL)popupWindowIsOpen;
+@property (nonatomic, readonly) BOOL popupWindowIsOpen;
 - (BOOL)filterKeyDown:(NSEvent *)event;
 - (void)_reflectSelection;
 @end

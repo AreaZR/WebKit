@@ -39,7 +39,7 @@ class Element;
     RefPtr<WebCore::Element> _element;
 }
 
-- (id)initWithElement:(WebCore::Element*)element;
+- (instancetype)initWithElement:(WebCore::Element*)element NS_DESIGNATED_INITIALIZER;
 @end
 
 #endif

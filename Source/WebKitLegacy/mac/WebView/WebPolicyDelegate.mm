@@ -47,13 +47,13 @@ NSString *WebActionOriginalURLKey = @"WebActionOriginalURLKey";
     SEL action;
 }
 
-- (id)initWithTarget:(id)target action:(SEL)action;
+- (instancetype)initWithTarget:(id)target action:(SEL)action NS_DESIGNATED_INITIALIZER;
 
 @end
 
 @implementation WebPolicyDecisionListenerPrivate
 
-- (id)initWithTarget:(id)t action:(SEL)a
+- (instancetype)initWithTarget:(id)t action:(SEL)a
 {
     self = [super init];
     if (!self)

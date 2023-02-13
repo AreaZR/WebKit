@@ -42,14 +42,14 @@ extern NSString *WebKitResourceLoadStatisticsDirectoryDefaultsKey;
 - (float)_web_widthWithFont:(NSFont *)font;
 #endif
 
-- (NSString *)_web_stringByAbbreviatingWithTildeInPath;
+@property (nonatomic, readonly, copy) NSString *_web_stringByAbbreviatingWithTildeInPath;
 
 - (BOOL)_webkit_isCaseInsensitiveEqualToString:(NSString *)string;
 - (BOOL)_webkit_hasCaseInsensitivePrefix:(NSString *)suffix;
 - (BOOL)_webkit_hasCaseInsensitiveSuffix:(NSString *)suffix;
-- (NSString *)_webkit_filenameByFixingIllegalCharacters;
+@property (nonatomic, readonly, copy) NSString *_webkit_filenameByFixingIllegalCharacters;
 
-- (NSString *)_webkit_stringByTrimmingWhitespace;
+@property (nonatomic, readonly, copy) NSString *_webkit_stringByTrimmingWhitespace;
 
 + (NSString *)_webkit_localCacheDirectoryWithBundleIdentifier:(NSString*)bundleIdentifier;
 

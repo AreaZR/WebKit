@@ -129,7 +129,7 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_3, 10_14, "No longer supported; please adopt WKWe
 #if TARGET_OS_IPHONE
 @interface WebView : WAKView
 #else
-@interface WebView : NSView
+@interface WebView : NSView<WebDocumentSearching> 
 #endif
 {
 @private
@@ -294,14 +294,14 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_3, 10_14, "No longer supported; please adopt WKWe
     @abstract Go back to the previous URL in the backforward list.
     @result YES if able to go back in the backforward list, NO otherwise.
 */    
-- (BOOL)goBack;
+@property (nonatomic, readonly) BOOL goBack;
 
 /*!
     @method goForward
     @abstract Go forward to the next URL in the backforward list.
     @result YES if able to go forward in the backforward list, NO otherwise.
 */    
-- (BOOL)goForward;
+@property (nonatomic, readonly) BOOL goForward;
 
 /*!
     @method goToBackForwardItem:

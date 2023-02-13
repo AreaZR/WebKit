@@ -122,7 +122,7 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_4, 10_14)
 - (DOMCSSRuleList *)getMatchedCSSRules:(DOMElement *)element pseudoElement:(NSString *)pseudoElement WEBKIT_AVAILABLE_MAC(10_5);
 - (DOMCSSRuleList *)getMatchedCSSRules:(DOMElement *)element pseudoElement:(NSString *)pseudoElement authorOnly:(BOOL)authorOnly WEBKIT_AVAILABLE_MAC(10_5);
 - (DOMNodeList *)getElementsByClassName:(NSString *)classNames WEBKIT_AVAILABLE_MAC(10_6);
-- (BOOL)hasFocus WEBKIT_AVAILABLE_MAC(10_6);
+@property (nonatomic, readonly) BOOL hasFocus WEBKIT_AVAILABLE_MAC(10_6);
 #if !TARGET_OS_IPHONE
 - (void)webkitCancelFullScreen WEBKIT_AVAILABLE_MAC(10_6);
 #endif

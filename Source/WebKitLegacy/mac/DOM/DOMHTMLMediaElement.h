@@ -73,7 +73,7 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_5, 10_14)
 
 - (void)load;
 - (NSString *)canPlayType:(NSString *)type;
-- (NSTimeInterval)getStartDate;
+@property (nonatomic, readonly) NSTimeInterval startDate;
 - (void)play;
 - (void)pause;
 - (void)fastSeek:(double)time;

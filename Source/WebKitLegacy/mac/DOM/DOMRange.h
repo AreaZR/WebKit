@@ -69,8 +69,8 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_4, 10_14)
 - (DOMDocumentFragment *)cloneContents;
 - (void)insertNode:(DOMNode *)newNode;
 - (void)surroundContents:(DOMNode *)newParent;
-- (DOMRange *)cloneRange;
-- (NSString *)toString;
+@property (nonatomic, readonly, copy) DOMRange *cloneRange;
+@property (nonatomic, readonly, copy) NSString *toString;
 - (void)detach;
 - (DOMDocumentFragment *)createContextualFragment:(NSString *)html WEBKIT_AVAILABLE_MAC(10_5);
 - (short)compareNode:(DOMNode *)refNode WEBKIT_AVAILABLE_MAC(10_5);

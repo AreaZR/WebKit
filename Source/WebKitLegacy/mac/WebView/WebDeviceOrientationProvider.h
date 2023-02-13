@@ -30,5 +30,5 @@
 @protocol WebDeviceOrientationProvider <NSObject>
 - (void)startUpdating;
 - (void)stopUpdating;
-- (WebDeviceOrientation*)lastOrientation;
+@property (nonatomic, readonly, strong) WebDeviceOrientation *lastOrientation;
 @end

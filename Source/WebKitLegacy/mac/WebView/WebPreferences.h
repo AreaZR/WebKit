@@ -92,7 +92,7 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_3, 10_14)
     for the WebPreferences.
     @result Returns a new instance of WebPreferences or a previously allocated instance with the same identifier.
 */
-- (instancetype)initWithIdentifier:(NSString *)anIdentifier;
+- (instancetype)initWithIdentifier:(NSString *)anIdentifier NS_DESIGNATED_INITIALIZER;
 
 /*!
     @property identifier

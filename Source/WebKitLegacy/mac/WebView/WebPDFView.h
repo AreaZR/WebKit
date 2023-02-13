@@ -50,8 +50,7 @@
 + (NSArray *)supportedMIMETypes;
 + (NSBundle *)PDFKitBundle;
 
-- (void)setPDFDocument:(PDFDocument *)doc;
-- (PDFDocument *)PDFDocument;
+@property (nonatomic, copy) PDFDocument *PDFDocument;
 
 @end
 

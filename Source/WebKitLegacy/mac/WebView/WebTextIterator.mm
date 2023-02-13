@@ -63,7 +63,7 @@
     [super dealloc];
 }
 
-- (id)initWithRange:(DOMRange *)range
+- (instancetype)initWithRange:(DOMRange *)range
 {
     self = [super init];
     if (!self)

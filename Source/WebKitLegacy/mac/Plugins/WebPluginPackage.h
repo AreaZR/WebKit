@@ -36,6 +36,6 @@
     NSBundle *nsBundle;
 }
 
-- (Class)viewFactory;
+@property (nonatomic, readonly, strong) Class viewFactory;
 
 @end

@@ -33,8 +33,8 @@
 @interface NSData (WebNSDataExtras)
 
 -(BOOL)_web_isCaseInsensitiveEqualToCString:(const char *)string;
--(NSMutableDictionary *)_webkit_parseRFC822HeaderFields;
-- (BOOL)_web_startsWithBlankLine;
-- (NSInteger)_web_locationAfterFirstBlankLine;
+@property (nonatomic, readonly, copy) NSMutableDictionary *_webkit_parseRFC822HeaderFields;
+@property (nonatomic, readonly) BOOL _web_startsWithBlankLine;
+@property (nonatomic, readonly) NSInteger _web_locationAfterFirstBlankLine;
 
 @end

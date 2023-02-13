@@ -151,7 +151,7 @@ static WebCacheModel cacheModelForMainBundle(NSString *bundleIdentifier)
             "net.hmdt-web.Shiira",
         };
 
-        const char* bundleID = [bundleIdentifier UTF8String];
+        const char* bundleID = bundleIdentifier.UTF8String;
         if (contains(documentViewerIDs, bundleID))
             return WebCacheModelDocumentViewer;
         if (contains(documentBrowserIDs, bundleID))
@@ -272,7 +272,7 @@ public:
 
     [[self class] _setInstance:self forIdentifier:_private->identifier.get()];
 
-    [self _updatePrivateBrowsingStateTo:[self privateBrowsingEnabled]];
+    [self _updatePrivateBrowsingStateTo:self.privateBrowsingEnabled];
 
 #if PLATFORM(IOS_FAMILY)
     if (sendChangeNotification) {
@@ -299,7 +299,7 @@ public:
     @try {
         id identifier = nil;
         id values = nil;
-        if ([decoder allowsKeyedCoding]) {
+        if (decoder.allowsKeyedCoding) {
             identifier = [decoder decodeObjectForKey:@"Identifier"];
             values = [decoder decodeObjectForKey:@"Values"];
         } else {
@@ -330,7 +330,7 @@ public:
         self = [instance retain];
     } else {
         [[self class] _setInstance:self forIdentifier:_private->identifier.get()];
-        [self _updatePrivateBrowsingStateTo:[self privateBrowsingEnabled]];
+        [self _updatePrivateBrowsingStateTo:self.privateBrowsingEnabled];
     }
 
     return self;
@@ -338,7 +338,7 @@ public:
 
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
-    if ([encoder allowsKeyedCoding]){
+    if (encoder.allowsKeyedCoding){
         [encoder encodeObject:_private->identifier.get() forKey:@"Identifier"];
 #if PLATFORM(IOS_FAMILY)
         dispatch_sync(_private->readWriteQueue.get(), ^{
@@ -400,9 +400,9 @@ public:
         @YES, WebKitAllowAnimatedImageLoopingPreferenceKey,
         @"1800", WebKitBackForwardCacheExpirationIntervalKey,
         @NO, WebKitPrivateBrowsingEnabledPreferenceKey,
-        @(cacheModelForMainBundle([[NSBundle mainBundle] bundleIdentifier])), WebKitCacheModelPreferenceKey,
+        @(cacheModelForMainBundle([NSBundle mainBundle].bundleIdentifier)), WebKitCacheModelPreferenceKey,
         @YES, WebKitZoomsTextOnlyPreferenceKey,
-        [NSNumber numberWithLongLong:ApplicationCacheStorage::noQuota()], WebKitApplicationCacheTotalQuota,
+        @(ApplicationCacheStorage::noQuota()), WebKitApplicationCacheTotalQuota,
 
         // FIXME: Are these relevent to WebKitLegacy? If not, we should remove them.
         @NO, WebKitResourceLoadStatisticsEnabledPreferenceKey,
@@ -417,7 +417,7 @@ public:
         @"1", WebKitPDFDisplayModePreferenceKey,
         @"0", WebKitPDFScaleFactorPreferenceKey,
         @(WebTextDirectionSubmenuAutomaticallyIncluded), WebKitTextDirectionSubmenuInclusionBehaviorPreferenceKey,
-        [NSNumber numberWithLongLong:ApplicationCacheStorage::noQuota()], WebKitApplicationCacheDefaultOriginQuota,
+        @(ApplicationCacheStorage::noQuota()), WebKitApplicationCacheDefaultOriginQuota,
 #endif
 
 #if PLATFORM(IOS_FAMILY)
@@ -464,7 +464,7 @@ public:
         o = [_private->values.get() objectForKey:_key];
     });
 #else
-    id o = [_private->values.get() objectForKey:_key];
+    id o = _private->values.get()[_key];
 #endif
     if (o)
         return o;
@@ -488,7 +488,7 @@ public:
 #if PLATFORM(IOS_FAMILY)
     dispatch_barrier_sync(_private->readWriteQueue.get(), ^{
 #endif
-    [_private->values.get() setObject:value forKey:_key];
+    _private->values.get()[_key] = value;
 #if PLATFORM(IOS_FAMILY)
     });
 #endif
@@ -518,7 +518,7 @@ public:
 #if PLATFORM(IOS_FAMILY)
     dispatch_barrier_sync(_private->readWriteQueue.get(), ^{
 #endif
-        [_private->values.get() setObject:value forKey:_key];
+        _private->values.get()[_key] = value;
 #if PLATFORM(IOS_FAMILY)
     });
 #endif
@@ -541,7 +541,7 @@ public:
 #if PLATFORM(IOS_FAMILY)
     dispatch_barrier_sync(_private->readWriteQueue.get(), ^{
 #endif
-    [_private->values.get() setObject:@(value) forKey:_key];
+    _private->values.get()[_key] = @(value);
 #if PLATFORM(IOS_FAMILY)
     });
 #endif
@@ -564,7 +564,7 @@ public:
 #if PLATFORM(IOS_FAMILY)
     dispatch_barrier_sync(_private->readWriteQueue.get(), ^{
 #endif
-    [_private->values.get() setObject:@(value) forKey:_key];
+    _private->values.get()[_key] = @(value);
 #if PLATFORM(IOS_FAMILY)
     });
 #endif
@@ -587,7 +587,7 @@ public:
 #if PLATFORM(IOS_FAMILY)
     dispatch_barrier_sync(_private->readWriteQueue.get(), ^{
 #endif
-    [_private->values.get() setObject:@(value) forKey:_key];
+    _private->values.get()[_key] = @(value);
 #if PLATFORM(IOS_FAMILY)
     });
 #endif
@@ -609,7 +609,7 @@ public:
 #if PLATFORM(IOS_FAMILY)
     dispatch_barrier_sync(_private->readWriteQueue.get(), ^{
 #endif
-    [_private->values.get() setObject:@(value) forKey:_key];
+    _private->values.get()[_key] = @(value);
 #if PLATFORM(IOS_FAMILY)
     });
 #endif
@@ -632,12 +632,12 @@ public:
 #if PLATFORM(IOS_FAMILY)
     dispatch_barrier_sync(_private->readWriteQueue.get(), ^{
 #endif
-    [_private->values.get() setObject:@(value) forKey:_key];
+    _private->values.get()[_key] = @(value);
 #if PLATFORM(IOS_FAMILY)
     });
 #endif
     if (_private->autosaves)
-        [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithLongLong:value] forKey:_key];
+        [[NSUserDefaults standardUserDefaults] setObject:@(value) forKey:_key];
     [self _postPreferencesChangedNotification];
 }
 
@@ -655,12 +655,12 @@ public:
 #if PLATFORM(IOS_FAMILY)
     dispatch_barrier_sync(_private->readWriteQueue.get(), ^{
 #endif
-    [_private->values.get() setObject:@(value) forKey:_key];
+    _private->values.get()[_key] = @(value);
 #if PLATFORM(IOS_FAMILY)
     });
 #endif
     if (_private->autosaves)
-        [[NSUserDefaults standardUserDefaults] setObject:[NSNumber numberWithUnsignedLongLong:value] forKey:_key];
+        [[NSUserDefaults standardUserDefaults] setObject:@(value) forKey:_key];
     [self _postPreferencesChangedNotification];
 }
 
@@ -792,7 +792,7 @@ public:
     if ([locationString _webkit_looksLikeAbsoluteURL]) {
         return [NSURL _web_URLWithDataAsString:locationString];
     } else {
-        locationString = [locationString stringByExpandingTildeInPath];
+        locationString = locationString.stringByExpandingTildeInPath;
         return [NSURL fileURLWithPath:locationString isDirectory:NO];
     }
 }
@@ -801,8 +801,8 @@ public:
 {
     NSString *locationString;
 
-    if ([URL isFileURL]) {
-        locationString = [[URL path] _web_stringByAbbreviatingWithTildeInPath];
+    if (URL.fileURL) {
+        locationString = [URL.path _web_stringByAbbreviatingWithTildeInPath];
     } else {
         locationString = [URL _web_originalDataAsString];
     }
@@ -1558,7 +1558,7 @@ public:
     if (!ident)
         return standardPreferences().get();
 
-    WebPreferences *instance = [webPreferencesInstances() objectForKey:[self _concatenateKeyWithIBCreatorID:ident]];
+    WebPreferences *instance = webPreferencesInstances()[[self _concatenateKeyWithIBCreatorID:ident]];
 
     return instance;
 }
@@ -1571,7 +1571,7 @@ public:
     auto& instances = webPreferencesInstances();
     if (!instances)
         instances = adoptNS([[NSMutableDictionary alloc] init]);
-    [instances setObject:instance forKey:[self _concatenateKeyWithIBCreatorID:ident]];
+    instances[[self _concatenateKeyWithIBCreatorID:ident]] = instance;
     LOG(Encoding, "recording %p for %@\n", instance, [self _concatenateKeyWithIBCreatorID:ident]);
 }
 
@@ -1579,7 +1579,7 @@ public:
 {
     // FIXME: This won't work at all under garbage collection because retainCount returns a constant.
     // We may need to change WebPreferences API so there's an explicit way to end the lifetime of one.
-    WebPreferences *instance = [webPreferencesInstances() objectForKey:identifier];
+    WebPreferences *instance = webPreferencesInstances()[identifier];
     if ([instance retainCount] == 1)
         [webPreferencesInstances() removeObjectForKey:identifier];
 }
@@ -1695,22 +1695,22 @@ static RetainPtr<NSString>& classIBCreatorID()
 
 - (NSString *)_localStorageDatabasePath
 {
-    return [[self _stringValueForKey:WebKitLocalStorageDatabasePathPreferenceKey] stringByStandardizingPath];
+    return [self _stringValueForKey:WebKitLocalStorageDatabasePathPreferenceKey].stringByStandardizingPath;
 }
 
 - (void)_setLocalStorageDatabasePath:(NSString *)path
 {
-    [self _setStringValue:[path stringByStandardizingPath] forKey:WebKitLocalStorageDatabasePathPreferenceKey];
+    [self _setStringValue:path.stringByStandardizingPath forKey:WebKitLocalStorageDatabasePathPreferenceKey];
 }
 
 - (NSString *)_ftpDirectoryTemplatePath
 {
-    return [[self _stringValueForKey:WebKitFTPDirectoryTemplatePath] stringByStandardizingPath];
+    return [self _stringValueForKey:WebKitFTPDirectoryTemplatePath].stringByStandardizingPath;
 }
 
 - (void)_setFTPDirectoryTemplatePath:(NSString *)path
 {
-    [self _setStringValue:[path stringByStandardizingPath] forKey:WebKitFTPDirectoryTemplatePath];
+    [self _setStringValue:path.stringByStandardizingPath forKey:WebKitFTPDirectoryTemplatePath];
 }
 
 - (BOOL)_forceFTPDirectoryListings
@@ -2147,12 +2147,12 @@ static RetainPtr<NSString>& classIBCreatorID()
 
 - (BOOL)allowsAlternateFullscreen
 {
-    return [self allowsPictureInPictureMediaPlayback];
+    return self.allowsPictureInPictureMediaPlayback;
 }
 
 - (void)setAllowsAlternateFullscreen:(BOOL)flag
 {
-    [self setAllowsPictureInPictureMediaPlayback:flag];
+    self.allowsPictureInPictureMediaPlayback = flag;
 }
 
 - (BOOL)allowsPictureInPictureMediaPlayback
@@ -2456,7 +2456,7 @@ static RetainPtr<NSString>& classIBCreatorID()
 
 - (NSString *)mediaKeysStorageDirectory
 {
-    return [[self _stringValueForKey:WebKitMediaKeysStorageDirectoryKey] stringByStandardizingPath];
+    return [self _stringValueForKey:WebKitMediaKeysStorageDirectoryKey].stringByStandardizingPath;
 }
 
 - (void)setMediaKeysStorageDirectory:(NSString *)directory
@@ -2516,12 +2516,12 @@ static RetainPtr<NSString>& classIBCreatorID()
 
 - (void)setMetaRefreshEnabled:(BOOL)enabled
 {
-    [self setHTTPEquivEnabled:enabled];
+    self.HTTPEquivEnabled = enabled;
 }
 
 - (BOOL)metaRefreshEnabled
 {
-    return [self httpEquivEnabled];
+    return self.HTTPEquivEnabled;
 }
 
 - (void)setHTTPEquivEnabled:(BOOL)enabled

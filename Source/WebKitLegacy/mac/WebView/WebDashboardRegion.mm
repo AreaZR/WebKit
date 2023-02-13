@@ -31,7 +31,7 @@
 
 @implementation WebDashboardRegion
 
-- (id)initWithRect:(NSRect)r clip:(NSRect)c type:(WebDashboardRegionType)t
+- (instancetype)initWithRect:(NSRect)r clip:(NSRect)c type:(WebDashboardRegionType)t
 {
     self = [super init];
     rect = r;

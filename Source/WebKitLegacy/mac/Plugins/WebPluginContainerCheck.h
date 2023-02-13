@@ -36,8 +36,8 @@
 
 @protocol WebPluginContainerCheckController <NSObject>
 - (void)_webPluginContainerCancelCheckIfAllowedToLoadRequest:(id)checkIdentifier;
-- (WebFrame *)webFrame;
-- (WebView *)webView;
+@property (nonatomic, readonly, strong) WebFrame *webFrame;
+@property (nonatomic, readonly, strong) WebView *webView;
 @end
 
 @interface WebPluginContainerCheck : NSObject
@@ -52,9 +52,9 @@
     WebPolicyDecisionListener *_listener;
 }
 
-+ (id)checkWithRequest:(NSURLRequest *)request target:(NSString *)target resultObject:(id)obj selector:(SEL)selector controller:(id <WebPluginContainerCheckController>)controller contextInfo:(id)/*optional*/contextInfo; 
++ (instancetype)checkWithRequest:(NSURLRequest *)request target:(NSString *)target resultObject:(id)obj selector:(SEL)selector controller:(id <WebPluginContainerCheckController>)controller contextInfo:(id)/*optional*/contextInfo; 
 - (void)start;
 - (void)cancel;
-- (id)contextInfo;
+@property (nonatomic, readonly, strong) id contextInfo;
 
 @end

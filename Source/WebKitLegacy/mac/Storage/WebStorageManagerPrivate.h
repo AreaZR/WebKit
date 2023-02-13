@@ -35,7 +35,7 @@ extern NSString * const WebStorageDidModifyOriginNotification;
 + (WebStorageManager *)sharedWebStorageManager;
 
 // Returns an array of WebSecurityOrigin objects that have LocalStorage.
-- (NSArray *)origins;
+@property (nonatomic, readonly, copy) NSArray *origins;
 
 - (void)deleteAllOrigins;
 - (void)deleteOrigin:(WebSecurityOrigin *)origin;

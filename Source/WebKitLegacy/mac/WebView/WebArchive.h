@@ -60,7 +60,7 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_3, 10_14)
     @param subframeArchives The archives representing the subframes of the archive (can be nil).
     @result An initialized WebArchive.
 */
-- (instancetype)initWithMainResource:(WebResource *)mainResource subresources:(NSArray *)subresources subframeArchives:(NSArray *)subframeArchives;
+- (instancetype)initWithMainResource:(WebResource *)mainResource subresources:(NSArray *)subresources subframeArchives:(NSArray *)subframeArchives NS_DESIGNATED_INITIALIZER;
 
 /*!
     @method initWithData:
@@ -68,7 +68,7 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_3, 10_14)
     @param data The data representing the archive. This can be obtained using WebArchive's data method.
     @result An initialized WebArchive.
 */
-- (instancetype)initWithData:(NSData *)data;
+- (instancetype)initWithData:(NSData *)data NS_DESIGNATED_INITIALIZER;
 
 /*!
     @property mainResource

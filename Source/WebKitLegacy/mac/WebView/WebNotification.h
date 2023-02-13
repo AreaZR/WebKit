@@ -37,14 +37,14 @@
     WebNotificationPrivate *_private;
 }
 
-- (NSString *)title;
-- (NSString *)body;
-- (NSString *)tag;
-- (NSString *)iconURL;
-- (NSString *)lang;
-- (NSString *)dir;
-- (WebSecurityOrigin *)origin;
-- (NSString *)notificationID;
+@property (nonatomic, readonly, copy) NSString *title;
+@property (nonatomic, readonly, copy) NSString *body;
+@property (nonatomic, readonly, copy) NSString *tag;
+@property (nonatomic, readonly, copy) NSString *iconURL;
+@property (nonatomic, readonly, copy) NSString *lang;
+@property (nonatomic, readonly, copy) NSString *dir;
+@property (nonatomic, readonly, strong) WebSecurityOrigin *origin;
+@property (nonatomic, readonly, copy) NSString *notificationID;
 
 - (void)dispatchShowEvent;
 - (void)dispatchCloseEvent;

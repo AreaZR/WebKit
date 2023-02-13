@@ -53,9 +53,9 @@
 #else
 - (NSView *)_web_superviewOfClass:(Class)viewClass;
 #endif
-- (WebFrameView *)_web_parentWebFrameView;
+@property (nonatomic, readonly, strong) WebFrameView *_web_parentWebFrameView;
 #if !TARGET_OS_IPHONE
-- (WebView *)_webView;
+@property (nonatomic, readonly, strong) WebView *_webView;
 #endif
 
 #if !TARGET_OS_IPHONE
@@ -78,7 +78,7 @@
 
 #endif
 
-- (BOOL)_web_firstResponderIsSelfOrDescendantView;
+@property (nonatomic, readonly) BOOL _web_firstResponderIsSelfOrDescendantView;
 
 @end
 

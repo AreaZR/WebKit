@@ -117,7 +117,7 @@ ALLOW_DEPRECATED_IMPLEMENTATIONS_END
     return database.get().get();
 }
 
-- (id)init
+- (instancetype)init
 {
     WebCoreThreadViolationCheckRoundOne();
 

@@ -84,7 +84,7 @@ void removeDOMWrapper(DOMObjectInternal* impl)
 @implementation WebScriptObject (WebScriptObjectInternal)
 
 // Only called by DOMObject subclass.
-- (id)_init
+- (instancetype)_init
 {
     self = [super init];
 

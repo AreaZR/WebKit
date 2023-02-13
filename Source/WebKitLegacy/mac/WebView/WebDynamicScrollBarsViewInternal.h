@@ -33,36 +33,34 @@
 
 @interface WebDynamicScrollBarsView (WebInternal) <WebCoreFrameScrollView>
 
-- (BOOL)allowsHorizontalScrolling;
-- (BOOL)allowsVerticalScrolling;
+@property (nonatomic, readonly) BOOL allowsHorizontalScrolling;
+@property (nonatomic, readonly) BOOL allowsVerticalScrolling;
 
 - (void)setScrollingModes:(WebCore::ScrollbarMode)hMode vertical:(WebCore::ScrollbarMode)vMode andLock:(BOOL)lock;
 - (void)scrollingModes:(WebCore::ScrollbarMode*)hMode vertical:(WebCore::ScrollbarMode*)vMode;
 
-- (WebCore::ScrollbarMode)horizontalScrollingMode;
-- (WebCore::ScrollbarMode)verticalScrollingMode;
+@property (nonatomic, readonly) WebCore::ScrollbarMode horizontalScrollingMode;
+@property (nonatomic, readonly) WebCore::ScrollbarMode verticalScrollingMode;
 
 - (void)setHorizontalScrollingMode:(WebCore::ScrollbarMode)mode andLock:(BOOL)lock;
 - (void)setVerticalScrollingMode:(WebCore::ScrollbarMode)mode andLock:(BOOL)lock;
 
-- (void)setHorizontalScrollingModeLocked:(BOOL)locked;
-- (void)setVerticalScrollingModeLocked:(BOOL)locked;
 - (void)setScrollingModesLocked:(BOOL)mode;
 
-- (BOOL)horizontalScrollingModeLocked;
-- (BOOL)verticalScrollingModeLocked;
+@property (nonatomic) BOOL horizontalScrollingModeLocked;
+@property (nonatomic) BOOL verticalScrollingModeLocked;
 
 - (void)updateScrollers;
 - (void)setSuppressLayout:(BOOL)flag;
 
 // Calculate the appropriate frame for the contentView based on allowsScrollersToOverlapContent.
-- (NSRect)contentViewFrame;
+@property (nonatomic, readonly) NSRect contentViewFrame;
 
 // Returns YES if we're currently in the middle of programmatically moving the
 // scrollbar.
 // NOTE: As opposed to other places in the code, programmatically moving the
 // scrollers from inside this class should not fire JS events.
-- (BOOL)inProgrammaticScroll;
+@property (nonatomic, readonly) BOOL inProgrammaticScroll;
 @end
 
 #endif // !PLATFORM(IOS_FAMILY)

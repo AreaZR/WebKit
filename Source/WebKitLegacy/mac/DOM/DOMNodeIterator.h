@@ -37,7 +37,7 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_4, 10_14)
 @property (readonly, strong) DOMNode *referenceNode WEBKIT_AVAILABLE_MAC(10_5);
 @property (readonly) BOOL pointerBeforeReferenceNode WEBKIT_AVAILABLE_MAC(10_5);
 
-- (DOMNode *)nextNode;
-- (DOMNode *)previousNode;
+@property (nonatomic, readonly, copy) DOMNode *nextNode;
+@property (nonatomic, readonly, copy) DOMNode *previousNode;
 - (void)detach;
 @end

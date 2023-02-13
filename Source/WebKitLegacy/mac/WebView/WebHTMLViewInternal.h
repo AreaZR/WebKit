@@ -55,18 +55,17 @@ namespace WebCore {
 - (void)_setSoftSpaceRange:(NSRange)range;
 #endif
 
-- (BOOL)_canSmartCopyOrDelete;
+@property (nonatomic, readonly) BOOL _canSmartCopyOrDelete;
 
-- (WebFrame *)_frame;
+@property (nonatomic, readonly, strong) WebFrame *_frame;
 - (void)closeIfNotCurrentView;
 
 #if PLATFORM(MAC)
 - (void)_lookUpInDictionaryFromMenu:(id)sender;
 - (BOOL)_interpretKeyEvent:(NakedPtr<WebCore::KeyboardEvent>)event savingCommands:(BOOL)savingCommands;
 - (DOMDocumentFragment *)_documentFragmentFromPasteboard:(NSPasteboard *)pasteboard;
-- (NSEvent *)_mouseDownEvent;
-- (BOOL)isGrammarCheckingEnabled;
-- (void)setGrammarCheckingEnabled:(BOOL)flag;
+@property (nonatomic, readonly, copy) NSEvent *_mouseDownEvent;
+@property (nonatomic, getter=isGrammarCheckingEnabled) BOOL grammarCheckingEnabled;
 - (void)toggleGrammarChecking:(id)sender;
 - (void)setPromisedDragTIFFDataSource:(NakedPtr<WebCore::CachedImage>)source;
 #endif
@@ -77,14 +76,14 @@ namespace WebCore {
 
 - (void)_web_updateLayoutAndStyleIfNeededRecursive;
 - (void)_destroyAllWebPlugins;
-- (BOOL)_needsLayout;
+@property (nonatomic, readonly) BOOL _needsLayout;
 
 #if PLATFORM(MAC)
 - (void)attachRootLayer:(CALayer *)layer;
 - (void)detachRootLayer;
 
-- (BOOL)_web_isDrawingIntoLayer;
-- (BOOL)_web_isDrawingIntoAcceleratedLayer;
+@property (nonatomic, readonly) BOOL _web_isDrawingIntoLayer;
+@property (nonatomic, readonly) BOOL _web_isDrawingIntoAcceleratedLayer;
 #endif
 
 #if PLATFORM(IOS_FAMILY)
@@ -98,7 +97,7 @@ namespace WebCore {
 
 - (void)_stopAutoscrollTimer;
 
-- (WebPluginController *)_pluginController;
+@property (nonatomic, readonly, strong) WebPluginController *_pluginController;
 
 - (void)_executeSavedKeypressCommands;
 
@@ -109,5 +108,5 @@ namespace WebCore {
 - (void)delete:(id)sender;
 - (void)transpose:(id)sender;
 #endif
-- (BOOL)hasMarkedText;
+@property (nonatomic, readonly) BOOL hasMarkedText;
 @end

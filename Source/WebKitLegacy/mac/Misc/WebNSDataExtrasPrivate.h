@@ -30,6 +30,6 @@
 
 @interface NSData (WebKitExtras)
 
--(NSString *)_webkit_guessedMIMEType;
+@property (nonatomic, readonly, copy) NSString *_webkit_guessedMIMEType;
 
 @end

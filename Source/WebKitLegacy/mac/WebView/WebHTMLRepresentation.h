@@ -65,7 +65,7 @@
 - (BOOL)elementDoesAutoComplete:(DOMElement *)element;
 - (BOOL)elementIsPassword:(DOMElement *)element;
 - (DOMElement *)formForElement:(DOMElement *)element;
-- (DOMElement *)currentForm;
+@property (nonatomic, readonly, copy) DOMElement *currentForm;
 - (NSArray *)controlsInForm:(DOMElement *)form;
 - (NSString *)searchForLabels:(NSArray *)labels beforeElement:(DOMElement *)element resultDistance:(NSUInteger*)outDistance resultIsInCellAbove:(BOOL*)outIsInCellAbove;
 - (NSString *)matchLabels:(NSArray *)labels againstElement:(DOMElement *)element;

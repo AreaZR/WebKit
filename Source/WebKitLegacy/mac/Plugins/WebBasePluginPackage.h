@@ -66,30 +66,30 @@ typedef void (*BP_CreatePluginMIMETypesPreferencesFuncPtr)(void);
 }
 
 + (WebBasePluginPackage *)pluginWithPath:(NSString *)pluginPath;
-- (id)initWithPath:(NSString *)pluginPath;
+- (instancetype)initWithPath:(NSString *)pluginPath NS_DESIGNATED_INITIALIZER;
 
-- (BOOL)getPluginInfoFromPLists;
+@property (nonatomic, readonly) BOOL pluginInfoFromPLists;
 
 - (BOOL)load;
 - (void)unload;
 
-- (const WTF::String&)path;
+@property (nonatomic, readonly) const WTF::String& path;
 
-- (const WebCore::PluginInfo&)pluginInfo;
+@property (nonatomic, readonly) const WebCore::PluginInfo& pluginInfo;
 
-- (String)bundleIdentifier;
-- (String)bundleVersion;
+@property (nonatomic, readonly) WTF::String bundleIdentifier;
+@property (nonatomic, readonly) WTF::String bundleVersion;
 
 - (BOOL)supportsExtension:(const WTF::String&)extension;
 - (BOOL)supportsMIMEType:(const WTF::String&)MIMEType;
 
 - (NSString *)MIMETypeForExtension:(const WTF::String&)extension;
 
-- (BOOL)isQuickTimePlugIn;
-- (BOOL)isJavaPlugIn;
+@property (nonatomic, readonly) BOOL quickTimePlugIn;
+@property (nonatomic, readonly) BOOL javaPlugIn;
 
 - (BOOL)isNativeLibraryData:(NSData *)data;
-- (UInt32)versionNumber;
+@property (nonatomic, readonly) UInt32 versionNumber;
 - (void)wasAddedToPluginDatabase:(WebPluginDatabase *)database;
 - (void)wasRemovedFromPluginDatabase:(WebPluginDatabase *)database;
 

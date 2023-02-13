@@ -34,8 +34,8 @@
     IBOutlet NSTextField *textInput;
 }
 
-- (id)initWithPrompt:(NSString *)prompt text:(NSString *)text;
-- (NSString *)text;
+- (instancetype)initWithPrompt:(NSString *)prompt text:(NSString *)text;
+@property (nonatomic, readonly, copy) NSString *text;
 
 - (IBAction)pressedCancel:(id)sender;
 - (IBAction)pressedOK:(id)sender;

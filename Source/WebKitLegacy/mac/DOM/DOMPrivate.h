@@ -34,9 +34,9 @@
 
 @interface DOMNode (DOMNodeExtensionsPendingPublic)
 #if !TARGET_OS_IPHONE
-- (NSImage *)renderedImage;
+@property (nonatomic, readonly, copy) NSImage *renderedImage;
 #endif
-- (NSArray *)textRects;
+@property (nonatomic, readonly, copy) NSArray *textRects;
 @end
 
 @interface DOMNode (WebPrivate)
@@ -48,43 +48,42 @@
 // calls to the public method - (NSColor *)color.
 @interface DOMRGBColor (WebPrivate)
 #if !TARGET_OS_IPHONE
-- (NSColor *)_color;
+@property (nonatomic, readonly, copy) NSColor *_color;
 #endif
 @end
 
 // FIXME: this should be removed as soon as all internal Apple uses of it have been replaced with
 // calls to the public method - (NSString *)text.
 @interface DOMRange (WebPrivate)
-- (NSString *)_text;
+@property (nonatomic, readonly, copy) NSString *_text;
 @end
 
 @interface DOMRange (DOMRangeExtensions)
 #if TARGET_OS_IPHONE
 - (CGRect)boundingBox;
 #else
-- (NSRect)boundingBox;
+@property (nonatomic, readonly) NSRect boundingBox;
 #endif
 #if !TARGET_OS_IPHONE
 - (NSImage *)renderedImageForcingBlackText:(BOOL)forceBlackText;
 #else
 - (CGImageRef)renderedImageForcingBlackText:(BOOL)forceBlackText;
 #endif
-- (NSArray *)lineBoxRects; // Deprecated. Use textRects instead.
-- (NSArray *)textRects;
+@property (nonatomic, readonly, copy) NSArray *lineBoxRects; // Deprecated. Use textRects instead.
+@property (nonatomic, readonly, copy) NSArray *textRects;
 @end
 
 @interface DOMElement (WebPrivate)
 #if !TARGET_OS_IPHONE
-- (NSData *)_imageTIFFRepresentation;
+@property (nonatomic, readonly, copy) NSData *_imageTIFFRepresentation;
 #endif
-- (CTFontRef)_font;
+@property (nonatomic, readonly) CTFontRef _font;
 - (NSURL *)_getURLAttribute:(NSString *)name;
-- (BOOL)isFocused;
+@property (nonatomic, readonly) BOOL focused;
 @end
 
 @interface DOMCSSStyleDeclaration (WebPrivate)
-- (NSString *)_fontSizeDelta;
-- (void)_setFontSizeDelta:(NSString *)fontSizeDelta;
+@property (nonatomic, setter=_setFontSizeDelta, copy) NSString *_fontSizeDelta;
 @end
 
 @interface DOMHTMLDocument (WebPrivate)
@@ -93,11 +92,11 @@
 @end
 
 @interface DOMHTMLTableCellElement (WebPrivate)
-- (DOMHTMLTableCellElement *)_cellAbove;
+@property (nonatomic, readonly, copy) DOMHTMLTableCellElement *_cellAbove;
 @end
 
 @interface DOMHTMLInputElement (FormAutoFillTransition)
-- (BOOL)_isTextField;
+@property (nonatomic, readonly) BOOL _isTextField;
 @end
 
 #if TARGET_OS_IPHONE

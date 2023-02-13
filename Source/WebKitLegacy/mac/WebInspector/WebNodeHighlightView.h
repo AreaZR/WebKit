@@ -40,9 +40,9 @@
     NSMutableArray *_layers; // CAShapeLayers.
 #endif
 }
-- (id)initWithWebNodeHighlight:(WebNodeHighlight *)webNodeHighlight;
+- (instancetype)initWithWebNodeHighlight:(WebNodeHighlight *)webNodeHighlight;
 
-- (WebNodeHighlight *)webNodeHighlight;
+@property (nonatomic, readonly, strong) WebNodeHighlight *webNodeHighlight;
 - (void)detachFromWebNodeHighlight;
 
 #if PLATFORM(IOS_FAMILY)

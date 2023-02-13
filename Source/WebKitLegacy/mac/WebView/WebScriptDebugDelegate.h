@@ -98,15 +98,14 @@ enum {
 }
 
 // associate user info with frame
-- (void)setUserInfo:(id)userInfo;
 
 // retrieve user info
-- (id)userInfo;
+@property (nonatomic, strong) id userInfo;
 
 // get name of function (if available) or nil
-- (NSString *)functionName;
+@property (nonatomic, readonly, copy) NSString *functionName;
 
 // get pending exception (if any) or nil
-- (id)exception;
+@property (nonatomic, readonly, strong) id exception;
 
 @end

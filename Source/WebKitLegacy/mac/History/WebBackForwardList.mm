@@ -83,7 +83,7 @@ WebBackForwardList *kit(BackForwardList* backForwardList)
     return adoptNS([[WebBackForwardList alloc] initWithBackForwardList:*backForwardList]).autorelease();
 }
 
-- (id)initWithBackForwardList:(Ref<BackForwardList>&&)backForwardList
+- (instancetype)initWithBackForwardList:(Ref<BackForwardList>&&)backForwardList
 {   
     WebCoreThreadViolationCheckRoundOne();
     self = [super init];
@@ -104,7 +104,7 @@ WebBackForwardList *kit(BackForwardList* backForwardList)
 #endif
 }
 
-- (id)init
+- (instancetype)init
 {
     return [self initWithBackForwardList:BackForwardList::create(nullptr)];
 }
@@ -229,7 +229,7 @@ constexpr auto WebBackForwardListDictionaryCurrentKey = @"current";
 static bool bumperCarBackForwardHackNeeded()
 {
 #if !PLATFORM(IOS_FAMILY)
-    static bool hackNeeded = [[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.freeverse.bumpercar"]
+    static bool hackNeeded = [[NSBundle mainBundle].bundleIdentifier isEqualToString:@"com.freeverse.bumpercar"]
         && !WebKitLinkedOnOrAfter(WEBKIT_FIRST_VERSION_WITHOUT_BUMPERCAR_BACK_FORWARD_QUIRK);
     return hackNeeded;
 #else
@@ -295,11 +295,11 @@ static bool bumperCarBackForwardHackNeeded()
             [result appendString:@"    "]; 
         }   
         [result appendFormat:@"%2d) ", i];
-        int currPos = [result length];
-        [result appendString:[kit(const_cast<WebCore::HistoryItem*>(entries[i].ptr())) description]];
+        int currPos = result.length;
+        [result appendString:kit(const_cast<WebCore::HistoryItem*>(entries[i].ptr())).description];
 
         // shift all the contents over.  a bit slow, but this is for debugging
-        NSRange replRange = { static_cast<NSUInteger>(currPos), [result length] - currPos };
+        NSRange replRange = { static_cast<NSUInteger>(currPos), result.length - currPos };
         [result replaceOccurrencesOfString:@"\n" withString:@"\n        " options:0 range:replRange];
         
         [result appendString:@"\n"];

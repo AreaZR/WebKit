@@ -54,7 +54,7 @@ using namespace WebCore;
 }
 #endif
 
-- (id)initWithWebNodeHighlight:(WebNodeHighlight *)webNodeHighlight
+- (instancetype)initWithWebNodeHighlight:(WebNodeHighlight *)webNodeHighlight
 {
     self = [self initWithFrame:NSZeroRect];
     if (!self)
@@ -98,7 +98,7 @@ using namespace WebCore;
 
         ASSERT([[NSGraphicsContext currentContext] isFlipped]);
 
-        GraphicsContextCG context([[NSGraphicsContext currentContext] CGContext]);
+        GraphicsContextCG context([NSGraphicsContext currentContext].CGContext);
         [_webNodeHighlight inspectorController]->drawHighlight(context);
         [NSGraphicsContext restoreGraphicsState];
     }

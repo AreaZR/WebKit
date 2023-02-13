@@ -60,7 +60,7 @@ static NSString * const WebResourceResponseKey =          @"WebResourceResponse"
 @public
     RefPtr<ArchiveResource> coreResource;
 }
-- (instancetype)initWithCoreResource:(Ref<ArchiveResource>&&)coreResource;
+- (instancetype)initWithCoreResource:(Ref<ArchiveResource>&&)coreResource NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation WebResourcePrivate
@@ -318,8 +318,8 @@ static NSString * const WebResourceResponseKey =          @"WebResourceResponse"
     // Copying it will also cause a performance regression.
     return [self _initWithData:data
                            URL:URL
-                      MIMEType:[response MIMEType]
-              textEncodingName:[response textEncodingName]
+                      MIMEType:response.MIMEType
+              textEncodingName:response.textEncodingName
                      frameName:nil
                       response:response
                       copyData:NO];
@@ -338,11 +338,11 @@ static NSString * const WebResourceResponseKey =          @"WebResourceResponse"
 #if !PLATFORM(IOS_FAMILY)
 - (NSFileWrapper *)_fileWrapperRepresentation
 {
-    auto wrapper = adoptNS([[NSFileWrapper alloc] initRegularFileWithContents:[self data]]);
+    auto wrapper = adoptNS([[NSFileWrapper alloc] initRegularFileWithContents:self.data]);
     NSString *filename = [self _suggestedFilename];
-    if (!filename || ![filename length])
-        filename = [[self URL] _webkit_suggestedFilenameWithMIMEType:[self MIMEType]];
-    [wrapper setPreferredFilename:filename];
+    if (!filename || !filename.length)
+        filename = [self.URL _webkit_suggestedFilenameWithMIMEType:self.MIMEType];
+    wrapper.preferredFilename = filename;
     return wrapper.autorelease();
 }
 #endif

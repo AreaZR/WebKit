@@ -46,8 +46,7 @@ class HTMLVideoElement;
     BOOL _forceDisableAnimation;
 }
 
-- (void)setVideoElement:(NakedPtr<WebCore::HTMLVideoElement>)videoElement;
-- (NakedPtr<WebCore::HTMLVideoElement>)videoElement;
+@property (nonatomic) NakedPtr<WebCore::HTMLVideoElement> videoElement;
 
 - (void)enterFullscreen:(NSScreen *)screen;
 - (void)exitFullscreen;

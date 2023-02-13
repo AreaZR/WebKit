@@ -31,16 +31,14 @@ class WebInspectorFrontendClient;
 @private
     NakedPtr<WebInspectorFrontendClient> m_frontendClient;
 }
-- (id)initWithFrontendClient:(NakedPtr<WebInspectorFrontendClient>)frontendClient;
+- (instancetype)initWithFrontendClient:(NakedPtr<WebInspectorFrontendClient>)frontendClient NS_DESIGNATED_INITIALIZER;
 - (void)attach;
 - (void)detach;
 - (void)close;
 
-- (BOOL)isDebuggingEnabled;
-- (void)setDebuggingEnabled:(BOOL)enabled;
+@property (nonatomic, getter=isDebuggingEnabled) BOOL debuggingEnabled;
 
-- (BOOL)isTimelineProfilingEnabled;
-- (void)setTimelineProfilingEnabled:(BOOL)enabled;
+@property (nonatomic, getter=isTimelineProfilingEnabled) BOOL timelineProfilingEnabled;
 
 - (BOOL)isProfilingJavaScript;
 - (void)startProfilingJavaScript;

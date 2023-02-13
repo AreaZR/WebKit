@@ -62,18 +62,17 @@ namespace WebCore {
     NakedPtr<WebCore::InspectorController> _inspectorController;
     id _delegate;
 }
-- (id)initWithTargetView:(NSView *)targetView inspectorController:(NakedPtr<WebCore::InspectorController>)inspectorController;
+- (instancetype)initWithTargetView:(NSView *)targetView inspectorController:(NakedPtr<WebCore::InspectorController>)inspectorController NS_DESIGNATED_INITIALIZER;
 
-- (void)setDelegate:(id)delegate;
-- (id)delegate;
+@property (nonatomic) id delegate;
 
 - (void)attach;
 - (void)detach;
 
-- (NSView *)targetView;
-- (WebNodeHighlightView *)highlightView;
+@property (nonatomic, readonly, strong) NSView *targetView;
+@property (nonatomic, readonly, strong) WebNodeHighlightView *highlightView;
 
-- (NakedPtr<WebCore::InspectorController>)inspectorController;
+@property (nonatomic, readonly) NakedPtr<WebCore::InspectorController> inspectorController;
 
 #if !PLATFORM(IOS_FAMILY)
 - (void)setNeedsUpdateInTargetViewRect:(NSRect)rect;

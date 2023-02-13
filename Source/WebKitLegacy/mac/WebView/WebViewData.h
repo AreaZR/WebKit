@@ -111,7 +111,7 @@ class WebSelectionServiceController;
     WebView *_view;
 }
 
-- (instancetype)initWithView:(WebView *)view;
+- (instancetype)initWithView:(WebView *)view NS_DESIGNATED_INITIALIZER;
 - (void)startObserving:(NSWindow *)window;
 - (void)stopObserving:(NSWindow *)window;
 @end

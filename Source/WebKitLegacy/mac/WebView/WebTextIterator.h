@@ -34,7 +34,7 @@
     WebTextIteratorPrivate *_private;
 }
 
-- (id)initWithRange:(DOMRange *)range;
+- (instancetype)initWithRange:(DOMRange *)range NS_DESIGNATED_INITIALIZER;
 
 /*!
  @method advance
@@ -48,14 +48,14 @@
  @method atEnd
  @result YES if the WebTextIterator has reached the end of the DOMRange.
  */
-- (BOOL)atEnd;
+@property (nonatomic, readonly) BOOL atEnd;
 
 /*!
  @method currentTextLength
  @result Length of the current text. Length of zero means that the iterator is at a boundary,
  such as an image, that separates runs of text.
  */
-- (NSUInteger)currentTextLength;
+@property (nonatomic, readonly) NSUInteger currentTextLength;
 
 /*!
  @method currentTextPointer
@@ -63,7 +63,7 @@
  invalid after any modification is made to the document; it must be used before the document
  is changed or the iterator is advanced.
  */
-- (const unichar *)currentTextPointer;
+@property (nonatomic, readonly) const unichar *currentTextPointer;
 
 /*!
  @method currentRange
@@ -74,7 +74,7 @@
  due to the cost of computing a DOM range.
  @result A DOM range indicating the position within the document of the current text.
  */
-- (DOMRange *)currentRange;
+@property (nonatomic, readonly, copy) DOMRange *currentRange;
 
 @end
 

@@ -42,53 +42,53 @@
 + (NSURL *)_web_URLWithDataAsString:(NSString *)string;
 + (NSURL *)_web_URLWithDataAsString:(NSString *)string relativeToURL:(NSURL *)baseURL;
 
-- (NSData *)_web_originalData;
-- (NSString *)_web_originalDataAsString;
-- (const char*)_web_URLCString;
+@property (nonatomic, readonly, copy) NSData *_web_originalData;
+@property (nonatomic, readonly, copy) NSString *_web_originalDataAsString;
+@property (nonatomic, readonly) const char *_web_URLCString;
 
-- (NSString *)_web_hostString;
+@property (nonatomic, readonly, copy) NSString *_web_hostString;
 
-- (NSString *)_web_userVisibleString;
+@property (nonatomic, readonly, copy) NSString *_web_userVisibleString;
 
-- (BOOL)_web_isEmpty;
+@property (nonatomic, readonly) BOOL _web_isEmpty;
 
-- (NSURL *)_webkit_canonicalize;
-- (NSURL *)_webkit_canonicalize_with_wtf;
-- (NSURL *)_webkit_URLByRemovingFragment;
-- (NSURL *)_web_URLByRemovingUserInfo;
+@property (nonatomic, readonly, copy) NSURL *_webkit_canonicalize;
+@property (nonatomic, readonly, copy) NSURL *_webkit_canonicalize_with_wtf;
+@property (nonatomic, readonly, copy) NSURL *_webkit_URLByRemovingFragment;
+@property (nonatomic, readonly, copy) NSURL *_web_URLByRemovingUserInfo;
 
-- (BOOL)_webkit_isJavaScriptURL;
-- (BOOL)_webkit_isFileURL;
-- (NSString *)_webkit_scriptIfJavaScriptURL;
+@property (nonatomic, readonly) BOOL _webkit_isJavaScriptURL;
+@property (nonatomic, readonly) BOOL _webkit_isFileURL;
+@property (nonatomic, readonly, copy) NSString *_webkit_scriptIfJavaScriptURL;
 
 - (NSString *)_webkit_suggestedFilenameWithMIMEType:(NSString *)MIMEType;
 
-- (NSURL *)_webkit_URLFromURLOrSchemelessFileURL;
+@property (nonatomic, readonly, copy) NSURL *_webkit_URLFromURLOrSchemelessFileURL;
 
 @end
 
 @interface NSString (WebNSURLExtras)
 
-- (BOOL)_web_isUserVisibleURL;
+@property (nonatomic, readonly) BOOL _web_isUserVisibleURL;
 
 // Deprecated as it ignores URL parsing errors.
 // Please use _webkit_decodeHostName instead.
 // Turns funny-looking ASCII form into Unicode, returns self if no decoding needed.
-- (NSString *)_web_decodeHostName;
+@property (nonatomic, readonly, copy) NSString *_web_decodeHostName;
 
 // Deprecated as it ignores URL parsing errors.
 // Please use the _webkit_encodeHostName instead.
 // Turns Unicode into funny-looking ASCII form, returns self if no encoding needed.
-- (NSString *)_web_encodeHostName;
+@property (nonatomic, readonly, copy) NSString *_web_encodeHostName;
 
 // Return value of nil means error in URL parsing.
-- (NSString *)_webkit_decodeHostName;
-- (NSString *)_webkit_encodeHostName;
+@property (nonatomic, readonly, copy) NSString *_webkit_decodeHostName;
+@property (nonatomic, readonly, copy) NSString *_webkit_encodeHostName;
 
-- (BOOL)_webkit_isJavaScriptURL;
-- (BOOL)_webkit_isFileURL;
-- (BOOL)_webkit_looksLikeAbsoluteURL;
-- (NSRange)_webkit_rangeOfURLScheme;
-- (NSString *)_webkit_scriptIfJavaScriptURL;
+@property (nonatomic, readonly) BOOL _webkit_isJavaScriptURL;
+@property (nonatomic, readonly) BOOL _webkit_isFileURL;
+@property (nonatomic, readonly) BOOL _webkit_looksLikeAbsoluteURL;
+@property (nonatomic, readonly) NSRange _webkit_rangeOfURLScheme;
+@property (nonatomic, readonly, copy) NSString *_webkit_scriptIfJavaScriptURL;
 
 @end

@@ -43,9 +43,9 @@
 - (void)_ignoreWhenUnarchiving;
 
 #if !TARGET_OS_IPHONE
-- (NSFileWrapper *)_fileWrapperRepresentation;
+@property (nonatomic, readonly, strong) NSFileWrapper *_fileWrapperRepresentation;
 #endif
-- (NSURLResponse *)_response;
-- (NSString *)_stringValue;
+@property (nonatomic, readonly, copy) NSURLResponse *_response;
+@property (nonatomic, readonly, copy) NSString *_stringValue;
 
 @end

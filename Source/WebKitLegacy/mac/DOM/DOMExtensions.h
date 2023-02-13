@@ -62,9 +62,9 @@ typedef struct _WKQuad {
 #if TARGET_OS_IPHONE
 - (CGRect)boundingBox;
 #else
-- (NSRect)boundingBox WEBKIT_AVAILABLE_MAC(10_5);
+@property (nonatomic, readonly) NSRect boundingBox WEBKIT_AVAILABLE_MAC(10_5);
 #endif
-- (NSArray *)lineBoxRects WEBKIT_AVAILABLE_MAC(10_5);
+@property (nonatomic, readonly, copy) NSArray *lineBoxRects WEBKIT_AVAILABLE_MAC(10_5);
 
 #if TARGET_OS_IPHONE
 - (CGRect)boundingBoxUsingTransforms; // takes transforms into account
@@ -88,7 +88,7 @@ typedef struct _WKQuad {
 
 @interface DOMElement (DOMElementAppKitExtensions)
 #if !TARGET_OS_IPHONE
-- (NSImage *)image WEBKIT_AVAILABLE_MAC(10_5);
+@property (nonatomic, readonly, copy) NSImage *image WEBKIT_AVAILABLE_MAC(10_5);
 #endif
 @end
 

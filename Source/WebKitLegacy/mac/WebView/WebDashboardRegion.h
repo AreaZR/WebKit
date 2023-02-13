@@ -44,10 +44,10 @@ typedef enum {
     NSRect clip;
     WebDashboardRegionType type;
 }
-- (id)initWithRect:(NSRect)rect clip:(NSRect)clip type:(WebDashboardRegionType)type;
-- (NSRect)dashboardRegionClip;
-- (NSRect)dashboardRegionRect;
-- (WebDashboardRegionType)dashboardRegionType;
+- (instancetype)initWithRect:(NSRect)rect clip:(NSRect)clip type:(WebDashboardRegionType)type NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly) NSRect dashboardRegionClip;
+@property (nonatomic, readonly) NSRect dashboardRegionRect;
+@property (nonatomic, readonly) WebDashboardRegionType dashboardRegionType;
 @end
 
 #endif

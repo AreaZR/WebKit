@@ -40,8 +40,8 @@
 - (NSFileWrapper *)_fileWrapperForURL:(NSURL *)URL;
 #endif
 - (void)_addSubframeArchives:(NSArray *) archives;
-- (NSError *)_mainDocumentError;
-- (NSString *)_responseMIMEType;
+@property (nonatomic, readonly, copy) NSError *_mainDocumentError;
+@property (nonatomic, readonly, copy) NSString *_responseMIMEType;
 
 - (void)_setDeferMainResourceDataLoad:(BOOL)flag;
 
@@ -49,8 +49,7 @@
 - (void)_setOverrideTextEncodingName:(NSString *)encoding;
 #endif
 - (void)_setAllowToBeMemoryMapped;
-- (void)setDataSourceDelegate:(NSObject<WebDataSourcePrivateDelegate> *)dataSourceDelegate;
-- (NSObject<WebDataSourcePrivateDelegate> *)dataSourceDelegate;
+@property (nonatomic, assign) NSObject<WebDataSourcePrivateDelegate> *dataSourceDelegate;
 
 #if TARGET_OS_IPHONE
 @property (nonatomic, readonly) NSDictionary *_quickLookContent;

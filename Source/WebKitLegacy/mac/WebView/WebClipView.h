@@ -38,11 +38,10 @@
     NSRect _additionalClip;
 }
 
-- (BOOL)currentScrollIsBlit;
-- (void)setAdditionalClip:(NSRect)additionalClip;
+@property (nonatomic, readonly) BOOL currentScrollIsBlit;
 - (void)resetAdditionalClip;
-- (BOOL)hasAdditionalClip;
-- (NSRect)additionalClip;
+@property (nonatomic, readonly) BOOL hasAdditionalClip;
+@property (nonatomic) NSRect additionalClip;
 
 @end
 

@@ -52,7 +52,7 @@ using namespace WebCore;
 {
     RefPtr<Geolocation> _geolocation;
 }
-- (id)initWithGeolocation:(NakedRef<Geolocation>)geolocation;
+- (instancetype)initWithGeolocation:(NakedRef<Geolocation>)geolocation NS_DESIGNATED_INITIALIZER;
 @end
 #else
 @interface WebGeolocationPolicyListener : NSObject <WebAllowDenyPolicyListener>
@@ -115,7 +115,7 @@ void WebGeolocationClient::requestPermission(Geolocation& geolocation)
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
     SEL selector = @selector(webView:decidePolicyForGeolocationRequestFromOrigin:frame:listener:);
-    if (![[m_webView UIDelegate] respondsToSelector:selector]) {
+    if (![m_webView.UIDelegate respondsToSelector:selector]) {
         geolocation.setIsAllowed(false, { });
         return;
     }
@@ -147,7 +147,7 @@ std::optional<GeolocationPositionData> WebGeolocationClient::lastPosition()
 #if !PLATFORM(IOS_FAMILY)
 @implementation WebGeolocationPolicyListener
 
-- (id)initWithGeolocation:(NakedRef<Geolocation>)geolocation
+- (instancetype)initWithGeolocation:(NakedRef<Geolocation>)geolocation
 {
     if (!(self = [super init]))
         return nil;

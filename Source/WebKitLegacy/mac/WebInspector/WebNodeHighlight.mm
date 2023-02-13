@@ -45,7 +45,7 @@ using namespace WebCore;
 
 #if !PLATFORM(IOS_FAMILY)
 @interface WebNodeHighlight (FileInternal)
-- (NSRect)_computeHighlightWindowFrame;
+@property (nonatomic, readonly) NSRect _computeHighlightWindowFrame;
 - (void)_repositionHighlightWindow;
 @end
 #endif
@@ -81,7 +81,7 @@ using namespace WebCore;
 
 @implementation WebNodeHighlight
 
-- (id)initWithTargetView:(NSView *)targetView inspectorController:(NakedPtr<InspectorController>)inspectorController
+- (instancetype)initWithTargetView:(NSView *)targetView inspectorController:(NakedPtr<InspectorController>)inspectorController
 {
     self = [super init];
     if (!self)
@@ -94,13 +94,13 @@ using namespace WebCore;
     int styleMask = NSWindowStyleMaskBorderless;
     NSRect contentRect = [NSWindow contentRectForFrameRect:[self _computeHighlightWindowFrame] styleMask:styleMask];
     _highlightWindow = [[NSWindow alloc] initWithContentRect:contentRect styleMask:styleMask backing:NSBackingStoreBuffered defer:NO];
-    [_highlightWindow setBackgroundColor:[NSColor clearColor]];
+    _highlightWindow.backgroundColor = [NSColor clearColor];
     [_highlightWindow setOpaque:NO];
     [_highlightWindow setIgnoresMouseEvents:YES];
     [_highlightWindow setReleasedWhenClosed:NO];
 
     _highlightView = [[WebNodeHighlightView alloc] initWithWebNodeHighlight:self];
-    [_highlightWindow setContentView:_highlightView];
+    _highlightWindow.contentView = _highlightView;
     [_highlightView release];
 #else
     ASSERT([_targetView isKindOfClass:[WebView class]]);
@@ -136,17 +136,17 @@ using namespace WebCore;
 #if !PLATFORM(IOS_FAMILY)
     ASSERT(_highlightWindow);
 
-    if (!_highlightWindow || !_targetView || ![_targetView window])
+    if (!_highlightWindow || !_targetView || !_targetView.window)
         return;
 
-    [[_targetView window] addChildWindow:_highlightWindow ordered:NSWindowAbove];
+    [_targetView.window addChildWindow:_highlightWindow ordered:NSWindowAbove];
 
     // Observe both frame-changed and bounds-changed notifications because either one could leave
     // the highlight incorrectly positioned with respect to the target view. We need to do this for
     // the entire superview hierarchy to handle scrolling, bars coming and going, etc. 
     // (without making concrete assumptions about the view hierarchy).
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-    for (NSView *v = _targetView; v; v = [v superview]) {
+    for (NSView *v = _targetView; v; v = v.superview) {
         [notificationCenter addObserver:self selector:@selector(_repositionHighlightWindow) name:NSViewFrameDidChangeNotification object:v];
         [notificationCenter addObserver:self selector:@selector(_repositionHighlightWindow) name:NSViewBoundsDidChangeNotification object:v];
     }
@@ -186,7 +186,7 @@ using namespace WebCore;
     [notificationCenter removeObserver:self name:NSViewFrameDidChangeNotification object:nil];
     [notificationCenter removeObserver:self name:NSViewBoundsDidChangeNotification object:nil];
 
-    [[_highlightWindow parentWindow] removeChildWindow:_highlightWindow];
+    [_highlightWindow.parentWindow removeChildWindow:_highlightWindow];
     [_highlightWindow close];
 
     [_highlightWindow release];
@@ -226,7 +226,7 @@ using namespace WebCore;
 {
     ASSERT(_targetView);
 
-    [[_targetView window] disableScreenUpdatesUntilFlush];
+    [_targetView.window disableScreenUpdatesUntilFlush];
 
     // Mark the whole highlight view as needing display since we don't know what areas
     // need updated, since the highlight can be larger than the element to show margins.
@@ -265,9 +265,9 @@ using namespace WebCore;
     ASSERT(_targetView);
     ASSERT([_targetView window]);
 
-    NSRect highlightWindowFrame = [_targetView convertRect:[_targetView visibleRect] toView:nil];
+    NSRect highlightWindowFrame = [_targetView convertRect:_targetView.visibleRect toView:nil];
     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    highlightWindowFrame.origin = [[_targetView window] convertBaseToScreen:highlightWindowFrame.origin];
+    highlightWindowFrame.origin = [_targetView.window convertBaseToScreen:highlightWindowFrame.origin];
     ALLOW_DEPRECATED_DECLARATIONS_END
 
     return highlightWindowFrame;
@@ -281,11 +281,11 @@ using namespace WebCore;
     
     // Until that bug is fixed, bail out to avoid worse problems where the highlight
     // moves to a nonsense location.
-    if (![_targetView window])
+    if (!_targetView.window)
         return;
 
     // Disable screen updates so the highlight moves in sync with the view.
-    [[_targetView window] disableScreenUpdatesUntilFlush];
+    [_targetView.window disableScreenUpdatesUntilFlush];
 
     [_highlightWindow setFrame:[self _computeHighlightWindowFrame] display:YES];
 }

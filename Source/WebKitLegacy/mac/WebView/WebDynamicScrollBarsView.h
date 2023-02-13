@@ -60,8 +60,8 @@ struct WebDynamicScrollBarsViewPrivate;
 
 // These methods return YES if the scrollers are visible, or if the only reason that they are not
 // visible is that they have been suppressed by setAlwaysHideHorizontal/VerticalScroller:.
-- (BOOL)horizontalScrollingAllowed;
-- (BOOL)verticalScrollingAllowed;
+@property (nonatomic, readonly) BOOL horizontalScrollingAllowed;
+@property (nonatomic, readonly) BOOL verticalScrollingAllowed;
 @end
 
 #endif // !TARGET_OS_IPHONE

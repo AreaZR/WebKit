@@ -33,16 +33,16 @@
 
 @interface WebFrameView (WebInternal)
 
-- (WebView *)_webView;
+@property (nonatomic, readonly, strong) WebView *_webView;
 - (void)_setDocumentView:(NSView <WebDocumentView> *)view;
 - (NSView <WebDocumentView> *)_makeDocumentViewForDataSource:(WebDataSource *)dataSource;
 - (void)_setWebFrame:(WebFrame *)webFrame;
-- (float)_verticalPageScrollDistance;
+@property (nonatomic, readonly) float _verticalPageScrollDistance;
 + (NSMutableDictionary *)_viewTypesAllowImageTypeOmission:(BOOL)allowImageTypeOmission;
 - (Class)_viewClassForMIMEType:(NSString *)MIMEType;
 + (Class)_viewClassForMIMEType:(NSString *)MIMEType allowingPlugins:(BOOL)allowPlugins;
 + (BOOL)_canShowMIMETypeAsHTML:(NSString *)MIMEType;
-- (WebDynamicScrollBarsView *)_scrollView;
+@property (nonatomic, readonly, strong) WebDynamicScrollBarsView *_scrollView;
 - (void)_install;
 - (void)_frameSizeChanged;
 

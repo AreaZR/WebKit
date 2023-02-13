@@ -35,7 +35,7 @@ namespace WebCore {
 
 @interface WebArchive (WebInternal)
 
-- (id)_initWithCoreLegacyWebArchive:(WTF::RefPtr<WebCore::LegacyWebArchive>&&)coreLegacyWebArchive;
-- (WebCore::LegacyWebArchive *)_coreLegacyWebArchive;
+- (instancetype)_initWithCoreLegacyWebArchive:(WTF::RefPtr<WebCore::LegacyWebArchive>&&)coreLegacyWebArchive;
+@property (nonatomic, readonly) WebCore::LegacyWebArchive *_coreLegacyWebArchive;
 
 @end

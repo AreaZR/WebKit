@@ -45,13 +45,13 @@ extern NSString *WebHistoryItemsDiscardedWhileLoadingNotification;
     @method allItems
     @result Returns an array of all WebHistoryItems in WebHistory, in an undefined order.
 */
-- (NSArray *)allItems;
+@property (nonatomic, readonly, copy) NSArray *allItems;
 
 /*!
     @method _data
     @result A data object with the entire history in the same format used by the saveToURL:error: method.
 */
-- (NSData *)_data;
+@property (nonatomic, readonly, copy) NSData *_data;
 
 + (void)_setVisitedLinkTrackingEnabled:(BOOL)visitedLinkTrackingEnabled;
 + (void)_removeAllVisitedLinks;

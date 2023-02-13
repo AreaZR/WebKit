@@ -114,7 +114,7 @@ static WebHTMLView *getTopHTMLView(Frame* frame)
 {
     ASSERT(frame);
     ASSERT(frame->page());
-    return (WebHTMLView*)[[kit(&frame->page()->mainFrame()) frameView] documentView];
+    return (WebHTMLView*)kit(&frame->page()->mainFrame()).frameView.documentView;
 }
 
 void WebDragClient::willPerformDragDestinationAction(WebCore::DragDestinationAction action, const WebCore::DragData& dragData)
@@ -139,7 +139,7 @@ void WebDragClient::startDrag(DragItem dragItem, DataTransfer& dataTransfer, Fra
     auto& dragImage = dragItem.image;
     auto dragLocationInContentCoordinates = dragItem.dragLocationInContentCoordinates;
 
-    RetainPtr<WebHTMLView> htmlView = (WebHTMLView*)[[kit(&frame) frameView] documentView];
+    RetainPtr<WebHTMLView> htmlView = (WebHTMLView*)kit(&frame).frameView.documentView;
     if (![htmlView.get() isKindOfClass:[WebHTMLView class]])
         return;
     
@@ -153,11 +153,11 @@ void WebDragClient::startDrag(DragItem dragItem, DataTransfer& dataTransfer, Fra
     NSImage *dragNSImage = dragImage.get().get();
     WebHTMLView *sourceHTMLView = htmlView.get();
 
-    IntSize size([dragNSImage size]);
+    IntSize size(dragNSImage.size);
     size.scale(1 / frame.page()->deviceScaleFactor());
-    [dragNSImage setSize:size];
+    dragNSImage.size = size;
 
-    id delegate = [m_webView UIDelegate];
+    id delegate = m_webView.UIDelegate;
     SEL selector = @selector(webView:dragImage:at:offset:event:pasteboard:source:slideBack:forView:);
     if ([delegate respondsToSelector:selector]) {
         @try {
@@ -182,10 +182,10 @@ void WebDragClient::beginDrag(DragItem dragItem, Frame& frame, const IntPoint& m
 
     auto draggingItem = adoptNS([[NSDraggingItem alloc] initWithPasteboardWriter:createPasteboardWriter(dragItem.data).get()]);
 
-    auto dragImageSize = IntSize { [dragItem.image.get() size] };
+    auto dragImageSize = IntSize { dragItem.image.get().size };
 
     dragImageSize.scale(1 / frame.page()->deviceScaleFactor());
-    [dragItem.image.get() setSize:dragImageSize];
+    dragItem.image.get().size = dragImageSize;
 
     NSRect draggingFrame = NSMakeRect(mouseDraggedPosition.x() - dragImageSize.width() * dragItem.imageAnchorPoint.x(), mouseDraggedPosition.y() - dragImageSize.height() * dragItem.imageAnchorPoint.y(), dragImageSize.width(), dragImageSize.height());
     [draggingItem setDraggingFrame:draggingFrame contents:dragItem.image.get().get()];
@@ -198,7 +198,7 @@ void WebDragClient::beginDrag(DragItem dragItem, Frame& frame, const IntPoint& m
 void WebDragClient::declareAndWriteDragImage(const String& pasteboardName, Element& element, const URL& url, const String& title, WebCore::Frame* frame)
 {
     ASSERT(pasteboardName);
-    [[NSPasteboard pasteboardWithName:pasteboardName] _web_declareAndWriteDragImageForElement:kit(&element) URL:url title:title archive:[kit(&element) webArchive] source:getTopHTMLView(frame)];
+    [[NSPasteboard pasteboardWithName:pasteboardName] _web_declareAndWriteDragImageForElement:kit(&element) URL:url title:title archive:kit(&element).webArchive source:getTopHTMLView(frame)];
 }
 
 #elif !PLATFORM(IOS_FAMILY) || !ENABLE(DRAG_SUPPORT)

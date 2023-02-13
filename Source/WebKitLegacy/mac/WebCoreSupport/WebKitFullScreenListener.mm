@@ -35,7 +35,7 @@ using namespace WebCore;
 
 @implementation WebKitFullScreenListener
 
-- (id)initWithElement:(Element*)element
+- (instancetype)initWithElement:(Element*)element
 {
     if (!(self = [super init]))
         return nil;

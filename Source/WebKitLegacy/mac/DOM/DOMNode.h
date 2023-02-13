@@ -55,7 +55,7 @@ enum {
 } WEBKIT_ENUM_DEPRECATED_MAC(10_4, 10_14);
 
 WEBKIT_CLASS_DEPRECATED_MAC(10_4, 10_14)
-@interface DOMNode : DOMObject <DOMEventTarget>
+@interface DOMNode : DOMObject <DOMEventTarget, DOMXPathNSResolver>
 @property (readonly, copy) NSString *nodeName;
 @property (copy) NSString *nodeValue;
 @property (readonly) unsigned short nodeType;
@@ -79,11 +79,11 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_4, 10_14)
 - (DOMNode *)replaceChild:(DOMNode *)newChild oldChild:(DOMNode *)oldChild WEBKIT_AVAILABLE_MAC(10_5);
 - (DOMNode *)removeChild:(DOMNode *)oldChild;
 - (DOMNode *)appendChild:(DOMNode *)newChild;
-- (BOOL)hasChildNodes;
+@property (nonatomic, readonly) BOOL hasChildNodes;
 - (DOMNode *)cloneNode:(BOOL)deep;
 - (void)normalize;
 - (BOOL)isSupported:(NSString *)feature version:(NSString *)version WEBKIT_AVAILABLE_MAC(10_5);
-- (BOOL)hasAttributes;
+@property (nonatomic, readonly) BOOL hasAttributes;
 - (BOOL)isSameNode:(DOMNode *)other WEBKIT_AVAILABLE_MAC(10_5);
 - (BOOL)isEqualNode:(DOMNode *)other WEBKIT_AVAILABLE_MAC(10_5);
 - (NSString *)lookupPrefix:(NSString *)namespaceURI WEBKIT_AVAILABLE_MAC(10_5);

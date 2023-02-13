@@ -59,15 +59,14 @@ class EventListener;
 @property (readonly) NSRect initialFrame;
 @property (readonly) NSRect finalFrame;
 
-- (WebView*)webView;
-- (void)setWebView:(WebView*)webView;
+@property (nonatomic, strong) WebView *webView;
 
-- (NSView*)webViewPlaceholder;
+@property (nonatomic, readonly, strong) NSView *webViewPlaceholder;
 
-- (BOOL)isFullScreen;
+@property (nonatomic, getter=isFullScreen, readonly) BOOL fullScreen;
 
 - (void)setElement:(RefPtr<WebCore::Element>&&)element;
-- (WebCore::Element*)element;
+- (WebCore::Element*)element NS_RETURNS_INNER_POINTER;
 
 - (void)enterFullScreen:(NSScreen *)screen;
 - (void)exitFullScreen;

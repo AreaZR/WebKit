@@ -51,6 +51,6 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_5, 10_14)
 @property (readonly) BOOL invalidIteratorState;
 @property (readonly) unsigned snapshotLength;
 
-- (DOMNode *)iterateNext;
+@property (nonatomic, readonly, copy) DOMNode *iterateNext;
 - (DOMNode *)snapshotItem:(unsigned)index;
 @end

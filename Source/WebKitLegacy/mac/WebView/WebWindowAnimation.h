@@ -33,11 +33,11 @@
     RetainPtr<NSAnimation> _subAnimation;
     NSTimeInterval _hintedDuration;
 }
-- (id)initWithHintedDuration:(NSTimeInterval)duration window:(NSWindow *)window initalFrame:(NSRect)initialFrame finalFrame:(NSRect)finalFrame;
+- (instancetype)initWithHintedDuration:(NSTimeInterval)duration window:(NSWindow *)window initalFrame:(NSRect)initialFrame finalFrame:(NSRect)finalFrame;
 
 - (void)setSubAnimation:(NSAnimation *)animation;
 
-- (NSRect)currentFrame;
+@property (nonatomic, readonly) NSRect currentFrame;
 
 // Be sure to call setWindow:nil to clear the weak link _window when appropriate
 - (void)setWindow:(NSWindow *)window;
@@ -51,9 +51,9 @@
     BOOL _isStopped;
     
 }
-- (id)initWithDuration:(NSTimeInterval)duration window:(NSWindow *)window initialAlpha:(CGFloat)initialAlpha finalAlpha:(CGFloat)finalAlpha;
+- (instancetype)initWithDuration:(NSTimeInterval)duration window:(NSWindow *)window initialAlpha:(CGFloat)initialAlpha finalAlpha:(CGFloat)finalAlpha;
 
-- (CGFloat)currentAlpha;
+@property (nonatomic, readonly) CGFloat currentAlpha;
 
 // Be sure to call setWindow:nil to clear the weak link _window when appropriate
 - (void)setWindow:(NSWindow *)window;

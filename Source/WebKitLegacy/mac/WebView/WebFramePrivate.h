@@ -77,14 +77,14 @@ typedef enum {
 - (BOOL)_isDescendantOfFrame:(WebFrame *)frame;
 - (void)_setShouldCreateRenderers:(BOOL)shouldCreateRenderers;
 #if !TARGET_OS_IPHONE
-- (NSColor *)_bodyBackgroundColor;
+@property (nonatomic, readonly, copy) NSColor *_bodyBackgroundColor;
 #else
 - (CGColorRef)_bodyBackgroundColor;
 #endif
-- (BOOL)_isFrameSet;
-- (BOOL)_firstLayoutDone;
-- (BOOL)_isVisuallyNonEmpty;
-- (WebFrameLoadType)_loadType;
+@property (nonatomic, readonly) BOOL _isFrameSet;
+@property (nonatomic, readonly) BOOL _firstLayoutDone;
+@property (nonatomic, readonly) BOOL _isVisuallyNonEmpty;
+@property (nonatomic, readonly) WebFrameLoadType _loadType;
 #if TARGET_OS_IPHONE
 - (BOOL)needsLayout; // Needed for Mail <rdar://problem/6228038>
 - (void)_setLoadsSynchronously:(BOOL)flag;
@@ -195,7 +195,7 @@ typedef enum {
 // These methods take and return NSRanges based on the root editable element as the positional base.
 // This fits with AppKit's idea of an input context. These methods are slow compared to their DOMRange equivalents.
 // You should use WebView's selectedDOMRange and setSelectedDOMRange whenever possible.
-- (NSRange)_selectedNSRange;
+@property (nonatomic, readonly) NSRange _selectedNSRange;
 - (void)_selectNSRange:(NSRange)range;
 
 #if TARGET_OS_IPHONE
@@ -205,9 +205,9 @@ typedef enum {
 - (DOMRange *)_selectionRangeForFirstPoint:(CGPoint)first secondPoint:(CGPoint)second;
 #endif
 
-- (BOOL)_isDisplayingStandaloneImage;
+@property (nonatomic, readonly) BOOL _isDisplayingStandaloneImage;
 
-- (unsigned)_pendingFrameUnloadEventCount;
+@property (nonatomic, readonly) unsigned int _pendingFrameUnloadEventCount;
 
 - (NSString *)_stringByEvaluatingJavaScriptFromString:(NSString *)string withGlobalObject:(JSObjectRef)globalObject inScriptWorld:(WebScriptWorld *)world;
 - (JSGlobalContextRef)_globalContextForScriptWorld:(WebScriptWorld *)world;
@@ -232,7 +232,7 @@ typedef enum {
 - (void)_smartInsertForString:(NSString *)pasteString replacingRange:(DOMRange *)rangeToReplace beforeString:(NSString **)beforeString afterString:(NSString **)afterString;
 #endif
 
-- (NSMutableDictionary *)_cacheabilityDictionary;
+@property (nonatomic, readonly, copy) NSMutableDictionary *_cacheabilityDictionary;
 
 - (BOOL)_allowsFollowingLink:(NSURL *)URL;
 
@@ -252,13 +252,13 @@ typedef enum {
 - (void)setAccessibleName:(NSString *)name;
 
 // Enhanced accessibility.
-- (BOOL)enhancedAccessibilityEnabled;
+@property (nonatomic, readonly) BOOL enhancedAccessibilityEnabled;
 - (void)setEnhancedAccessibility:(BOOL)enable;
 
-- (NSString*)_layerTreeAsText;
+@property (nonatomic, readonly, copy) NSString *_layerTreeAsText;
 
 // The top of the accessibility tree.
-- (id)accessibilityRoot;
+@property (nonatomic, readonly, strong) id accessibilityRoot;
 
 // Clears frame opener. This is executed between layout tests runs
 - (void)_clearOpener;
@@ -286,7 +286,7 @@ typedef enum {
 
 - (NSDictionary *)elementAtPoint:(NSPoint)point;
 
-- (NSURL *)_unreachableURL;
+@property (nonatomic, readonly, copy) NSURL *_unreachableURL;
 
 - (void)_generateTestReport:(NSString *) message withGroup:(NSString *)group;
 

@@ -134,16 +134,16 @@ WebLayoutMilestones kitLayoutMilestones(OptionSet<WebCore::LayoutMilestone>);
 
 + (BOOL)shouldIncludeInWebKitStatistics;
 
-- (WebCore::Frame*)_mainCoreFrame;
-- (WebFrame *)_selectedOrMainFrame;
+@property (nonatomic, readonly) WebCore::Frame *_mainCoreFrame;
+@property (nonatomic, readonly, strong) WebFrame *_selectedOrMainFrame;
 
 - (void)_clearCredentials;
 
-- (WebCore::KeyboardUIMode)_keyboardUIMode;
+@property (nonatomic, readonly) WebCore::KeyboardUIMode _keyboardUIMode;
 
-- (BOOL)_becomingFirstResponderFromOutside;
+@property (nonatomic, readonly) BOOL _becomingFirstResponderFromOutside;
 
-- (BOOL)_needsOneShotDrawingSynchronization;
+@property (nonatomic, readonly) BOOL _needsOneShotDrawingSynchronization;
 - (void)_setNeedsOneShotDrawingSynchronization:(BOOL)needsSynchronization;
 
 - (void)_scheduleUpdateRendering;
@@ -153,7 +153,7 @@ WebLayoutMilestones kitLayoutMilestones(OptionSet<WebCore::LayoutMilestone>);
 - (void)_didCompleteRenderingUpdateDisplay;
 - (void)_didCompleteRenderingFrame;
 
-- (BOOL)_flushCompositingChanges;
+@property (nonatomic, readonly) BOOL _flushCompositingChanges;
 
 #if USE(AUTOCORRECTION_PANEL)
 - (void)handleAcceptedAlternativeText:(NSString*)text;
@@ -165,7 +165,7 @@ WebLayoutMilestones kitLayoutMilestones(OptionSet<WebCore::LayoutMilestone>);
 - (Vector<String>)_dictationAlternatives:(WebCore::DictationContext)dictationContext;
 
 #if ENABLE(SERVICE_CONTROLS)
-- (WebSelectionServiceController&)_selectionServiceController;
+@property (nonatomic, readonly) WebSelectionServiceController & _selectionServiceController;
 #endif
 
 #if HAVE(TRANSLATION_UI_SERVICES) && ENABLE(CONTEXT_MENUS)
@@ -194,19 +194,19 @@ WebLayoutMilestones kitLayoutMilestones(OptionSet<WebCore::LayoutMilestone>);
 + (WebCacheModel)_cacheModel;
 
 #ifdef __cplusplus
-- (NakedPtr<WebCore::Page>)page;
-- (WTF::String)_userAgentString;
+@property (nonatomic, readonly) NakedPtr<WebCore::Page> page;
+@property (nonatomic, readonly) WTF::String _userAgentString;
 #endif
 
 #if !PLATFORM(IOS_FAMILY)
 - (NSMenu *)_menuForElement:(NSDictionary *)element defaultItems:(NSArray *)items;
 #endif
-- (id)_UIDelegateForwarder;
+@property (nonatomic, readonly, strong) id _UIDelegateForwarder;
 #if PLATFORM(IOS_FAMILY)
 - (id)_UIDelegateForSelector:(SEL)selector;
 #endif
-- (id)_editingDelegateForwarder;
-- (id)_policyDelegateForwarder;
+@property (nonatomic, readonly, strong) id _editingDelegateForwarder;
+@property (nonatomic, readonly, strong) id _policyDelegateForwarder;
 #if PLATFORM(IOS_FAMILY)
 - (id)_frameLoadDelegateForwarder;
 - (id)_resourceLoadDelegateForwarder;
@@ -227,7 +227,7 @@ WebLayoutMilestones kitLayoutMilestones(OptionSet<WebCore::LayoutMilestone>);
 - (WebDownload *)_downloadURL:(NSURL *)URL;
 + (NSString *)_generatedMIMETypeForURLScheme:(NSString *)URLScheme;
 + (BOOL)_representationExistsForURLScheme:(NSString *)URLScheme;
-- (BOOL)_isPerformingProgrammaticFocus;
+@property (nonatomic, readonly) BOOL _isPerformingProgrammaticFocus;
 - (void)_mouseDidMoveOverElement:(NSDictionary *)dictionary modifierFlags:(NSUInteger)modifierFlags;
 - (WebView *)_openNewWindowWithRequest:(NSURLRequest *)request;
 #if !PLATFORM(IOS_FAMILY)
@@ -249,8 +249,7 @@ WebLayoutMilestones kitLayoutMilestones(OptionSet<WebCore::LayoutMilestone>);
 - (WebBasePluginPackage *)_pluginForMIMEType:(NSString *)MIMEType;
 - (WebBasePluginPackage *)_pluginForExtension:(NSString *)extension;
 
-- (void)setCurrentNodeHighlight:(WebNodeHighlight *)nodeHighlight;
-- (WebNodeHighlight *)currentNodeHighlight;
+@property (nonatomic, strong) WebNodeHighlight *currentNodeHighlight;
 
 #if !PLATFORM(IOS_FAMILY)
 - (void)addPluginInstanceView:(NSView *)view;
@@ -266,8 +265,8 @@ WebLayoutMilestones kitLayoutMilestones(OptionSet<WebCore::LayoutMilestone>);
 
 - (void)_setZoomMultiplier:(float)multiplier isTextOnly:(BOOL)isTextOnly;
 - (float)_zoomMultiplier:(BOOL)isTextOnly;
-- (float)_realZoomMultiplier;
-- (BOOL)_realZoomMultiplierIsTextOnly;
+@property (nonatomic, readonly) float _realZoomMultiplier;
+@property (nonatomic, readonly) BOOL _realZoomMultiplierIsTextOnly;
 - (BOOL)_canZoomOut:(BOOL)isTextOnly;
 - (BOOL)_canZoomIn:(BOOL)isTextOnly;
 - (IBAction)_zoomOut:(id)sender isTextOnly:(BOOL)isTextOnly;
@@ -306,7 +305,7 @@ WebLayoutMilestones kitLayoutMilestones(OptionSet<WebCore::LayoutMilestone>);
 - (void)_enterVideoFullscreenForVideoElement:(NakedPtr<WebCore::HTMLVideoElement>)videoElement mode:(WebCore::HTMLMediaElementEnums::VideoFullscreenMode)mode;
 - (void)_exitVideoFullscreen;
 #if PLATFORM(MAC)
-- (BOOL)_hasActiveVideoForControlsInterface;
+@property (nonatomic, readonly) BOOL _hasActiveVideoForControlsInterface;
 - (void)_setUpPlaybackControlsManagerForMediaElement:(NakedRef<WebCore::HTMLMediaElement>)mediaElement;
 - (void)_clearPlaybackControlsManager;
 - (void)_playbackControlsMediaEngineChanged;
@@ -333,13 +332,13 @@ WebLayoutMilestones kitLayoutMilestones(OptionSet<WebCore::LayoutMilestone>);
 - (void)_setTextIndicatorAnimationProgress:(float)progress;
 - (void)_showDictionaryLookupPopup:(const WebCore::DictionaryPopupInfo&)dictionaryPopupInfo;
 - (id)_animationControllerForDictionaryLookupPopupInfo:(const WebCore::DictionaryPopupInfo&)dictionaryPopupInfo;
-- (WebImmediateActionController *)_immediateActionController;
-- (NSEvent *)_pressureEvent;
+@property (nonatomic, readonly, strong) WebImmediateActionController *_immediateActionController;
+@property (nonatomic, readonly, copy) NSEvent *_pressureEvent;
 - (void)_setPressureEvent:(NSEvent *)event;
 #endif
 
 #if ENABLE(WIRELESS_PLAYBACK_TARGET) && !PLATFORM(IOS_FAMILY) && defined(__cplusplus)
-- (WebMediaPlaybackTargetPicker *) _devicePicker;
+@property (nonatomic, readonly) WebMediaPlaybackTargetPicker *_devicePicker;
 - (void)_addPlaybackTargetPickerClient:(WebCore::PlaybackTargetClientContextIdentifier)contextId;
 - (void)_removePlaybackTargetPickerClient:(WebCore::PlaybackTargetClientContextIdentifier)contextId;
 - (void)_showPlaybackTargetPicker:(WebCore::PlaybackTargetClientContextIdentifier)contextId location:(const WebCore::IntPoint&)location hasVideo:(BOOL)hasVideo;
@@ -353,7 +352,7 @@ WebLayoutMilestones kitLayoutMilestones(OptionSet<WebCore::LayoutMilestone>);
 - (void)prepareForMouseDown;
 - (void)updateTouchBar;
 - (void)_dismissTextTouchBarPopoverItemWithIdentifier:(NSString *)identifier;
-- (NSCandidateListTouchBarItem *)candidateList;
+@property (nonatomic, readonly, strong) NSCandidateListTouchBarItem *candidateList;
 
 - (void)showFormValidationMessage:(NSString *)message withAnchorRect:(NSRect)anchorRect;
 - (void)hideFormValidationMessage;

@@ -48,9 +48,9 @@
 - (IBAction)_resetZoom:(id)sender;
 
 // Whether or not the commands can be executed.
-- (BOOL)_canZoomOut;
-- (BOOL)_canZoomIn;
-- (BOOL)_canResetZoom;
+@property (nonatomic, readonly) BOOL _canZoomOut;
+@property (nonatomic, readonly) BOOL _canZoomIn;
+@property (nonatomic, readonly) BOOL _canResetZoom;
 
 @end
 
@@ -60,11 +60,10 @@
 @end
 
 @protocol WebMultipleTextMatches <NSObject>
-- (void)setMarkedTextMatchesAreHighlighted:(BOOL)newValue;
-- (BOOL)markedTextMatchesAreHighlighted;
+@property (nonatomic) BOOL markedTextMatchesAreHighlighted;
 - (NSUInteger)countMatchesForText:(NSString *)string inDOMRange:(DOMRange *)range options:(WebFindOptions)options limit:(NSUInteger)limit markMatches:(BOOL)markMatches;
 - (void)unmarkAllTextMatches;
-- (NSArray *)rectsForTextMatches;
+@property (nonatomic, readonly, copy) NSArray *rectsForTextMatches;
 @end
 
 @protocol WebDocumentOptionsSearching <NSObject>
@@ -74,10 +73,8 @@
 
 /* Used to save and restore state in the view, typically when going back/forward */
 @protocol _WebDocumentViewState <NSObject>
-- (NSPoint)scrollPoint;
-- (void)setScrollPoint:(NSPoint)p;
-- (id)viewState;
-- (void)setViewState:(id)statePList;
+@property (nonatomic) NSPoint scrollPoint;
+@property (nonatomic, strong) id viewState;
 @end
 
 @interface WebHTMLView (WebDocumentInternalProtocols) <WebDocumentElement, WebMultipleTextMatches, WebDocumentOptionsSearching>

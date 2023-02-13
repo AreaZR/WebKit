@@ -38,27 +38,27 @@
 
 #if !TARGET_OS_IPHONE
 @protocol WebDocumentImage <NSObject>
-- (NSImage *)image;
+@property (nonatomic, readonly, copy) NSImage *image;
 @end
 #endif
 
 // This method is deprecated as it now lives on WebFrame.
 @protocol WebDocumentDOM <NSObject>
-- (DOMDocument *)DOMDocument;
-- (BOOL)canSaveAsWebArchive;
+@property (nonatomic, readonly, copy) DOMDocument *DOMDocument;
+@property (nonatomic, readonly) BOOL canSaveAsWebArchive;
 @end
 
 @protocol WebDocumentSelection <WebDocumentText>
 #if !TARGET_OS_IPHONE
-- (NSArray *)pasteboardTypesForSelection;
+@property (nonatomic, readonly, copy) NSArray *pasteboardTypesForSelection;
 - (void)writeSelectionWithPasteboardTypes:(NSArray *)types toPasteboard:(NSPasteboard *)pasteboard;
 #endif
 
 // Array of rects that tightly enclose the selected text, in coordinates of selectinView.
-- (NSArray *)selectionTextRects;
+@property (nonatomic, readonly, copy) NSArray *selectionTextRects;
 
 // Rect tightly enclosing the entire selected area, in coordinates of selectionView.
-- (NSRect)selectionRect;
+@property (nonatomic, readonly) NSRect selectionRect;
 
 #if !TARGET_OS_IPHONE
 // NSImage of the portion of the selection that's in view. This does not draw backgrounds. 
@@ -70,19 +70,19 @@
 
 // Rect tightly enclosing the entire selected area, in coordinates of selectionView.
 // NOTE: This method is equivalent to selectionRect and shouldn't be used; use selectionRect instead.
-- (NSRect)selectionImageRect;
+@property (nonatomic, readonly) NSRect selectionImageRect;
 
 // View that draws the selection and can be made first responder. Often this is self but it could be
 // a nested view, as for example in the case of WebPDFView.
 #if TARGET_OS_IPHONE
 - (WAKView *)selectionView;
 #else
-- (NSView *)selectionView;
+@property (nonatomic, readonly, strong) NSView *selectionView;
 #endif
 @end
 
 @protocol WebDocumentPDF <WebDocumentText>
-- (PDFDocument *)PDFDocument;
+@property (nonatomic, readonly, copy) PDFDocument *PDFDocument;
 @end
 
 @protocol WebDocumentIncrementalSearching

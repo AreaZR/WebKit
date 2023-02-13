@@ -36,30 +36,29 @@
     @param origin The security origin this will manage.
     @result A new WebQuotaManager object.
 */
-- (id)initWithOrigin:(WebSecurityOrigin *)origin;
+- (instancetype)initWithOrigin:(WebSecurityOrigin *)origin;
 
 /*!
     @method origin
     @result The security origin this manager is managing.
 */
-- (WebSecurityOrigin *)origin;
+@property (nonatomic, readonly, strong) WebSecurityOrigin *origin;
 
 /*!
     @method usage
     @result The current total usage of all relevant items in this security origin in bytes.
 */
-- (unsigned long long)usage;
+@property (nonatomic, readonly) unsigned long long usage;
 
 /*!
     @method quota
     @result The current quota of security origin in bytes.
 */
-- (unsigned long long)quota;
+@property (nonatomic) unsigned long long quota;
 
 /*!
     @method setQuota:
     @param quota a new quota, in bytes, to set on this security origin.
 */
-- (void)setQuota:(unsigned long long)quota;
 
 @end

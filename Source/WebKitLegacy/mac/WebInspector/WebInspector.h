@@ -40,7 +40,7 @@ extern NSString *WebInspectorDidStopSearchingForNode;
     WebView *_inspectedWebView;
     WebInspectorFrontend *_frontend;
 }
-- (id)initWithInspectedWebView:(WebView *)inspectedWebView;
+- (instancetype)initWithInspectedWebView:(WebView *)inspectedWebView NS_DESIGNATED_INITIALIZER;
 - (void)inspectedWebViewClosed;
 - (void)show:(id)sender;
 - (void)showConsole:(id)sender;
@@ -53,10 +53,8 @@ extern NSString *WebInspectorDidStopSearchingForNode;
 - (void)startDebuggingJavaScript:(id)sender;
 - (void)stopDebuggingJavaScript:(id)sender;
 
-- (BOOL)isJavaScriptProfilingEnabled;
-- (void)setJavaScriptProfilingEnabled:(BOOL)enabled;
-- (BOOL)isTimelineProfilingEnabled;
-- (void)setTimelineProfilingEnabled:(BOOL)enabled;
+@property (nonatomic, getter=isJavaScriptProfilingEnabled) BOOL javaScriptProfilingEnabled;
+@property (nonatomic, getter=isTimelineProfilingEnabled) BOOL timelineProfilingEnabled;
 
 - (BOOL)isProfilingJavaScript;
 - (void)toggleProfilingJavaScript:(id)sender;

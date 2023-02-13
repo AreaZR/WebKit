@@ -69,7 +69,7 @@ static NSString *databasesDirectoryPath();
     return sharedManager;
 }
 
-- (id)init
+- (instancetype)init
 {
     if (!(self = [super init]))
         return nil;
@@ -225,5 +225,5 @@ static NSString *databasesDirectoryPath()
     if (!databasesDirectory || ![databasesDirectory isKindOfClass:[NSString class]])
         databasesDirectory = @"~/Library/WebKit/Databases";
     
-    return [databasesDirectory stringByStandardizingPath];
+    return databasesDirectory.stringByStandardizingPath;
 }

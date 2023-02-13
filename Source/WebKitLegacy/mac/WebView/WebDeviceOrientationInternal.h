@@ -35,12 +35,12 @@
     RefPtr<WebCore::DeviceOrientationData> m_orientation;
 }
 
-- (id)initWithCoreDeviceOrientation:(RefPtr<WebCore::DeviceOrientationData>&&)coreDeviceOrientation;
+- (instancetype)initWithCoreDeviceOrientation:(RefPtr<WebCore::DeviceOrientationData>&&)coreDeviceOrientation NS_DESIGNATED_INITIALIZER;
 @end
 
 @interface WebDeviceOrientation (Internal)
 
-- (id)initWithCoreDeviceOrientation:(RefPtr<WebCore::DeviceOrientationData>&&)coreDeviceOrientation;
+- (instancetype)initWithCoreDeviceOrientation:(RefPtr<WebCore::DeviceOrientationData>&&)coreDeviceOrientation;
 
 @end
 

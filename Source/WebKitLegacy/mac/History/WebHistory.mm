@@ -96,22 +96,20 @@ private:
 - (void)addItems:(NSArray *)newEntries;
 - (BOOL)removeItem:(WebHistoryItem *)entry;
 - (BOOL)removeItems:(NSArray *)entries;
-- (BOOL)removeAllItems;
+@property (nonatomic, readonly) BOOL removeAllItems;
 - (void)rebuildHistoryByDayIfNeeded:(WebHistory *)webHistory;
 
-- (NSArray *)orderedLastVisitedDays;
+@property (nonatomic, readonly, copy) NSArray *orderedLastVisitedDays;
 - (BOOL)containsURL:(NSURL *)URL;
 - (WebHistoryItem *)itemForURL:(NSURL *)URL;
 - (WebHistoryItem *)itemForURLString:(NSString *)URLString;
-- (NSArray *)allItems;
+@property (nonatomic, readonly, copy) NSArray *allItems;
 
 - (BOOL)loadFromURL:(NSURL *)URL collectDiscardedItemsInto:(NSMutableArray *)discardedItems error:(NSError **)error;
 - (BOOL)saveToURL:(NSURL *)URL error:(NSError **)error;
 
-- (void)setHistoryItemLimit:(int)limit;
-- (int)historyItemLimit;
-- (void)setHistoryAgeInDaysLimit:(int)limit;
-- (int)historyAgeInDaysLimit;
+@property (nonatomic) int historyItemLimit;
+@property (nonatomic) int historyAgeInDaysLimit;
 
 @end
 
@@ -127,7 +125,7 @@ private:
     }];
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (!self)
@@ -187,18 +185,18 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
     ASSERT(_entriesByDate->contains(dateKey));
 
     NSMutableArray *entriesForDate = _entriesByDate->get(dateKey).get();
-    NSTimeInterval entryDate = [entry lastVisitedTimeInterval];
+    NSTimeInterval entryDate = entry.lastVisitedTimeInterval;
 
-    unsigned count = [entriesForDate count];
+    unsigned count = entriesForDate.count;
 
     // The entries for each day are stored in a sorted array with the most recent entry first
     // Check for the common cases of the entry being newer than all existing entries or the first entry of the day
-    if (!count || [[entriesForDate objectAtIndex:0] lastVisitedTimeInterval] < entryDate) {
+    if (!count || [entriesForDate[0] lastVisitedTimeInterval] < entryDate) {
         [entriesForDate insertObject:entry atIndex:0];
         return;
     }
     // .. or older than all existing entries
-    if (count > 0 && [[entriesForDate objectAtIndex:count - 1] lastVisitedTimeInterval] >= entryDate) {
+    if (count > 0 && [entriesForDate[count - 1] lastVisitedTimeInterval] >= entryDate) {
         [entriesForDate insertObject:entry atIndex:count];
         return;
     }
@@ -207,7 +205,7 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
     unsigned high = count;
     while (low < high) {
         unsigned mid = low + (high - low) / 2;
-        if ([[entriesForDate objectAtIndex:mid] lastVisitedTimeInterval] >= entryDate)
+        if ([entriesForDate[mid] lastVisitedTimeInterval] >= entryDate)
             low = mid + 1;
         else
             high = mid;
@@ -220,7 +218,7 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
 - (BOOL)removeItemFromDateCaches:(WebHistoryItem *)entry
 {
     WebHistoryDateKey dateKey;
-    BOOL foundDate = [self findKey:&dateKey forDay:[entry lastVisitedTimeInterval]];
+    BOOL foundDate = [self findKey:&dateKey forDay:entry.lastVisitedTimeInterval];
  
     if (!foundDate)
         return NO;
@@ -230,7 +228,7 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
     [entriesForDate removeObjectIdenticalTo:entry];
     
     // remove this date entirely if there are no other entries on it
-    if ([entriesForDate count] == 0) {
+    if (entriesForDate.count == 0) {
         _entriesByDate->remove(it);
         // Clear _orderedLastVisitedDays so it will be regenerated when next requested.
         _orderedLastVisitedDays = nil;
@@ -241,7 +239,7 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
 
 - (BOOL)removeItemForURLString:(NSString *)URLString
 {
-    WebHistoryItem *entry = [_entriesByURL objectForKey:URLString];
+    WebHistoryItem *entry = _entriesByURL[URLString];
     if (!entry)
         return NO;
 
@@ -254,7 +252,7 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
     ASSERT(itemWasInDateCaches);
 #endif
 
-    if (![_entriesByURL count])
+    if (!_entriesByURL.count)
         WebVisitedLinkStore::removeAllVisitedLinks();
 
     return YES;
@@ -263,7 +261,7 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
 - (void)addItemToDateCaches:(WebHistoryItem *)entry
 {
     WebHistoryDateKey dateKey;
-    if ([self findKey:&dateKey forDay:[entry lastVisitedTimeInterval]])
+    if ([self findKey:&dateKey forDay:entry.lastVisitedTimeInterval])
         // other entries already exist for this date
         [self insertItem:entry forDateKey:dateKey];
     else {
@@ -283,7 +281,7 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
     NSString *URLString = [url _web_originalDataAsString];
     if (!URLString)
         URLString = @"";
-    auto entry = retainPtr([_entriesByURL objectForKey:URLString]);
+    auto entry = retainPtr(_entriesByURL[URLString]);
 
     if (entry) {
         LOG(History, "Updating global history entry %@", entry.get());
@@ -296,7 +294,7 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
     } else {
         LOG(History, "Adding new global history entry for %@", url);
         entry = adoptNS([[WebHistoryItem alloc] initWithURLString:URLString title:title lastVisitedTimeInterval:[NSDate timeIntervalSinceReferenceDate]]);
-        [_entriesByURL setObject:entry.get() forKey:URLString];
+        _entriesByURL[URLString] = entry.get();
     }
     
     [self addItemToDateCaches:entry.get()];
@@ -309,10 +307,10 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
     ASSERT_ARG(entry, entry);
     ASSERT_ARG(entry, [entry lastVisitedTimeInterval] != 0);
 
-    NSString *URLString = [entry URLString];
+    NSString *URLString = entry.URLString;
 
 #if !PLATFORM(IOS_FAMILY)
-    if (auto oldEntry = retainPtr([_entriesByURL objectForKey:URLString])) {
+    if (auto oldEntry = retainPtr(_entriesByURL[URLString])) {
         if (discardDuplicate)
             return NO;
 
@@ -320,7 +318,7 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
     }
 
     [self addItemToDateCaches:entry];
-    [_entriesByURL setObject:entry forKey:URLString];
+    _entriesByURL[URLString] = entry;
 #else
     if (auto otherEntry = retainPtr([_entriesByURL objectForKey:URLString])) {
         if (discardDuplicate)
@@ -352,7 +350,7 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
     
     _orderedLastVisitedDays = nil;
     
-    NSArray *allEntries = [entriesByURL allValues];
+    NSArray *allEntries = entriesByURL.allValues;
     [webHistory _sendNotification:WebHistoryAllItemsRemovedNotification entries:allEntries];
     
     // Next, we rebuild the history, restore the states, and notify the clients.
@@ -366,12 +364,12 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
 
 - (BOOL)removeItem:(WebHistoryItem *)entry
 {
-    NSString *URLString = [entry URLString];
+    NSString *URLString = entry.URLString;
 
     // If this exact object isn't stored, then make no change.
     // FIXME: Is this the right behavior if this entry isn't present, but another entry for the same URL is?
     // Maybe need to change the API to make something like removeEntryForURLString public instead.
-    WebHistoryItem *matchingEntry = [_entriesByURL objectForKey:URLString];
+    WebHistoryItem *matchingEntry = _entriesByURL[URLString];
     if (matchingEntry != entry)
         return NO;
 
@@ -382,12 +380,12 @@ static inline WebHistoryDateKey dateKey(NSTimeInterval date)
 
 - (BOOL)removeItems:(NSArray *)entries
 {
-    NSUInteger count = [entries count];
+    NSUInteger count = entries.count;
     if (!count)
         return NO;
 
     for (NSUInteger index = 0; index < count; ++index)
-        [self removeItem:[entries objectAtIndex:index]];
+        [self removeItem:entries[index]];
     
     return YES;
 }
@@ -448,7 +446,7 @@ ALLOW_DEPRECATED_DECLARATIONS_BEGIN
 - (NSArray *)orderedItemsLastVisitedOnDay:(NSCalendarDate *)date
 {
     WebHistoryDateKey dateKey;
-    if (![self findKey:&dateKey forDay:[date timeIntervalSinceReferenceDate]])
+    if (![self findKey:&dateKey forDay:date.timeIntervalSinceReferenceDate])
         return nil;
     return _entriesByDate->get(dateKey).get();
 }
@@ -459,7 +457,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
 - (WebHistoryItem *)itemForURLString:(NSString *)URLString
 {
-    return [_entriesByURL objectForKey:URLString];
+    return _entriesByURL[URLString];
 }
 
 - (BOOL)containsURL:(NSURL *)URL
@@ -474,7 +472,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
 - (NSArray *)allItems
 {
-    return [_entriesByURL allValues];
+    return _entriesByURL.allValues;
 }
 
 // MARK: ARCHIVING/UNARCHIVING
@@ -523,11 +521,11 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     NSDictionary *dictionary = nil;
 
     // Optimize loading from local file, which is faster than using the general URL loading mechanism
-    if ([URL isFileURL]) {
-        dictionary = [NSDictionary dictionaryWithContentsOfFile:[URL path]];
+    if (URL.fileURL) {
+        dictionary = [NSDictionary dictionaryWithContentsOfFile:URL.path];
         if (!dictionary) {
 #if !LOG_DISABLED
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[URL path]])
+            if ([[NSFileManager defaultManager] fileExistsAtPath:URL.path])
                 LOG_ERROR("unable to read history from file %@; perhaps contents are corrupted", [URL path]);
 #endif
             // else file doesn't exist, which is normal the first time
@@ -546,23 +544,23 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     if (![dictionary isKindOfClass:[NSDictionary class]])
         return NO;
 
-    NSNumber *fileVersionObject = [dictionary objectForKey:FileVersionKey];
+    NSNumber *fileVersionObject = dictionary[FileVersionKey];
     int fileVersion;
     // we don't trust data obtained from elsewhere, so double-check
     if (!fileVersionObject || ![fileVersionObject isKindOfClass:[NSNumber class]]) {
         LOG_ERROR("history file version can't be determined, therefore not loading");
         return NO;
     }
-    fileVersion = [fileVersionObject intValue];
+    fileVersion = fileVersionObject.intValue;
     if (fileVersion > currentFileVersion) {
         LOG_ERROR("history file version is %d, newer than newest known version %d, therefore not loading", fileVersion, currentFileVersion);
         return NO;
     }    
 
-    NSArray *array = [dictionary objectForKey:DatesArrayKey];
+    NSArray *array = dictionary[DatesArrayKey];
 
     int itemCountLimit = [self historyItemLimit];
-    NSTimeInterval ageLimitDate = [[self ageLimitDate] timeIntervalSinceReferenceDate];
+    NSTimeInterval ageLimitDate = [self ageLimitDate].timeIntervalSinceReferenceDate;
     BOOL ageLimitPassed = NO;
     BOOL itemLimitPassed = NO;
     ASSERT(*numberOfItemsLoaded == 0);
@@ -572,10 +570,10 @@ ALLOW_DEPRECATED_DECLARATIONS_END
             auto item = adoptNS([[WebHistoryItem alloc] initFromDictionaryRepresentation:itemAsDictionary]);
 
             // item without URL is useless; data on disk must have been bad; ignore
-            if ([item URLString]) {
+            if (item.URLString) {
                 // Test against date limit. Since the items are ordered newest to oldest, we can stop comparing
                 // once we've found the first item that's too old.
-                if (!ageLimitPassed && [item lastVisitedTimeInterval] <= ageLimitDate)
+                if (!ageLimitPassed && item.lastVisitedTimeInterval <= ageLimitDate)
                     ageLimitPassed = YES;
 
                 if (ageLimitPassed || itemLimitPassed)
@@ -673,7 +671,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     [_historyPrivate rebuildHistoryByDayIfNeeded:self];
 }
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (!self)
@@ -773,7 +771,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
                       object:self];
 #endif
 
-    if ([discardedItems count])
+    if (discardedItems.count)
         [self _sendNotification:WebHistoryItemsDiscardedWhileLoadingNotification entries:discardedItems.get()];
 
     return YES;
@@ -878,8 +876,8 @@ void WebHistoryWriter::writeHistoryItems(BinaryPropertyListObjectStream& stream)
 {
     for (int dateIndex = m_dateKeys.size() - 1; dateIndex >= 0; dateIndex--) {
         NSArray *entries = m_entriesByDate->get(m_dateKeys[dateIndex]).get();
-        NSUInteger entryCount = [entries count];
+        NSUInteger entryCount = entries.count;
         for (NSUInteger entryIndex = 0; entryIndex < entryCount; ++entryIndex)
-            writeHistoryItem(stream, [entries objectAtIndex:entryIndex]);
+            writeHistoryItem(stream, entries[entryIndex]);
     }
 }

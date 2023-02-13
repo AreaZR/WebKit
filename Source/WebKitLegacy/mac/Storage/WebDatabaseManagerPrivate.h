@@ -58,7 +58,7 @@ extern CFStringRef WebDatabaseOriginsDidChangeNotification;
 + (WebDatabaseManager *)sharedWebDatabaseManager;
 
 // Will return an array of WebSecurityOrigin objects.
-- (NSArray *)origins;
+@property (nonatomic, readonly, copy) NSArray *origins;
 
 // Will return an array of strings, the identifiers of each database in the given origin.
 - (NSArray *)databasesWithOrigin:(WebSecurityOrigin *)origin;

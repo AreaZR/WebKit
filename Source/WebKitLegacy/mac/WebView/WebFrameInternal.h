@@ -112,17 +112,17 @@ WebView *getWebView(WebFrame *webFrame);
 
 - (void)_clearCoreFrame;
 
-- (BOOL)_isIncludedInWebKitStatistics;
+@property (nonatomic, readonly) BOOL _isIncludedInWebKitStatistics;
 
 - (void)_updateBackgroundAndUpdatesWhileOffscreen;
 - (void)_setInternalLoadDelegate:(id)internalLoadDelegate;
-- (id)_internalLoadDelegate;
+@property (nonatomic, readonly, strong) id _internalLoadDelegate;
 - (void)_unmarkAllBadGrammar;
 - (void)_unmarkAllMisspellings;
 
-- (BOOL)_hasSelection;
+@property (nonatomic, readonly) BOOL _hasSelection;
 - (void)_clearSelection;
-- (WebFrame *)_findFrameWithSelection;
+@property (nonatomic, readonly, strong) WebFrame *_findFrameWithSelection;
 - (void)_clearSelectionInOtherFrames;
 
 - (void)_attachScriptDebugger;
@@ -132,7 +132,7 @@ WebView *getWebView(WebFrame *webFrame);
 // to preserve compatibility with Mail and Safari among others. But internal to WebKit,
 // we need to be able to get the initial data source as well, so the _dataSource method
 // should be used instead.
-- (WebDataSource *)_dataSource;
+@property (nonatomic, readonly, assign) WebDataSource *_dataSource;
 
 #if PLATFORM(IOS_FAMILY)
 + (void)_createMainFrameWithSimpleHTMLDocumentWithPage:(WebCore::Page*)page frameView:(WebFrameView *)frameView style:(NSString *)style;
@@ -141,14 +141,14 @@ WebView *getWebView(WebFrame *webFrame);
 - (void)_setIsCommitting:(BOOL)value;
 #endif
 
-- (BOOL)_needsLayout;
+@property (nonatomic, readonly) BOOL _needsLayout;
 - (void)_drawRect:(NSRect)rect contentsOnly:(BOOL)contentsOnly;
 - (BOOL)_getVisibleRect:(NSRect*)rect;
 
 - (NSString *)_stringByEvaluatingJavaScriptFromString:(NSString *)string;
 - (NSString *)_stringByEvaluatingJavaScriptFromString:(NSString *)string forceUserGesture:(BOOL)forceUserGesture;
 
-- (NSString *)_selectedString;
+@property (nonatomic, readonly, copy) NSString *_selectedString;
 - (NSString *)_stringForRange:(DOMRange *)range;
 
 - (DOMRange *)_convertNSRangeToDOMRange:(NSRange)range;
@@ -178,15 +178,15 @@ WebView *getWebView(WebFrame *webFrame);
 
 - (DOMRange *)_characterRangeAtPoint:(NSPoint)point;
 
-- (DOMCSSStyleDeclaration *)_typingStyle;
+@property (nonatomic, readonly, copy) DOMCSSStyleDeclaration *_typingStyle@property (nonatomic, readonly, strong) DOMCSSStyleDeclaration *_typingStyle;
 - (void)_setTypingStyle:(DOMCSSStyleDeclaration *)style withUndoAction:(WebCore::EditAction)undoAction;
 
 #if ENABLE(DRAG_SUPPORT) && PLATFORM(MAC)
 - (void)_dragSourceEndedAt:(NSPoint)windowLoc operation:(NSDragOperation)operation;
 #endif
 
-- (BOOL)_canProvideDocumentSource;
-- (BOOL)_canSaveAsWebArchive;
+@property (nonatomic, readonly) BOOL _canProvideDocumentSource;
+@property (nonatomic, readonly) BOOL _canSaveAsWebArchive;
 
 - (void)_commitData:(NSData *)data;
 

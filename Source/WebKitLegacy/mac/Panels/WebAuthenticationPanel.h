@@ -50,13 +50,13 @@
     NSURLAuthenticationChallenge *challenge;
 }
 
--(id)initWithCallback:(id)cb selector:(SEL)sel;
+-(instancetype)initWithCallback:(id)cb selector:(SEL)sel;
 
 // Interface-related methods
 - (IBAction)cancel:(id)sender;
 - (IBAction)logIn:(id)sender;
 
-- (BOOL)loadNib;
+@property (nonatomic, readonly) BOOL loadNib;
 
 - (void)runAsModalDialogWithChallenge:(NSURLAuthenticationChallenge *)chall;
 - (void)runAsSheetOnWindow:(NSWindow *)window withChallenge:(NSURLAuthenticationChallenge *)chall;

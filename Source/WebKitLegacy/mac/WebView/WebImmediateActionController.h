@@ -55,14 +55,14 @@ struct DictionaryPopupInfo;
     BOOL _contentPreventsDefault;
 }
 
-- (instancetype)initWithWebView:(WebView *)webView recognizer:(NSImmediateActionGestureRecognizer *)immediateActionRecognizer;
+- (instancetype)initWithWebView:(WebView *)webView recognizer:(NSImmediateActionGestureRecognizer *)immediateActionRecognizer NS_DESIGNATED_INITIALIZER;
 - (void)webViewClosed;
 
 @property (nonatomic, getter=isEnabled) BOOL enabled;
 
 - (void)webView:(WebView *)webView didHandleScrollWheel:(NSEvent *)event;
 
-- (NSImmediateActionGestureRecognizer *)immediateActionRecognizer;
+@property (nonatomic, readonly, strong) NSImmediateActionGestureRecognizer *immediateActionRecognizer;
 
 + (WebCore::DictionaryPopupInfo)_dictionaryPopupInfoForRange:(const WebCore::SimpleRange&)range inFrame:(WebCore::Frame*)frame withLookupOptions:(NSDictionary *)lookupOptions indicatorOptions:(OptionSet<WebCore::TextIndicatorOption>)indicatorOptions transition:(WebCore::TextIndicatorPresentationTransition)presentationTransition;
 

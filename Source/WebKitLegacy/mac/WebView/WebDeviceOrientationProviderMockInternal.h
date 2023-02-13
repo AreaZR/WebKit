@@ -27,11 +27,11 @@
 #import "WebDeviceOrientationProviderMock.h"
 #import <WebCore/DeviceOrientationClientMock.h>
 
-@interface WebDeviceOrientationProviderMockInternal : NSObject {
+@interface WebDeviceOrientationProviderMockInternal : NSObject<WebDeviceOrientationProviderMock>  {
     std::unique_ptr<WebCore::DeviceOrientationClientMock> m_core;
 }
 
-- (id)init;
+- (instancetype)init;
 
 - (void)setOrientation:(WebDeviceOrientation*)orientation;
 
@@ -39,7 +39,7 @@
 
 - (void)startUpdating;
 - (void)stopUpdating;
-- (WebDeviceOrientation*)lastOrientation;
+@property (nonatomic, readonly, strong) WebDeviceOrientation *lastOrientation;
 @end
 
 @interface WebDeviceOrientationProviderMock () <WebDeviceOrientationProviderMock>

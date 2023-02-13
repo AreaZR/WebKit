@@ -41,7 +41,7 @@ NSString *WebInspectorDidStartSearchingForNode = @"WebInspectorDidStartSearching
 NSString *WebInspectorDidStopSearchingForNode = @"WebInspectorDidStopSearchingForNode";
 
 @implementation WebInspector
-- (id)initWithInspectedWebView:(WebView *)inspectedWebView
+- (instancetype)initWithInspectedWebView:(WebView *)inspectedWebView
 {
     if (!(self = [super init]))
         return nil;

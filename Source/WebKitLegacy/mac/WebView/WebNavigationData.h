@@ -35,12 +35,12 @@
     WebNavigationDataPrivate *_private;
 }
 
-- (id)initWithURLString:(NSString *)url title:(NSString *)title originalRequest:(NSURLRequest *)request response:(NSURLResponse *)response hasSubstituteData:(BOOL)hasSubstituteData clientRedirectSource:(NSString *)redirectSource;
-- (NSString *)url;
-- (NSString *)title;
-- (NSURLRequest *)originalRequest;
-- (NSURLResponse *)response;
-- (BOOL)hasSubstituteData;
-- (NSString *)clientRedirectSource;
+- (instancetype)initWithURLString:(NSString *)url title:(NSString *)title originalRequest:(NSURLRequest *)request response:(NSURLResponse *)response hasSubstituteData:(BOOL)hasSubstituteData clientRedirectSource:(NSString *)redirectSource NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly, copy) NSString *url;
+@property (nonatomic, readonly, copy) NSString *title;
+@property (nonatomic, readonly, copy) NSURLRequest *originalRequest;
+@property (nonatomic, readonly, copy) NSURLResponse *response;
+@property (nonatomic, readonly) BOOL hasSubstituteData;
+@property (nonatomic, readonly, copy) NSString *clientRedirectSource;
 
 @end

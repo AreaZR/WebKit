@@ -36,5 +36,5 @@ namespace WebCore {
 
 @interface WebResource (WebResourceInternal)
 - (id)_initWithCoreResource:(Ref<WebCore::ArchiveResource>&&)coreResource;
-- (NakedRef<WebCore::ArchiveResource>)_coreResource;
+@property (nonatomic, readonly) NakedRef<WebCore::ArchiveResource> _coreResource;
 @end

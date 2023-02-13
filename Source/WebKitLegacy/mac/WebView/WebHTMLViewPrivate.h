@@ -74,20 +74,18 @@ extern const float _WebHTMLViewPrintingMaximumShrinkFactor;
 
 // FIXME: _selectionRect is deprecated in favor of selectionRect, which is in protocol WebDocumentSelection.
 // We can't remove this yet because it's still in use by Mail.
-- (NSRect)_selectionRect;
+@property (nonatomic, readonly) NSRect _selectionRect;
 
-- (BOOL)_canEdit;
-- (BOOL)_canEditRichly;
-- (BOOL)_canAlterCurrentSelection;
-- (BOOL)_hasSelection;
-- (BOOL)_hasSelectionOrInsertionPoint;
-- (BOOL)_isEditable;
+@property (nonatomic, readonly) BOOL _canEdit;
+@property (nonatomic, readonly) BOOL _canEditRichly;
+@property (nonatomic, readonly) BOOL _canAlterCurrentSelection;
+@property (nonatomic, readonly) BOOL _hasSelection;
+@property (nonatomic, readonly) BOOL _hasSelectionOrInsertionPoint;
+@property (nonatomic, readonly) BOOL _isEditable;
 
 #if !TARGET_OS_IPHONE
 
-- (BOOL)_transparentBackground;
-- (void)_setTransparentBackground:(BOOL)isBackgroundTransparent;
-
+@property (nonatomic, getter=_setTransparentBackground) BOOL _transparentBackground;
 #endif
 
 - (void)_setToolTip:(NSString *)string;
@@ -96,25 +94,25 @@ extern const float _WebHTMLViewPrintingMaximumShrinkFactor;
 
 // SPI used by Mail.
 // FIXME: These should all be moved to WebView; we won't always have a WebHTMLView.
-- (NSImage *)_selectionDraggingImage;
-- (NSRect)_selectionDraggingRect;
-- (DOMNode *)_insertOrderedList;
-- (DOMNode *)_insertUnorderedList;
-- (BOOL)_canIncreaseSelectionListLevel;
-- (BOOL)_canDecreaseSelectionListLevel;
-- (DOMNode *)_increaseSelectionListLevel;
-- (DOMNode *)_increaseSelectionListLevelOrdered;
-- (DOMNode *)_increaseSelectionListLevelUnordered;
+@property (nonatomic, readonly, copy) NSImage *_selectionDraggingImage;
+@property (nonatomic, readonly) NSRect _selectionDraggingRect;
+@property (nonatomic, readonly, copy) DOMNode *_insertOrderedList@property (nonatomic, readonly, strong) DOMNode *_insertOrderedList;
+@property (nonatomic, readonly, copy) DOMNode *_insertUnorderedList@property (nonatomic, readonly, strong) DOMNode *_insertUnorderedList;
+@property (nonatomic, readonly) BOOL _canIncreaseSelectionListLevel;
+@property (nonatomic, readonly) BOOL _canDecreaseSelectionListLevel;
+@property (nonatomic, readonly, copy) DOMNode *_increaseSelectionListLevel@property (nonatomic, readonly, strong) DOMNode *_increaseSelectionListLevel;
+@property (nonatomic, readonly, copy) DOMNode *_increaseSelectionListLevelOrdered@property (nonatomic, readonly, strong) DOMNode *_increaseSelectionListLevelOrdered;
+@property (nonatomic, readonly, copy) DOMNode *_increaseSelectionListLevelUnordered@property (nonatomic, readonly, strong) DOMNode *_increaseSelectionListLevelUnordered;
 - (void)_decreaseSelectionListLevel;
 - (DOMDocumentFragment *)_documentFragmentFromPasteboard:(NSPasteboard *)pasteboard forType:(NSString *)pboardType inContext:(DOMRange *)context subresources:(NSArray **)subresources;
 
 #endif
 
-- (BOOL)_isUsingAcceleratedCompositing;
+@property (nonatomic, readonly) BOOL _isUsingAcceleratedCompositing;
 #if TARGET_OS_IPHONE
 - (WAKView *)_compositingLayersHostingView;
 #else
-- (NSView *)_compositingLayersHostingView;
+@property (nonatomic, readonly, strong) NSView *_compositingLayersHostingView;
 #endif
 
 #if !TARGET_OS_IPHONE
@@ -124,14 +122,14 @@ extern const float _WebHTMLViewPrintingMaximumShrinkFactor;
 - (void)_layoutForPrinting;
 #endif
 - (CGFloat)_adjustedBottomOfPageWithTop:(CGFloat)top bottom:(CGFloat)bottom limit:(CGFloat)bottomLimit;
-- (BOOL)_isInPrintMode;
+@property (nonatomic, readonly) BOOL _isInPrintMode;
 - (BOOL)_beginPrintModeWithPageWidth:(float)pageWidth height:(float)pageHeight shrinkToFit:(BOOL)shrinkToFit;
 // Lays out to pages of the given minimum width and height or more (increasing both dimensions proportionally)
 // as needed for the content to fit, but no more than the given maximum width.
 - (BOOL)_beginPrintModeWithMinimumPageWidth:(CGFloat)minimumPageWidth height:(CGFloat)minimumPageHeight maximumPageWidth:(CGFloat)maximumPageWidth;
 - (void)_endPrintMode;
 
-- (BOOL)_isInScreenPaginationMode;
+@property (nonatomic, readonly) BOOL _isInScreenPaginationMode;
 - (BOOL)_beginScreenPaginationModeWithPageSize:(CGSize)pageSize shrinkToFit:(BOOL)shrinkToFit;
 - (void)_endScreenPaginationMode;
 

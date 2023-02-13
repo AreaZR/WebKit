@@ -50,7 +50,7 @@
 - (NSView *)plugInViewWithArguments:(NSDictionary *)arguments fromPluginPackage:(WebPluginPackage *)plugin;
 + (BOOL)isPlugInView:(NSView *)view;
 
-- (id)initWithDocumentView:(NSView *)view;
+- (instancetype)initWithDocumentView:(NSView *)view NS_DESIGNATED_INITIALIZER;
 
 - (void)setDataSource:(WebDataSource *)dataSource;
 
@@ -70,9 +70,9 @@
 - (void)restorePluginsFromCache;
 #endif
 
-- (WebFrame *)webFrame;
-- (WebView *)webView;
+@property (nonatomic, readonly, strong) WebFrame *webFrame;
+@property (nonatomic, readonly, strong) WebView *webView;
 
-- (NSString *)URLPolicyCheckReferrer;
+@property (nonatomic, readonly, copy) NSString *URLPolicyCheckReferrer;
 
 @end

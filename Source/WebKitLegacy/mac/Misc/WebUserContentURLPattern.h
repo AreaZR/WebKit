@@ -31,12 +31,12 @@
     WebUserContentURLPatternPrivate *_private;
 }
 
-- (id)initWithPatternString:(NSString *)patternString;
+- (instancetype)initWithPatternString:(NSString *)patternString NS_DESIGNATED_INITIALIZER;
 
-- (BOOL)isValid;
-- (NSString *)scheme;
-- (NSString *)host;
-- (BOOL)matchesSubdomains;
+@property (nonatomic, readonly) BOOL valid;
+@property (nonatomic, readonly, copy) NSString *scheme;
+@property (nonatomic, readonly, copy) NSString *host;
+@property (nonatomic, readonly) BOOL matchesSubdomains;
 - (BOOL)matchesURL:(NSURL *)url;
 
 @end

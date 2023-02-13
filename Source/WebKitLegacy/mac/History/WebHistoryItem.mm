@@ -201,7 +201,7 @@ void WKNotifyHistoryItemChanged(HistoryItem&)
 - (NSImage *)icon
 {
     ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    return [[WebIconDatabase sharedIconDatabase] iconForURL:[self URLString] withSize:WebIconSmallSize];
+    return [[WebIconDatabase sharedIconDatabase] iconForURL:self.URLString withSize:WebIconSmallSize];
     ALLOW_DEPRECATED_DECLARATIONS_END
 }
 #endif
@@ -213,7 +213,7 @@ void WKNotifyHistoryItemChanged(HistoryItem&)
 
 - (NSUInteger)hash
 {
-    return [(NSString*)core(_private)->urlString() hash];
+    return ((NSString*)core(_private)->urlString()).hash;
 }
 
 - (BOOL)isEqual:(id)anObject
@@ -227,7 +227,7 @@ void WKNotifyHistoryItemChanged(HistoryItem&)
 - (NSString *)description
 {
     HistoryItem* coreItem = core(_private);
-    NSMutableString *result = [NSMutableString stringWithFormat:@"%@ %@", [super description], (NSString*)coreItem->urlString()];
+    NSMutableString *result = [NSMutableString stringWithFormat:@"%@ %@", super.description, (NSString*)coreItem->urlString()];
     if (!coreItem->target().isEmpty()) {
         NSString *target = coreItem->target();
         [result appendFormat:@" in \"%@\"", target];
@@ -241,15 +241,15 @@ void WKNotifyHistoryItemChanged(HistoryItem&)
     
     if (coreItem->children().size()) {
         const auto& children = coreItem->children();
-        int currPos = [result length];
+        int currPos = result.length;
         unsigned size = children.size();        
         for (unsigned i = 0; i < size; ++i) {
             WebHistoryItem *child = kit(const_cast<HistoryItem*>(children[i].ptr()));
             [result appendString:@"\n"];
-            [result appendString:[child description]];
+            [result appendString:child.description];
         }
         // shift all the contents over.  A bit slow, but hey, this is for debugging.
-        NSRange replRange = { static_cast<NSUInteger>(currPos), [result length] - currPos };
+        NSRange replRange = { static_cast<NSUInteger>(currPos), result.length - currPos };
         [result replaceOccurrencesOfString:@"\n" withString:@"\n    " options:0 range:replRange];
     }
     
@@ -278,7 +278,7 @@ WebHistoryItem *kit(HistoryItem* item)
     return adoptNS([[self alloc] initWithURL:URL title:nil]).autorelease();
 }
 
-- (id)initWithURLString:(NSString *)URLString title:(NSString *)title displayTitle:(NSString *)displayTitle lastVisitedTimeInterval:(NSTimeInterval)time
+- (instancetype)initWithURLString:(NSString *)URLString title:(NSString *)title displayTitle:(NSString *)displayTitle lastVisitedTimeInterval:(NSTimeInterval)time
 {
     auto item = [self initWithWebCoreHistoryItem:HistoryItem::create(URLString, title, displayTitle)];
     if (!item)
@@ -287,7 +287,7 @@ WebHistoryItem *kit(HistoryItem* item)
     return item;
 }
 
-- (id)initWithWebCoreHistoryItem:(Ref<HistoryItem>&&)item
+- (instancetype)initWithWebCoreHistoryItem:(Ref<HistoryItem>&&)item
 {   
     WebCoreThreadViolationCheckRoundOne();
 
@@ -320,7 +320,7 @@ WebHistoryItem *kit(HistoryItem* item)
     core(_private)->setViewState(statePList);
 }
 
-- (id)initFromDictionaryRepresentation:(NSDictionary *)dict
+- (instancetype)initFromDictionaryRepresentation:(NSDictionary *)dict
 {
     NSString *URLString = [dict _webkit_stringForKey:@""];
     NSString *title = [dict _webkit_stringForKey:titleKey];
@@ -328,7 +328,7 @@ WebHistoryItem *kit(HistoryItem* item)
     // Do an existence check to avoid calling doubleValue on a nil string. Leave
     // time interval at 0 if there's no value in dict.
     NSString *timeIntervalString = [dict _webkit_stringForKey:lastVisitedTimeIntervalKey];
-    NSTimeInterval lastVisited = timeIntervalString == nil ? 0 : [timeIntervalString doubleValue];
+    NSTimeInterval lastVisited = timeIntervalString == nil ? 0 : timeIntervalString.doubleValue;
 
     self = [self initWithURLString:URLString title:title displayTitle:[dict _webkit_stringForKey:displayTitleKey] lastVisitedTimeInterval:lastVisited];
     
@@ -348,7 +348,7 @@ WebHistoryItem *kit(HistoryItem* item)
     if (NSArray *redirectURLs = [dict _webkit_arrayForKey:redirectURLsKey])
         _private->_redirectURLs = makeUnique<Vector<String>>(makeVector<String>(redirectURLs));
 
-    for (id childDict in [[dict objectForKey:childrenKey] reverseObjectEnumerator]) {
+    for (id childDict in [dict[childrenKey] reverseObjectEnumerator]) {
         auto child = adoptNS([[WebHistoryItem alloc] initFromDictionaryRepresentation:childDict]);
         core(_private)->addChildItem(*core(child->_private));
     }
@@ -386,7 +386,7 @@ WebHistoryItem *kit(HistoryItem* item)
 
 @implementation WebHistoryItem (WebPrivate)
 
-- (id)initWithURL:(NSURL *)URL title:(NSString *)title
+- (instancetype)initWithURL:(NSURL *)URL title:(NSString *)title
 {
     return [self initWithURLString:[URL _web_originalDataAsString] title:title lastVisitedTimeInterval:0];
 }
@@ -408,20 +408,19 @@ WebHistoryItem *kit(HistoryItem* item)
     HistoryItem* coreItem = core(_private);
     
     if (!coreItem->urlString().isEmpty())
-        [dict setObject:(NSString*)coreItem->urlString() forKey:@""];
+        dict[@""] = (NSString*)coreItem->urlString();
     if (!coreItem->title().isEmpty())
-        [dict setObject:(NSString*)coreItem->title() forKey:titleKey];
+        dict[titleKey] = (NSString*)coreItem->title();
     if (!coreItem->alternateTitle().isEmpty())
-        [dict setObject:(NSString*)coreItem->alternateTitle() forKey:displayTitleKey];
+        dict[displayTitleKey] = (NSString*)coreItem->alternateTitle();
     if (_private->_lastVisitedTime) {
         // Store as a string to maintain backward compatibility. (See 3245793)
-        [dict setObject:[NSString stringWithFormat:@"%.1lf", _private->_lastVisitedTime]
-                 forKey:lastVisitedTimeIntervalKey];
+        dict[lastVisitedTimeIntervalKey] = [NSString stringWithFormat:@"%.1lf", _private->_lastVisitedTime];
     }
     if (coreItem->lastVisitWasFailure())
-        [dict setObject:@YES forKey:lastVisitWasFailureKey];
+        dict[lastVisitWasFailureKey] = @YES;
     if (auto redirectURLs = _private->_redirectURLs.get())
-        [dict setObject:createNSArray(*redirectURLs).get() forKey:redirectURLsKey];
+        dict[redirectURLsKey] = createNSArray(*redirectURLs).get();
 
 #if PLATFORM(IOS_FAMILY)
     if (includesChildren && coreItem->children().size()) {
@@ -433,7 +432,7 @@ WebHistoryItem *kit(HistoryItem* item)
         
         for (int i = children.size() - 1; i >= 0; i--)
             [childDicts addObject:[kit(const_cast<HistoryItem*>(children[i].ptr())) dictionaryRepresentation]];
-        [dict setObject: childDicts forKey:childrenKey];
+        dict[childrenKey] = childDicts;
     }
 
 #if PLATFORM(IOS_FAMILY)

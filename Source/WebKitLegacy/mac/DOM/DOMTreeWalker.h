@@ -36,11 +36,11 @@ WEBKIT_CLASS_DEPRECATED_MAC(10_4, 10_14)
 @property (readonly) BOOL expandEntityReferences;
 @property (strong) DOMNode *currentNode;
 
-- (DOMNode *)parentNode;
-- (DOMNode *)firstChild;
-- (DOMNode *)lastChild;
-- (DOMNode *)previousSibling;
-- (DOMNode *)nextSibling;
-- (DOMNode *)previousNode;
-- (DOMNode *)nextNode;
+@property (nonatomic, readonly, copy) DOMNode *parentNode;
+@property (nonatomic, readonly, copy) DOMNode *firstChild;
+@property (nonatomic, readonly, copy) DOMNode *lastChild;
+@property (nonatomic, readonly, copy) DOMNode *previousSibling;
+@property (nonatomic, readonly, copy) DOMNode *nextSibling;
+@property (nonatomic, readonly, copy) DOMNode *previousNode;
+@property (nonatomic, readonly, copy) DOMNode *nextNode;
 @end

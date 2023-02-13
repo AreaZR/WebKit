@@ -29,5 +29,5 @@
 #import <WebKitLegacy/WebDOMOperations.h>
 
 @interface DOMDocument (WebDOMDocumentOperationsInternal)
-- (DOMRange *)_documentRange;
+@property (nonatomic, readonly, copy) DOMRange *_documentRange;
 @end

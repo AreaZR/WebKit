@@ -50,19 +50,18 @@ extern NSString *WebViewportFitCoverValue;
 + (void)_releaseAllPendingPageCaches;
 #endif
 
-- (id)initWithURL:(NSURL *)URL title:(NSString *)title;
+- (instancetype)initWithURL:(NSURL *)URL title:(NSString *)title;
 
-- (NSURL *)URL;
-- (BOOL)lastVisitWasFailure;
+@property (nonatomic, readonly, copy) NSURL *URL;
+@property (nonatomic, readonly) BOOL lastVisitWasFailure;
 
-- (NSString *)RSSFeedReferrer;
-- (void)setRSSFeedReferrer:(NSString *)referrer;
+@property (nonatomic, copy) NSString *RSSFeedReferrer;
 
-- (NSArray *)_redirectURLs;
+@property (nonatomic, readonly, copy) NSArray *_redirectURLs;
 
-- (NSString *)target;
-- (BOOL)isTargetItem;
-- (NSArray *)children;
+@property (nonatomic, readonly, assign) NSString *target;
+@property (nonatomic, getter=isTargetItem, readonly) BOOL targetItem;
+@property (nonatomic, readonly, copy) NSArray *children;
 - (NSDictionary *)dictionaryRepresentation;
 #if TARGET_OS_IPHONE
 - (NSDictionary *)dictionaryRepresentationIncludingChildren:(BOOL)includesChildren;
@@ -78,7 +77,7 @@ extern NSString *WebViewportFitCoverValue;
 - (void)_setScrollPoint:(CGPoint)scrollPoint;
 #endif
 
-- (BOOL)_isInBackForwardCache;
-- (BOOL)_hasCachedPageExpired;
+@property (nonatomic, readonly) BOOL _isInBackForwardCache;
+@property (nonatomic, readonly) BOOL _hasCachedPageExpired;
 
 @end

@@ -37,7 +37,7 @@ using namespace WebCore;
 
 @implementation WebOpenPanelResultListener
 
-- (id)initWithChooser:(FileChooser&)chooser
+- (instancetype)initWithChooser:(FileChooser&)chooser
 {
     self = [super init];
     if (!self)

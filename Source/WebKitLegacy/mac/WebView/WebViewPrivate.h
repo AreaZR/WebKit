@@ -192,15 +192,14 @@ typedef enum {
 @interface WebController : NSTreeController {
     IBOutlet WebView *webView;
 }
-- (WebView *)webView;
-- (void)setWebView:(WebView *)newWebView;
+@property (nonatomic, strong) WebView *webView;
 @end
 #endif
 
 @interface WebView (WebViewEditingActionsPendingPublic)
 
 - (void)outdent:(id)sender;
-- (NSDictionary *)typingAttributes;
+@property (nonatomic, readonly, copy) NSDictionary *typingAttributes;
 
 @end
 
@@ -214,8 +213,7 @@ typedef enum {
 
 - (void)setMainFrameDocumentReady:(BOOL)mainFrameDocumentReady;
 
-- (void)setTabKeyCyclesThroughElements:(BOOL)cyclesElements;
-- (BOOL)tabKeyCyclesThroughElements;
+@property (nonatomic) BOOL tabKeyCyclesThroughElements;
 
 - (void)scrollDOMRangeToVisible:(DOMRange *)range;
 #if TARGET_OS_IPHONE
@@ -227,30 +225,28 @@ typedef enum {
 @abstract Set the WebView's WebScriptDebugDelegate delegate.
 @param delegate The WebScriptDebugDelegate to set as the delegate.
 */    
-- (void)setScriptDebugDelegate:(id)delegate;
 
 /*!
 @method scriptDebugDelegate
 @abstract Return the WebView's WebScriptDebugDelegate.
 @result The WebView's WebScriptDebugDelegate.
 */    
-- (id)scriptDebugDelegate;
+@property (nonatomic, strong) id scriptDebugDelegate;
 
 /*!
     @method setHistoryDelegate:
     @abstract Set the WebView's WebHistoryDelegate delegate.
     @param delegate The WebHistoryDelegate to set as the delegate.
 */    
-- (void)setHistoryDelegate:(id)delegate;
 
 /*!
     @method historyDelegate
     @abstract Return the WebView's WebHistoryDelegate delegate.
     @result The WebView's WebHistoryDelegate delegate.
 */    
-- (id)historyDelegate;
+@property (nonatomic, strong) id historyDelegate;
 
-- (BOOL)shouldClose;
+@property (nonatomic, readonly) BOOL shouldClose;
 
 #if !TARGET_OS_IPHONE
 /*!
@@ -265,40 +261,37 @@ typedef enum {
 // These methods might end up moving into a protocol, so different document types can specify
 // whether or not they implement the protocol. For now we'll just deal with HTML.
 // These methods are still in flux; don't rely on them yet.
-- (BOOL)canMarkAllTextMatches;
+@property (nonatomic, readonly) BOOL canMarkAllTextMatches;
 - (NSUInteger)countMatchesForText:(NSString *)string options:(WebFindOptions)options highlight:(BOOL)highlight limit:(NSUInteger)limit markMatches:(BOOL)markMatches;
 - (NSUInteger)countMatchesForText:(NSString *)string inDOMRange:(DOMRange *)range options:(WebFindOptions)options highlight:(BOOL)highlight limit:(NSUInteger)limit markMatches:(BOOL)markMatches;
 - (void)unmarkAllTextMatches;
-- (NSArray *)rectsForTextMatches;
+@property (nonatomic, readonly, copy) NSArray *rectsForTextMatches;
 
 // Support for disabling registration with the undo manager. This is equivalent to the methods with the same names on NSTextView.
-- (BOOL)allowsUndo;
-- (void)setAllowsUndo:(BOOL)flag;
+@property (nonatomic) BOOL allowsUndo;
 
 /*!
     @method setPageSizeMultiplier:
     @abstract Change the zoom factor of the page in views managed by this webView.
     @param multiplier A fractional percentage value, 1.0 is 100%.
 */    
-- (void)setPageSizeMultiplier:(float)multiplier;
 
 /*!
     @method pageSizeMultiplier
     @result The page size multipler.
 */    
-- (float)pageSizeMultiplier;
+@property (nonatomic) float pageSizeMultiplier;
 
 // Commands for doing page zoom.  Will end up in WebView (WebIBActions) <NSUserInterfaceValidations>
-- (BOOL)canZoomPageIn;
+@property (nonatomic, readonly) BOOL canZoomPageIn;
 - (IBAction)zoomPageIn:(id)sender;
-- (BOOL)canZoomPageOut;
+@property (nonatomic, readonly) BOOL canZoomPageOut;
 - (IBAction)zoomPageOut:(id)sender;
-- (BOOL)canResetPageZoom;
+@property (nonatomic, readonly) BOOL canResetPageZoom;
 - (IBAction)resetPageZoom:(id)sender;
 
 // Sets a master volume control for all media elements in the WebView. Valid values are 0..1.
-- (void)setMediaVolume:(float)volume;
-- (float)mediaVolume;
+@property (nonatomic) float mediaVolume;
 
 - (void)suspendAllMediaPlayback;
 - (void)resumeAllMediaPlayback;
@@ -325,7 +318,7 @@ typedef enum {
 - (void)_setUseDarkAppearance:(BOOL)useDarkAppearance useInactiveAppearance:(BOOL)useInactiveAppearance;
 - (void)_setUseDarkAppearance:(BOOL)useDarkAppearance useElevatedUserInterfaceLevel:(BOOL)useElevatedUserInterfaceLevel;
 
-- (WebInspector *)inspector;
+@property (nonatomic, readonly, strong) WebInspector *inspector;
 
 #if ENABLE_REMOTE_INSPECTOR
 + (void)_enableRemoteInspector;
@@ -339,7 +332,7 @@ typedef enum {
     @result Returns whether or not this WebView will allow a Remote Web Inspector
     to attach to it.
 */
-- (BOOL)allowsRemoteInspection;
+@property (nonatomic) BOOL allowsRemoteInspection;
 
 /*!
     @method setAllowsRemoteInspection:
@@ -347,7 +340,6 @@ typedef enum {
     @abstract Sets the permission of this WebView to either allow or disallow
     a Remote Web Inspector to attach to it.
 */
-- (void)setAllowsRemoteInspection:(BOOL)allow;
 
 /*!
     @method setShowingInspectorIndication
@@ -370,7 +362,6 @@ typedef enum {
     This color is also used when no page is loaded. A color with alpha should only be used when the receiver is
     in a non-opaque window, since the color is drawn using NSCompositeCopy.
 */
-- (void)setBackgroundColor:(NSColor *)backgroundColor;
 
 /*!
     @method backgroundColor
@@ -378,7 +369,7 @@ typedef enum {
     This color is also used when no page is loaded. A color with alpha should only be used when the receiver is
     in a non-opaque window, since the color is drawn using NSCompositeCopy.
 */
-- (NSColor *)backgroundColor;
+@property (nonatomic, copy) NSColor *backgroundColor;
 #else
 - (void)setBackgroundColor:(CGColorRef)backgroundColor;
 - (CGColorRef)backgroundColor;
@@ -496,19 +487,19 @@ Could be worth adding to the API.
 
 // May well become public
 - (void)_setFormDelegate:(id<WebFormDelegate>)delegate;
-- (id<WebFormDelegate>)_formDelegate;
+@property (nonatomic, readonly, strong) id<WebFormDelegate> _formDelegate;
 
-- (BOOL)_isClosed;
+@property (nonatomic, readonly) BOOL _isClosed;
 
 // _close is now replaced by public method -close. It remains here only for backward compatibility
 // until callers can be weaned off of it.
 - (void)_close;
 
 // Indicates if the WebView is in the midst of a user gesture.
-- (BOOL)_isProcessingUserGesture;
+@property (nonatomic, readonly) BOOL _isProcessingUserGesture;
 
 // Determining and updating page visibility state.
-- (BOOL)_isViewVisible;
+@property (nonatomic, readonly) BOOL _isViewVisible;
 - (void)_updateVisibilityState;
 
 // SPI for DumpRenderTree
@@ -554,7 +545,7 @@ Could be worth adding to the API.
 #if ENABLE_DASHBOARD_SUPPORT
 // FIXME: Remove these once we have verified no one is calling them
 - (void)_addScrollerDashboardRegions:(NSMutableDictionary *)regions;
-- (NSDictionary *)_dashboardRegions;
+@property (nonatomic, readonly, copy) NSDictionary *_dashboardRegions;
 
 - (void)_setDashboardBehavior:(WebDashboardBehavior)behavior to:(BOOL)flag;
 - (BOOL)_dashboardBehavior:(WebDashboardBehavior)behavior;
@@ -605,26 +596,24 @@ Could be worth adding to the API.
     @abstract Forces the vertical scroller to be visible if flag is YES, otherwise
     if flag is NO the scroller with automatically show and hide as needed.
  */
-- (void)setAlwaysShowVerticalScroller:(BOOL)flag;
 
 /*!
     @method alwaysShowVerticalScroller
     @result YES if the vertical scroller is always shown
  */
-- (BOOL)alwaysShowVerticalScroller;
+@property (nonatomic) BOOL alwaysShowVerticalScroller;
 
 /*!
     @method setAlwaysShowHorizontalScroller:
     @abstract Forces the horizontal scroller to be visible if flag is YES, otherwise
     if flag is NO the scroller with automatically show and hide as needed.
  */
-- (void)setAlwaysShowHorizontalScroller:(BOOL)flag;
 
 /*!
     @method alwaysShowHorizontalScroller
     @result YES if the horizontal scroller is always shown
  */
-- (BOOL)alwaysShowHorizontalScroller;
+@property (nonatomic) BOOL alwaysShowHorizontalScroller;
 
 /*!
     @method setProhibitsMainFrameScrolling:
@@ -720,11 +709,9 @@ Could be worth adding to the API.
  */
 - (void)_detachScriptDebuggerFromAllFrames;
 
-- (BOOL)defersCallbacks; // called by QuickTime plug-in
-- (void)setDefersCallbacks:(BOOL)defer; // called by QuickTime plug-in
+@property (nonatomic) BOOL defersCallbacks; // called by QuickTime plug-in // called by QuickTime plug-in
 
-- (BOOL)usesPageCache;
-- (void)setUsesPageCache:(BOOL)usesPageCache;
+@property (nonatomic) BOOL usesPageCache;
 
 /*!
     @method textIteratorForRect:
@@ -745,46 +732,43 @@ Could be worth adding to the API.
 #endif
 
 /* Used to do fast (lower quality) scaling of images so that window resize can be quick. */
-- (BOOL)_inFastImageScalingMode;
+@property (nonatomic, readonly) BOOL _inFastImageScalingMode;
 - (void)_setUseFastImageScalingMode:(BOOL)flag;
 
-- (BOOL)_cookieEnabled;
+@property (nonatomic, readonly) BOOL _cookieEnabled;
 - (void)_setCookieEnabled:(BOOL)enable;
 
 // SPI for DumpRenderTree
 - (void)_executeCoreCommandByName:(NSString *)name value:(NSString *)value;
 - (void)_clearMainFrameName;
 
-- (void)setSelectTrailingWhitespaceEnabled:(BOOL)flag;
-- (BOOL)isSelectTrailingWhitespaceEnabled;
+@property (nonatomic, getter=isSelectTrailingWhitespaceEnabled) BOOL selectTrailingWhitespaceEnabled;
 
 - (void)setMemoryCacheDelegateCallsEnabled:(BOOL)suspend;
-- (BOOL)areMemoryCacheDelegateCallsEnabled;
+@property (nonatomic, readonly) BOOL areMemoryCacheDelegateCallsEnabled;
 
 // SPI for DumpRenderTree
-- (BOOL)_postsAcceleratedCompositingNotifications;
+@property (nonatomic, readonly) BOOL _postsAcceleratedCompositingNotifications;
 - (void)_setPostsAcceleratedCompositingNotifications:(BOOL)flag;
-- (BOOL)_isUsingAcceleratedCompositing;
+@property (nonatomic, readonly) BOOL _isUsingAcceleratedCompositing;
 - (void)_setBaseCTM:(CGAffineTransform)transform forContext:(CGContextRef)context;
 
 // For DumpRenderTree
-- (BOOL)interactiveFormValidationEnabled;
-- (void)setInteractiveFormValidationEnabled:(BOOL)enabled;
-- (int)validationMessageTimerMagnification;
-- (void)setValidationMessageTimerMagnification:(int)newValue;
+@property (nonatomic) BOOL interactiveFormValidationEnabled;
+@property (nonatomic) int validationMessageTimerMagnification;
 - (NSDictionary *)_contentsOfUserInterfaceItem:(NSString *)userInterfaceItem;
 
 // Returns YES if NSView -displayRectIgnoringOpacity:inContext: will produce a faithful representation of the content.
-- (BOOL)_isSoftwareRenderable;
+@property (nonatomic, readonly) BOOL _isSoftwareRenderable;
 
 - (void)setTracksRepaints:(BOOL)flag;
-- (BOOL)isTrackingRepaints;
+@property (nonatomic, getter=isTrackingRepaints, readonly) BOOL trackingRepaints;
 - (void)resetTrackedRepaints;
-- (NSArray*)trackedRepaintRects; // Returned array contains rectValue NSValues.
+@property (nonatomic, readonly, copy) NSArray *trackedRepaintRects; // Returned array contains rectValue NSValues.
 
 #if !TARGET_OS_IPHONE
 // Which pasteboard text is coming from in editing delegate methods such as shouldInsertNode.
-- (NSPasteboard *)_insertionPasteboard;
+@property (nonatomic, readonly, strong) NSPasteboard *_insertionPasteboard;
 #endif
 
 // Allow lists access from an origin (sourceOrigin) to a set of one or more origins described by the parameters:
@@ -816,47 +800,46 @@ Could be worth adding to the API.
 + (void)_registerURLSchemeAsAllowingDatabaseAccessInPrivateBrowsing:(NSString *)scheme;
 
 - (void)_scaleWebView:(float)scale atOrigin:(NSPoint)origin;
-- (float)_viewScaleFactor; // This is actually pageScaleFactor.
+@property (nonatomic, readonly) float _viewScaleFactor; // This is actually pageScaleFactor.
 
 - (void)_setUseFixedLayout:(BOOL)fixed;
 - (void)_setFixedLayoutSize:(NSSize)size;
 
-- (BOOL)_useFixedLayout;
-- (NSSize)_fixedLayoutSize;
+@property (nonatomic, readonly) BOOL _useFixedLayout;
+@property (nonatomic, readonly) NSSize _fixedLayoutSize;
 
 - (void)_setPaginationMode:(WebPaginationMode)paginationMode;
-- (WebPaginationMode)_paginationMode;
+@property (nonatomic, readonly) WebPaginationMode _paginationMode;
 
 - (void)_listenForLayoutMilestones:(WebLayoutMilestones)layoutMilestones;
-- (WebLayoutMilestones)_layoutMilestones;
+@property (nonatomic, readonly) WebLayoutMilestones _layoutMilestones;
 
-- (WebPageVisibilityState)_visibilityState;
+@property (nonatomic, readonly) WebPageVisibilityState _visibilityState;
 - (void)_setVisibilityState:(WebPageVisibilityState)visibilityState isInitialState:(BOOL)isInitialState;
 
 #if !TARGET_OS_IPHONE
-- (BOOL)windowOcclusionDetectionEnabled;
-- (void)setWindowOcclusionDetectionEnabled:(BOOL)flag;
+@property (nonatomic) BOOL windowOcclusionDetectionEnabled;
 #endif
 
 // Whether the column-break-{before,after} properties are respected instead of the
 // page-break-{before,after} properties.
 - (void)_setPaginationBehavesLikeColumns:(BOOL)behavesLikeColumns;
-- (BOOL)_paginationBehavesLikeColumns;
+@property (nonatomic, readonly) BOOL _paginationBehavesLikeColumns;
 
 // Set to 0 to have the page length equal the view length.
 - (void)_setPageLength:(CGFloat)pageLength;
-- (CGFloat)_pageLength;
+@property (nonatomic, readonly) CGFloat _pageLength;
 - (void)_setGapBetweenPages:(CGFloat)pageGap;
-- (CGFloat)_gapBetweenPages;
-- (NSUInteger)_pageCount;
+@property (nonatomic, readonly) CGFloat _gapBetweenPages;
+@property (nonatomic, readonly) NSUInteger _pageCount;
 
 // Whether or not a line grid is enabled by default when paginated via the pagination API.
 - (void)_setPaginationLineGridEnabled:(BOOL)lineGridEnabled;
-- (BOOL)_paginationLineGridEnabled;
+@property (nonatomic, readonly) BOOL _paginationLineGridEnabled;
 
 #if !TARGET_OS_IPHONE
 - (void)_setCustomBackingScaleFactor:(CGFloat)overrideScaleFactor;
-- (CGFloat)_backingScaleFactor;
+@property (nonatomic, readonly) CGFloat _backingScaleFactor;
 #endif
 
 // Deprecated. Use the methods in pending public above instead.
@@ -903,7 +886,7 @@ Could be worth adding to the API.
 - (void)showCandidates:(NSArray *)candidates forString:(NSString *)string inRect:(NSRect)rectOfTypedString forSelectedRange:(NSRange)range view:(NSView *)view completionHandler:(void (^)(NSTextCheckingResult *acceptedCandidate))completionBlock;
 #endif
 - (void)forceRequestCandidatesForTesting;
-- (BOOL)shouldRequestCandidates;
+@property (nonatomic, readonly) BOOL shouldRequestCandidates;
 
 typedef struct WebEdgeInsets {
     CGFloat top;
@@ -943,8 +926,7 @@ typedef struct WebEdgeInsets {
 
 @interface WebView (WebViewGrammarChecking)
 
-- (BOOL)isGrammarCheckingEnabled;
-- (void)setGrammarCheckingEnabled:(BOOL)flag;
+@property (nonatomic, getter=isGrammarCheckingEnabled) BOOL grammarCheckingEnabled;
 
 - (void)toggleGrammarChecking:(id)sender;
 
@@ -952,20 +934,15 @@ typedef struct WebEdgeInsets {
 
 @interface WebView (WebViewTextChecking)
 
-- (BOOL)isAutomaticQuoteSubstitutionEnabled;
-- (BOOL)isAutomaticLinkDetectionEnabled;
-- (BOOL)isAutomaticDashSubstitutionEnabled;
-- (BOOL)isAutomaticTextReplacementEnabled;
-- (BOOL)isAutomaticSpellingCorrectionEnabled;
-- (void)setAutomaticQuoteSubstitutionEnabled:(BOOL)flag;
+@property (nonatomic, getter=isAutomaticQuoteSubstitutionEnabled) BOOL automaticQuoteSubstitutionEnabled;
+@property (nonatomic, getter=isAutomaticLinkDetectionEnabled) BOOL automaticLinkDetectionEnabled;
+@property (nonatomic, getter=isAutomaticDashSubstitutionEnabled) BOOL automaticDashSubstitutionEnabled;
+@property (nonatomic, getter=isAutomaticTextReplacementEnabled) BOOL automaticTextReplacementEnabled;
+@property (nonatomic, getter=isAutomaticSpellingCorrectionEnabled) BOOL automaticSpellingCorrectionEnabled;
 - (void)toggleAutomaticQuoteSubstitution:(id)sender;
-- (void)setAutomaticLinkDetectionEnabled:(BOOL)flag;
 - (void)toggleAutomaticLinkDetection:(id)sender;
-- (void)setAutomaticDashSubstitutionEnabled:(BOOL)flag;
 - (void)toggleAutomaticDashSubstitution:(id)sender;
-- (void)setAutomaticTextReplacementEnabled:(BOOL)flag;
 - (void)toggleAutomaticTextReplacement:(id)sender;
-- (void)setAutomaticSpellingCorrectionEnabled:(BOOL)flag;
 - (void)toggleAutomaticSpellingCorrection:(id)sender;
 @end
 #endif /* !TARGET_OS_IPHONE */
@@ -973,15 +950,15 @@ typedef struct WebEdgeInsets {
 @interface WebView (WebViewEditingInMail)
 - (void)_insertNewlineInQuotedContent;
 - (void)_replaceSelectionWithNode:(DOMNode *)node matchStyle:(BOOL)matchStyle;
-- (BOOL)_selectionIsCaret;
-- (BOOL)_selectionIsAll;
+@property (nonatomic, readonly) BOOL _selectionIsCaret;
+@property (nonatomic, readonly) BOOL _selectionIsAll;
 - (void)_simplifyMarkup:(DOMNode *)startNode endNode:(DOMNode *)endNode;
 
 @end
 
 @interface WebView (WebViewDeviceOrientation)
 - (void)_setDeviceOrientationProvider:(id<WebDeviceOrientationProvider>)deviceOrientationProvider;
-- (id<WebDeviceOrientationProvider>)_deviceOrientationProvider;
+@property (nonatomic, readonly, strong) id<WebDeviceOrientationProvider> _deviceOrientationProvider;
 @end
 
 #if TARGET_OS_IPHONE
@@ -997,7 +974,7 @@ typedef struct WebEdgeInsets {
 @protocol WebGeolocationProvider <NSObject>
 - (void)registerWebView:(WebView *)webView;
 - (void)unregisterWebView:(WebView *)webView;
-- (WebGeolocationPosition *)lastPosition;
+@property (nonatomic, readonly, strong) WebGeolocationPosition *lastPosition;
 #if TARGET_OS_IPHONE
 - (void)setEnableHighAccuracy:(BOOL)enableHighAccuracy;
 - (void)initializeGeolocationForWebView:(WebView *)webView listener:(id<WebGeolocationProviderInitializationListener>)listener;
@@ -1022,7 +999,7 @@ typedef struct WebEdgeInsets {
 
 @interface WebView (WebViewGeolocation)
 - (void)_setGeolocationProvider:(id<WebGeolocationProvider>)locationProvider;
-- (id<WebGeolocationProvider>)_geolocationProvider;
+@property (nonatomic, readonly, strong) id<WebGeolocationProvider> _geolocationProvider;
 
 - (void)_geolocationDidChangePosition:(WebGeolocationPosition *)position;
 - (void)_geolocationDidFailWithMessage:(NSString *)errorMessage;
@@ -1033,7 +1010,7 @@ typedef struct WebEdgeInsets {
 
 @interface WebView (WebViewNotification)
 - (void)_setNotificationProvider:(id<WebNotificationProvider>)notificationProvider;
-- (id<WebNotificationProvider>)_notificationProvider;
+@property (nonatomic, readonly, strong) id<WebNotificationProvider> _notificationProvider;
 
 - (void)_notificationDidShow:(NSString *)notificationID;
 - (void)_notificationDidClick:(NSString *)notificationID;

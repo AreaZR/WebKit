@@ -41,7 +41,7 @@ using namespace WebCore;
 
 @implementation WebUserContentURLPattern
 
-- (id)initWithPatternString:(NSString *)patternString
+- (instancetype)initWithPatternString:(NSString *)patternString
 {
     self = [super init];
     if (!self)

@@ -39,27 +39,27 @@ struct WebSecurityOriginPrivate;
     id<WebQuotaManager> _databaseQuotaManager;
 }
 
-+ (id)webSecurityOriginFromDatabaseIdentifier:(NSString *)databaseIdentifier;
++ (instancetype)webSecurityOriginFromDatabaseIdentifier:(NSString *)databaseIdentifier;
 
-- (id)initWithURL:(NSURL *)url;
+- (instancetype)initWithURL:(NSURL *)url NS_DESIGNATED_INITIALIZER;
 
-- (NSString *)protocol;
-- (NSString *)host;
+@property (nonatomic, readonly, copy) NSString *protocol;
+@property (nonatomic, readonly, copy) NSString *host;
 
-- (NSString *)databaseIdentifier;
+@property (nonatomic, readonly, copy) NSString *databaseIdentifier;
 #if TARGET_OS_IPHONE
 - (NSString *)toString;
 #endif
-- (NSString *)stringValue;
+@property (nonatomic, readonly, copy) NSString *stringValue;
 
 // Returns zero if the port is the default port for the protocol, non-zero otherwise.
-- (unsigned short)port;
+@property (nonatomic, readonly) unsigned short port;
 
 @end
 
 @interface WebSecurityOrigin (WebQuotaManagers)
-- (id<WebQuotaManager>)applicationCacheQuotaManager;
-- (id<WebQuotaManager>)databaseQuotaManager;
+@property (nonatomic, readonly, strong) id<WebQuotaManager> applicationCacheQuotaManager;
+@property (nonatomic, readonly, strong) id<WebQuotaManager> databaseQuotaManager;
 @end
 
 // FIXME: The following methods are deprecated and should removed later.

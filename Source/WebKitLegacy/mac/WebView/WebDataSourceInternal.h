@@ -45,9 +45,9 @@ class WebDocumentLoaderMac;
 
 @interface WebDataSource (WebInternal)
 - (void)_makeRepresentation;
-- (BOOL)_isDocumentHTML;
-- (WebView *)_webView;
-- (NSURL *)_URL;
+@property (nonatomic, readonly) BOOL _isDocumentHTML;
+@property (nonatomic, readonly, strong) WebView *_webView;
+@property (nonatomic, readonly, copy) NSURL *_URL;
 - (DOMElement *)_imageElementWithImageResource:(WebResource *)resource;
 - (DOMDocumentFragment *)_documentFragmentWithImageResource:(WebResource *)resource;
 - (DOMDocumentFragment *)_documentFragmentWithArchive:(WebArchive *)archive;
@@ -58,7 +58,7 @@ class WebDocumentLoaderMac;
 - (void)_receivedData:(NSData *)data;
 - (void)_revertToProvisionalState;
 - (void)_setMainDocumentError:(NSError *)error;
-- (NakedPtr<WebCore::DocumentLoader>)_documentLoader;
+@property (nonatomic, readonly) NakedPtr<WebCore::DocumentLoader> _documentLoader;
 #if USE(QUICK_LOOK)
 @property (nonatomic, copy, setter=_setQuickLookContent:) NSDictionary *_quickLookContent;
 @property (nonatomic, setter=_setQuickLookPreviewLoaderClient:) WebCore::LegacyPreviewLoaderClient* _quickLookPreviewLoaderClient;

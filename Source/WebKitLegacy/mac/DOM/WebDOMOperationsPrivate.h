@@ -42,15 +42,15 @@
 @end
 
 @interface DOMHTMLInputElement (WebDOMHTMLInputElementOperationsPrivate)
-- (BOOL)_isAutofilled;
+@property (nonatomic, readonly) BOOL _isAutofilled;
 - (void)_setAutofilled:(BOOL)autofilled;
 
-- (BOOL)_isAutoFilledAndViewable;
+@property (nonatomic, readonly) BOOL _isAutoFilledAndViewable;
 - (void)_setAutoFilledAndViewable:(BOOL)autoFilledAndViewable;
 @end
 
 @interface DOMNode (WebDOMNodeOperationsPendingPublic)
-- (NSString *)markupString;
+@property (nonatomic, readonly, copy) NSString *markupString;
 - (NSRect)_renderRect:(bool *)isReplaced;
 @end
 
@@ -67,7 +67,7 @@ typedef BOOL (^WebArchiveSubframeFilter)(WebFrame* subframe);
 
 #if !TARGET_OS_IPHONE
 @interface DOMWheelEvent (WebDOMWheelEventOperationsPrivate)
-- (NSEventPhase)_phase;
-- (NSEventPhase)_momentumPhase;
+@property (nonatomic, readonly) NSEventPhase _phase;
+@property (nonatomic, readonly) NSEventPhase _momentumPhase;
 @end
 #endif

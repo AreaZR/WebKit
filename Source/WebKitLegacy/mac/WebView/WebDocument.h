@@ -125,34 +125,34 @@ WEBKIT_DEPRECATED_MAC(10_3, 10_14)
     @method supportsTextEncoding
     @result YES if the document view support text encoding, NO if it doesn't.
 */
-- (BOOL)supportsTextEncoding;
+@property (nonatomic, readonly) BOOL supportsTextEncoding;
 
 /*!
     @method string
     @result String that represents the entire document.
 */
-- (NSString *)string;
+@property (nonatomic, readonly, copy) NSString *string;
 
 #if !TARGET_OS_IPHONE
 /*!
     @method attributedString
     @result Attributed string that represents the entire document.
 */
-- (NSAttributedString *)attributedString;
+@property (nonatomic, readonly, copy) NSAttributedString *attributedString;
 #endif
 
 /*!
     @method selectedString
     @result String that represents the current selection.
 */
-- (NSString *)selectedString;
+@property (nonatomic, readonly, copy) NSString *selectedString;
 
 #if !TARGET_OS_IPHONE
 /*!
     @method selectedAttributedString
     @result Attributed string that represents the current selection.
 */
-- (NSAttributedString *)selectedAttributedString;
+@property (nonatomic, readonly, copy) NSAttributedString *selectedAttributedString;
 #endif
 
 
@@ -211,19 +211,19 @@ WEBKIT_DEPRECATED_MAC(10_3, 10_14)
     @method canProvideDocumentSource
     @result Returns true if the representation can provide document source.
 */
-- (BOOL)canProvideDocumentSource;
+@property (nonatomic, readonly) BOOL canProvideDocumentSource;
 
 /*!
     @method documentSource
     @result Returns the textual source representation of the document.  For HTML documents
     this is the original HTML source.
 */
-- (NSString *)documentSource;
+@property (nonatomic, readonly, copy) NSString *documentSource;
 
 /*!
     @method title
     @result Return the title for the document.
 */
-- (NSString *)title;
+@property (nonatomic, readonly, copy) NSString *title;
 
 @end

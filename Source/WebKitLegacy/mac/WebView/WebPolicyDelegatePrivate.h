@@ -42,7 +42,7 @@ typedef enum {
 @private
     WebPolicyDecisionListenerPrivate *_private;
 }
-- (id)_initWithTarget:(id)target action:(SEL)action;
+- (id)_initWithTarget:(id)target action:(SEL)action NS_DESIGNATED_INITIALIZER;
 - (void)_invalidate;
 @end
 
