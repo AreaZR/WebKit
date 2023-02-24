@@ -1347,9 +1347,13 @@ void SourceBufferPrivateAVFObjC::enqueueSample(Ref<MediaSampleAVFObjC>&& sample,
             if (!havePrerollDecodeWithCompletionHandler) {
                 CMSampleBufferRef rawSampleCopy;
                 PAL::CMSampleBufferCreateCopy(kCFAllocatorDefault, platformSample.sample.cmSampleBuffer, &rawSampleCopy);
-                auto sampleCopy = adoptCF(rawSampleCopy);
-                PAL::CMSetAttachment(sampleCopy.get(), PAL::kCMSampleBufferAttachmentKey_PostNotificationWhenConsumed, (__bridge CFDictionaryRef)@{ (__bridge NSString *)PAL::kCMSampleBufferAttachmentKey_PostNotificationWhenConsumed : @YES }, kCMAttachmentMode_ShouldNotPropagate);
-                [m_displayLayer enqueueSampleBuffer:sampleCopy.get()];
+                const void *key = PAL::kCMSampleBufferAttachmentKey_PostNotificationWhenConsumed;
+                const void *value = kCFBooleanTrue;
+                CFDictionaryRef ref = CFDictionaryCreate(kCFAllocatorDefault, &key, &value, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+                PAL::CMSetAttachment(rawSampleCopy, PAL::kCMSampleBufferAttachmentKey_PostNotificationWhenConsumed, ref, kCMAttachmentMode_ShouldNotPropagate);
+                CFRelease(ref);
+                [m_displayLayer enqueueSampleBuffer:rawSampleCopy];
+                CFRelease(rawSampleCopy);
 #if PLATFORM(IOS_FAMILY)
                 player->setHasAvailableVideoFrame(true);
 #endif

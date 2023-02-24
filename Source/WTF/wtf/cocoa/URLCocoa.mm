@@ -33,7 +33,7 @@
 #import <wtf/text/CString.h>
 
 @interface NSString (WTFNSURLExtras)
-- (BOOL)_web_looksLikeIPAddress;
+- (bool)_web_looksLikeIPAddress;
 @end
 
 namespace WTF {
@@ -52,9 +52,8 @@ URL::operator NSURL *() const
 
 RetainPtr<CFURLRef> URL::emptyCFURL()
 {
-    // We use the toll-free bridge to create an empty value that is distinct from null that no CFURL function can create.
     // FIXME: When we originally wrote this, we thought that creating empty CF URLs was valuable; can we do without it now?
-    return bridge_cast(adoptNS([[NSURL alloc] initWithString:@""]));
+    return adoptCF(CFURLCreateWithString(kCFAllocatorDefault, CFSTR(""), NULL));
 }
 
 bool URL::hostIsIPAddress(StringView host)

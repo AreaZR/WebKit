@@ -141,7 +141,7 @@ String localizedString(const char* key)
 static String truncatedStringForMenuItem(const String& original)
 {
     // Truncate the string if it's too long. This number is roughly the same as the one used by AppKit.
-    unsigned maxNumberOfGraphemeClustersInLookupMenuItem = 24;
+    constexpr unsigned maxNumberOfGraphemeClustersInLookupMenuItem = 24;
 
     String trimmed = original.stripWhiteSpace();
     unsigned numberOfCharacters = numCodeUnitsInGraphemeClusters(trimmed, maxNumberOfGraphemeClustersInLookupMenuItem);

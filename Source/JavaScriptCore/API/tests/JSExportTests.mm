@@ -144,7 +144,7 @@ extern "C" void checkResult(NSString *description, bool passed);
     context[@"NSString"] = [NSString class];
     context[@"myString"] = @"YES";
     JSValue *value = [context evaluateScript:@"myString.boolValue()"];
-    checkResult(@"Dynamically generated JSExport-ed protocols are ignored", [value isUndefined] && !!context.exception);
+    checkResult(@"Dynamically generated JSExport-ed protocols are ignored", value.isUndefined && !!context.exception);
 }
 
 + (void)classNamePrefixedWithUnderscoreTest
@@ -154,8 +154,8 @@ extern "C" void checkResult(NSString *description, bool passed);
     context[@"_UnderscorePrefixNoExport"] = [_UnderscorePrefixNoExport class];
     context[@"_UnderscorePrefixWithExport"] = [_UnderscorePrefixWithExport class];
 
-    checkResult(@"Non-underscore-prefixed ancestor class used when there are no exports", [context[@"_UnderscorePrefixNoExport"] toObject] == [NoUnderscorePrefix class]);
-    checkResult(@"Underscore-prefixed class used when there are exports", [context[@"_UnderscorePrefixWithExport"] toObject] == [_UnderscorePrefixWithExport class]);
+    checkResult(@"Non-underscore-prefixed ancestor class used when there are no exports", (context[@"_UnderscorePrefixNoExport"]).toObject == [NoUnderscorePrefix class]);
+    checkResult(@"Underscore-prefixed class used when there are exports", (context[@"_UnderscorePrefixWithExport"]).toObject == [_UnderscorePrefixWithExport class]);
 
     JSValue *withExportInstance = [context evaluateScript:@"new _UnderscorePrefixWithExport()"];
     checkResult(@"Exports present on underscore-prefixed class", !context.exception && !withExportInstance.isUndefined);
@@ -180,12 +180,12 @@ static void wrapperLifetimeIsTiedToGlobalObject()
         JSContext *context = [[JSContext alloc] init];
         contextRef = JSGlobalContextRetain(context.JSGlobalContextRef);
         context[@"A"] = A.class;
-        checkResult(@"Initial wrapper's constructor is itself", [[context evaluateScript:@"new A().constructor === A"] toBool]);
+        checkResult(@"Initial wrapper's constructor is itself", [context evaluateScript:@"new A().constructor === A"].toBool);
     }
 
     @autoreleasepool {
         JSContext *context = [JSContext contextWithJSGlobalContextRef:contextRef];
-        checkResult(@"New context's wrapper's constructor is itself", [[context evaluateScript:@"new A().constructor === A"] toBool]);
+        checkResult(@"New context's wrapper's constructor is itself", [context evaluateScript:@"new A().constructor === A"].toBool);
     }
 
     JSGlobalContextRelease(contextRef);
@@ -199,7 +199,7 @@ static void wrapperForNSObjectisObject()
         context.exception = nil;
 
         context[@"A"] = NSObject.class;
-        checkResult(@"Should not throw an exception when wrapping NSObject and Object has been changed", ![context exception]);
+        checkResult(@"Should not throw an exception when wrapping NSObject and Object has been changed", !context.exception);
     }
 }
 

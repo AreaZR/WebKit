@@ -168,11 +168,11 @@ void LocalConnection::verifyUser(SecAccessControlRef accessControl, LAContext *c
 RetainPtr<SecKeyRef> LocalConnection::createCredentialPrivateKey(LAContext *context, SecAccessControlRef accessControlRef, const String& secAttrLabel, NSData *secAttrApplicationTag) const
 {
     RetainPtr privateKeyAttributes = @{
-        (id)kSecAttrAccessControl: (id)accessControlRef,
-        (id)kSecAttrIsPermanent: @YES,
-        (id)kSecAttrAccessGroup: @(LocalAuthenticatorAccessGroup),
-        (id)kSecAttrLabel: secAttrLabel,
-        (id)kSecAttrApplicationTag: secAttrApplicationTag,
+        (id)kSecAttrAccessControl : (id)accessControlRef,
+        (id)kSecAttrIsPermanent : @YES,
+        (id)kSecAttrAccessGroup : bridge_cast(WebCore::LocalAuthenticatorAccessGroup),
+        (id)kSecAttrLabel : secAttrLabel,
+        (id)kSecAttrApplicationTag : secAttrApplicationTag,
     };
 
     if (context) {

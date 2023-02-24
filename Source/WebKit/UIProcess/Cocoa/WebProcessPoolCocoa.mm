@@ -172,12 +172,8 @@ static NSString * const WebKitSuppressMemoryPressureHandlerDefaultsKey = @"WebKi
 
 static NSString * const WebKitMediaStreamingActivity = @"WebKitMediaStreamingActivity";
 
-#if ENABLE(TRACKING_PREVENTION) && !RELEASE_LOG_DISABLED
-static NSString * const WebKitLogCookieInformationDefaultsKey = @"WebKitLogCookieInformation";
-#endif
-
 #if HAVE(POWERLOG_TASK_MODE_QUERY) && ENABLE(GPU_PROCESS)
-static NSString * const kPLTaskingStartNotificationGlobal = @"kPLTaskingStartNotificationGlobal";
+static CFStringRef const kPLTaskingStartNotificationGlobal = CFSTR("kPLTaskingStartNotificationGlobal");
 #endif
 
 #if PLATFORM(IOS_FAMILY) && !PLATFORM(MACCATALYST)
@@ -453,7 +449,7 @@ void WebProcessPool::platformInitializeWebProcess(const WebProcessProxy& process
 #endif
 
 #if ENABLE(TRACKING_PREVENTION) && !RELEASE_LOG_DISABLED
-    parameters.shouldLogUserInteraction = [defaults boolForKey:WebKitLogCookieInformationDefaultsKey];
+    parameters.shouldLogUserInteraction = [defaults boolForKey:@"WebKitLogCookieInformation"];
 #endif
 
     auto screenProperties = WebCore::collectScreenProperties();
@@ -809,7 +805,7 @@ void WebProcessPool::registerNotificationObservers()
     });
 
 #if PLATFORM(COCOA)
-    addCFNotificationObserver(lockdownModeConfigurationUpdateCallback, (__bridge CFStringRef)WKLockdownModeContainerConfigurationChangedNotification);
+    addCFNotificationObserver(lockdownModeConfigurationUpdateCallback, WKLockdownModeContainerConfigurationChangedNotification);
 #endif
 
 #if HAVE(PER_APP_ACCESSIBILITY_PREFERENCES)
@@ -827,7 +823,7 @@ void WebProcessPool::registerNotificationObservers()
     addCFNotificationObserver(mediaAccessibilityPreferencesChangedCallback, kMAXCaptionAppearanceSettingsChangedNotification);
 #endif
 #if HAVE(POWERLOG_TASK_MODE_QUERY) && ENABLE(GPU_PROCESS)
-    addCFNotificationObserver(powerLogTaskModeStartedCallback, (__bridge CFStringRef)kPLTaskingStartNotificationGlobal);
+    addCFNotificationObserver(powerLogTaskModeStartedCallback, kPLTaskingStartNotificationGlobal);
 #endif // HAVE(POWERLOG_TASK_MODE_QUERY) && ENABLE(GPU_PROCESS)
 }
 
@@ -866,7 +862,7 @@ void WebProcessPool::unregisterNotificationObservers()
     m_powerSourceNotifier = nullptr;
     
 #if PLATFORM(COCOA)
-    removeCFNotificationObserver((__bridge CFStringRef)WKLockdownModeContainerConfigurationChangedNotification);
+    removeCFNotificationObserver(WKLockdownModeContainerConfigurationChangedNotification);
 #endif
 
 #if HAVE(PER_APP_ACCESSIBILITY_PREFERENCES)
@@ -880,7 +876,7 @@ void WebProcessPool::unregisterNotificationObservers()
     removeCFNotificationObserver(kMAXCaptionAppearanceSettingsChangedNotification);
 #endif
 #if HAVE(POWERLOG_TASK_MODE_QUERY) && ENABLE(GPU_PROCESS)
-    removeCFNotificationObserver((__bridge CFStringRef)kPLTaskingStartNotificationGlobal);
+    removeCFNotificationObserver(kPLTaskingStartNotificationGlobal);
 #endif
     m_weakObserver = nil;
 }

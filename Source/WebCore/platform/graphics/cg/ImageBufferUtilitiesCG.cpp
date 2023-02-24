@@ -120,7 +120,7 @@ static bool encode(CGImageRef image, const String& mimeType, std::optional<doubl
             auto compressionQuality = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &*quality));
             const void* key = kCGImageDestinationLossyCompressionQuality;
             const void* value = compressionQuality.get();
-            return adoptCF(CFDictionaryCreate(0, &key, &value, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+            return adoptCF(CFDictionaryCreate(kCFAllocatorDefault, &key, &value, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
         }
         return nullptr;
     }();

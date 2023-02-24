@@ -49,13 +49,13 @@ NSString *WebLocalizedString(WebLocalizableStringsBundle *stringsBundle, const c
     } else {
         bundle = stringsBundle->bundle;
         if (bundle == nil) {
-            bundle = [NSBundle bundleWithIdentifier:[NSString stringWithUTF8String:stringsBundle->identifier]];
+            bundle = [NSBundle bundleWithIdentifier:@(stringsBundle->identifier)];
             ASSERT(bundle);
             stringsBundle->bundle = bundle;
         }
     }
     NSString *notFound = @"localized string not found";
-    auto keyString = adoptCF(CFStringCreateWithCStringNoCopy(NULL, key, kCFStringEncodingUTF8, kCFAllocatorNull));
+    auto keyString = adoptCF(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, key, kCFStringEncodingUTF8, kCFAllocatorNull));
     NSString *result = [bundle localizedStringForKey:(__bridge NSString *)keyString.get() value:notFound table:nil];
     ASSERT_WITH_MESSAGE(result != notFound, "could not find localizable string %s in bundle", key);
     return result;
