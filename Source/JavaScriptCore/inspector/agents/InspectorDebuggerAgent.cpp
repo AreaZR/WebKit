@@ -212,8 +212,8 @@ bool InspectorDebuggerAgent::ProtocolBreakpoint::matchesScriptURL(const String& 
     ASSERT(m_sourceID == JSC::noSourceID);
 
     if (m_isRegex) {
-        JSC::Yarr::RegularExpression regex(m_url);
-        return regex.match(scriptURL) != -1;
+        std::basic_regex regex(m_url.characters8());
+        return std::regex_match (scriptURL.characters8(), regex);
     }
     return m_url == scriptURL;
 }

@@ -29,6 +29,7 @@
 
 #pragma once
 
+#include <regex>
 #include "Breakpoint.h"
 #include "Debugger.h"
 #include "DebuggerPrimitives.h"
@@ -312,7 +313,7 @@ private:
         bool matches(const String&);
 
     private:
-        std::optional<JSC::Yarr::RegularExpression> m_symbolMatchRegex;
+        std::optional<std::basic_regex> m_symbolMatchRegex;
     };
     Vector<SymbolicBreakpoint> m_symbolicBreakpoints;
 
