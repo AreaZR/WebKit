@@ -30,6 +30,8 @@
 #include "config.h"
 #include "InspectorDebuggerAgent.h"
 
+#include <regex>
+
 #include "AsyncStackTrace.h"
 #include "ContentSearchUtilities.h"
 #include "Debugger.h"
@@ -1337,9 +1339,20 @@ bool InspectorDebuggerAgent::shouldBlackboxURL(const String& url) const
     if (!url.isEmpty()) {
         for (const auto& blackboxConfig : m_blackboxedURLs) {
             auto searchStringType = blackboxConfig.isRegex ? ContentSearchUtilities::SearchStringType::Regex : ContentSearchUtilities::SearchStringType::ExactString;
-            auto regex = ContentSearchUtilities::createRegularExpressionForSearchString(blackboxConfig.url, blackboxConfig.caseSensitive, searchStringType);
-            if (regex.match(url) != -1)
-                return true;
+            if (blackboxConfig.isRegex) {
+                if (blackboxConfig.caseSensitive) {
+                    if (blackboxConfig.url.contains(url))
+                        return true;
+                }
+                else {
+                    if (blackboxConfig.url.containsIgnoringASCIICase(url))
+                        return true;
+                }
+            } else {
+                std::basic_regex regex(blackboxConfig.url.characters8(), blackboxConfig.caseSensitive ? std::regex::ECMAScript : std::regex::ECMAScript | std::regex::icase);
+                if (std::regex_match(regex, url.characters8()))
+                    return true;
+            }
         }
     }
     return false;
