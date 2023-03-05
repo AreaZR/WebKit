@@ -1340,18 +1340,18 @@ bool InspectorDebuggerAgent::shouldBlackboxURL(const String& url) const
         for (const auto& blackboxConfig : m_blackboxedURLs) {
             auto searchStringType = blackboxConfig.isRegex ? ContentSearchUtilities::SearchStringType::Regex : ContentSearchUtilities::SearchStringType::ExactString;
             if (blackboxConfig.isRegex) {
-                if (blackboxConfig.caseSensitive) {
-                    if (blackboxConfig.url.contains(url))
-                        return true;
-                }
-                else {
-                    if (blackboxConfig.url.containsIgnoringASCIICase(url))
-                        return true;
-                }
-            } else {
                 std::basic_regex regex(blackboxConfig.url.characters8(), blackboxConfig.caseSensitive ? std::regex::ECMAScript : std::regex::ECMAScript | std::regex::icase);
                 if (std::regex_match(regex, url.characters8()))
                     return true;
+
+            } else {
+                if (blackboxConfig.caseSensitive) {
+                    if (blackboxConfig.url.contains(url))
+                        return true;
+                } else {
+                    if (blackboxConfig.url.containsIgnoringASCIICase(url))
+                        return true;
+                }
             }
         }
     }
