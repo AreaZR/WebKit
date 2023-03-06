@@ -211,13 +211,11 @@ static RetainPtr<NSMutableSet>& pluginViews()
 {
     if (_started)
         return;
-    
-    if ([_views count] > 0)
+
+    if (_views.count)
         LOG(Plugins, "starting WebKit plugins : %@", [_views description]);
     
-    int count = [_views count];
-    for (int i = 0; i < count; i++) {
-        id aView = [_views objectAtIndex:i];
+    for (id aView in _views) {
         if ([aView respondsToSelector:@selector(webPlugInStart)]) {
             JSC::JSLock::DropAllLocks dropAllLocks(WebCore::commonVM());
             [aView webPlugInStart];
@@ -234,13 +232,11 @@ static RetainPtr<NSMutableSet>& pluginViews()
     if (!_started)
         return;
 
-    if ([_views count] > 0) {
+    if (_views.count)
         LOG(Plugins, "stopping WebKit plugins: %@", [_views description]);
-    }
     
-    int viewsCount = [_views count];
-    for (int i = 0; i < viewsCount; i++)
-        [self stopOnePlugin:[_views objectAtIndex:i]];
+    for (id view in _views)
+        [self stopOnePlugin:view];
 
     _started = NO;
 }
@@ -251,12 +247,11 @@ static RetainPtr<NSMutableSet>& pluginViews()
     if (!_started)
         return;
 
-    NSUInteger viewsCount = [_views count];
-    if (viewsCount > 0)
+    if (_views.count)
         LOG(Plugins, "stopping WebKit plugins for PageCache: %@", [_views description]);
 
-    for (NSUInteger i = 0; i < viewsCount; ++i)
-        [self stopOnePluginForPageCache:[_views objectAtIndex:i]];
+    for (id view in _views)
+        [self stopOnePluginForPageCache:view];
 
     _started = NO;
 }
@@ -367,14 +362,13 @@ static void cancelOutstandingCheck(const void *item, void *context)
 {    
     [self stopAllPlugins];
 
-    if ([_views count] > 0) {
+    if (_views.count) {
         LOG(Plugins, "destroying WebKit plugins: %@", [_views description]);
     }
 
     [self _cancelOutstandingChecks];
     
-    int viewsCount = [_views count];
-    for (int i = 0; i < viewsCount; i++) {
+    for (id aView in _views) {
         id aView = [_views objectAtIndex:i];
         [self destroyOnePlugin:aView];
 
