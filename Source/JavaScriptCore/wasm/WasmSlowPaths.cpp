@@ -170,7 +170,7 @@ inline bool jitCompileSIMDFunction(Wasm::LLIntCallee* callee, Wasm::Instance* in
     }
 
     bool compile = false;
-    while (!compile) {
+    do {
         Locker locker { tierUpCounter.m_lock };
         switch (tierUpCounter.m_compilationStatus) {
         case Wasm::LLIntTierUpCounter::CompilationStatus::NotCompiled:
@@ -184,7 +184,7 @@ inline bool jitCompileSIMDFunction(Wasm::LLIntCallee* callee, Wasm::Instance* in
             RELEASE_ASSERT(!!callee->replacement(instance->memory()->mode()));
             return true;
         }
-    }
+    } while (!compile);
 
     uint32_t functionIndex = callee->functionIndex();
     ASSERT(instance->module().moduleInformation().usesSIMD(functionIndex));

@@ -90,16 +90,16 @@ JSC_CLASS_AVAILABLE(macos(10.15), ios(13.0))
 - (BOOL)isUsingBytecodeCache;
 
 /*!
- @method
+ @property
  @abstract Returns the JSScriptType of this JSScript.
  */
-- (JSScriptType)type;
+@property (nonatomic, readonly) JSScriptType type;
 
 /*!
- @method
+ @property
  @abstract Returns the sourceURL of this JSScript.
  */
-- (NSURL *)sourceURL;
+@property (nonatomic, readonly) NSURL *sourceURL;
 
 @end
 

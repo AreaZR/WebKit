@@ -1812,7 +1812,7 @@ private:
         unsigned numIterations = 0;
         bool done = false;
 
-        while (!done) {
+        do {
             ++numIterations;
 
             if (traceDebug)
@@ -1882,7 +1882,7 @@ private:
                     done = doAllocation(allocator);
                 }
             }
-        }
+        } while (!done);
         dataLogLnIf(reportStats, "Num iterations = ", numIterations, " for bank: ", bank);
     }
 

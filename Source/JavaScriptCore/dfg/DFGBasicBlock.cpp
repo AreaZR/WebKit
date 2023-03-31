@@ -96,8 +96,8 @@ void BasicBlock::replaceTerminal(Graph& graph, Node* node)
 
 bool BasicBlock::isInPhis(Node* node) const
 {
-    for (size_t i = 0; i < phis.size(); ++i) {
-        if (phis[i] == node)
+    for (Node* n : phis) {
+        if (n == node)
             return true;
     }
     return false;
@@ -114,12 +114,12 @@ bool BasicBlock::isInBlock(Node* myNode) const
 
 void BasicBlock::removePredecessor(BasicBlock* block)
 {
-    for (unsigned i = 0; i < predecessors.size(); ++i) {
-        if (predecessors[i] != block)
-            continue;
-        predecessors[i] = predecessors.last();
-        predecessors.removeLast();
-        return;
+    for (BasicBlock* predeccesor : predecessors) {
+        if (predeccesor == block) {
+            predeccesor = predecessors.last();
+            predecessors.removeLast();
+            return;
+        }
     }
     RELEASE_ASSERT_NOT_REACHED();
 }

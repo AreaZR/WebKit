@@ -66,7 +66,7 @@ public:
         Vector<Node*> worklist;
         seen.add(node);
         worklist.append(node);
-        while (!worklist.isEmpty()) {
+        do {
             Node* currentNode = worklist.takeLast();
             forAllIncomingValues(
                 currentNode,
@@ -77,7 +77,7 @@ public:
                     } else
                         functor(incomingNode);
                 });
-        }
+        } while (!worklist.isEmpty());
     }
     
 private:

@@ -582,7 +582,7 @@ auto AbstractModuleRecord::resolveExportImpl(JSGlobalObject* globalObject, const
     };
 
     pendingTasks.append(Task { root, Type::Query });
-    while (!pendingTasks.isEmpty()) {
+    do {
         const Task task = pendingTasks.takeLast();
         const ResolveQuery& query = task.query;
 
@@ -697,7 +697,7 @@ auto AbstractModuleRecord::resolveExportImpl(JSGlobalObject* globalObject, const
             break;
         }
         }
-    }
+    } while (!pendingTasks.isEmpty());
 
     ASSERT(frames.size() == 1);
     //  1. The starting point is always cacheable.
@@ -724,7 +724,7 @@ static void getExportedNames(JSGlobalObject* globalObject, AbstractModuleRecord*
 
     pendingModules.append(root);
 
-    while (!pendingModules.isEmpty()) {
+    do {
         AbstractModuleRecord* moduleRecord = pendingModules.takeLast();
         if (exportStarSet.contains(moduleRecord))
             continue;
@@ -741,7 +741,7 @@ static void getExportedNames(JSGlobalObject* globalObject, AbstractModuleRecord*
             RETURN_IF_EXCEPTION(scope, void());
             pendingModules.append(requestedModuleRecord);
         }
-    }
+    } while (!pendingModules.isEmpty());
 }
 
 JSModuleNamespaceObject* AbstractModuleRecord::getModuleNamespace(JSGlobalObject* globalObject)

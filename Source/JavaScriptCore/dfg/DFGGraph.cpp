@@ -788,13 +788,13 @@ public:
             }
         }
         
-        while (!m_worklist.isEmpty()) {
-            while (!m_worklist.isEmpty()) {
+        if (!m_worklist.isEmpty()) {
+            do {
                 Node* node = m_worklist.last();
                 m_worklist.removeLast();
                 ASSERT(node->shouldGenerate()); // It should not be on the worklist unless it's ref'ed.
                 DFG_NODE_DO_TO_CHILDREN(m_graph, node, countEdge);
-            }
+            } while (!m_worklist.isEmpty());
             
             if (m_graph.m_form == SSA) {
                 // Find Phi->Upsilon edges, which are represented as meta-data in the

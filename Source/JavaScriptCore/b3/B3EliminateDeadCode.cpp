@@ -68,14 +68,17 @@ bool eliminateDeadCodeImpl(Procedure& proc)
         }
         
         bool didPush = false;
-        for (size_t upsilonIndex = 0; upsilonIndex < upsilons.size(); ++upsilonIndex) {
+        size_t upsilonIndex = 0;
+        while (upsilonIndex < upsilons.size()) {
             UpsilonValue* upsilon = upsilons[upsilonIndex];
             if (worklist.saw(upsilon->phi())) {
                 worklist.push(upsilon);
-                upsilons[upsilonIndex--] = upsilons.last();
+                upsilons[upsilonIndex] = upsilons.last();
                 upsilons.takeLast();
                 didPush = true;
+                continue;
             }
+            ++upsilonIndex;
         }
         if (!didPush)
             break;

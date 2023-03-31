@@ -138,22 +138,22 @@ public:
     void dump()
     {
         dataLogF("    USED: [ ");
-        for (unsigned i = 0; i < m_used.size(); ++i) {
+        for (size_t i = 0; i < m_used.size(); ++i) {
             if (!m_free.contains(i)) {
-                dataLogF("%d:", i);
+                dataLogF("%zu:", i);
                 if (m_used[i] == max())
                     dataLogF("local ");
                 else
-                    dataLogF("%d ", m_used[i]);
+                    dataLogF("%u ", m_used[i]);
             }
         }
         dataLogF("]\n");
 
         dataLogF("    FREE: [ ");
-        for (unsigned i = 0; i < m_used.size(); ++i) {
+        for (size_t i = 0; i < m_used.size(); ++i) {
             if (m_free.contains(i) && m_used[i] != max()) {
                 ASSERT(!m_used[i]);
-                dataLogF("%d ", i);
+                dataLogF("%zu ", i);
             }
         }
         dataLogF("]\n");

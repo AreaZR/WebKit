@@ -306,7 +306,7 @@ function replace(strArg, replace)
     var resultList = [];
     var result;
     var done = false;
-    while (!done) {
+    do {
         result = @regExpExec(regexp, str);
 
         if (result === null)
@@ -324,7 +324,7 @@ function replace(strArg, replace)
                 }
             }
         }
-    }
+    } while (!done);
 
     var accumulatedResult = "";
     var nextSourcePosition = 0;

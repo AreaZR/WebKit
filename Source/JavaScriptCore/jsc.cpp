@@ -3493,7 +3493,7 @@ static void runInteractive(GlobalObject* globalObject)
     SourceOrigin sourceOrigin(URL(directoryName, "./interpreter"_s));
     
     bool shouldQuit = false;
-    while (!shouldQuit) {
+    do {
 #if HAVE(READLINE) && !RUNNING_FROM_XCODE
         ParserError error;
         String source;
@@ -3560,7 +3560,7 @@ static void runInteractive(GlobalObject* globalObject)
 
         scope.clearException();
         vm.drainMicrotasks();
-    }
+    } while (!shouldQuit);
     printf("\n");
 }
 
