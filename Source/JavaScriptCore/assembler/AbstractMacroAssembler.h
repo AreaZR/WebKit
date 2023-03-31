@@ -743,16 +743,14 @@ public:
 
         void link(AbstractMacroAssemblerType* masm) const
         {
-            size_t size = m_jumps.size();
-            for (size_t i = 0; i < size; ++i)
-                m_jumps[i].link(masm);
+            for (const Jump &jump : m_jumps)
+                jump.link(masm);
         }
         
         void linkTo(Label label, AbstractMacroAssemblerType* masm) const
         {
-            size_t size = m_jumps.size();
-            for (size_t i = 0; i < size; ++i)
-                m_jumps[i].linkTo(label, masm);
+            for (const Jump &jump : m_jumps)
+                jump.linkTo(label, masm);
         }
         
         void append(Jump jump)
@@ -854,9 +852,8 @@ public:
         if (offset1 > offset2)
             std::swap(offset1, offset2);
 
-        size_t size = m_registerAllocationForOffsets.size();
-        for (size_t i = 0; i < size; ++i)
-            m_registerAllocationForOffsets[i].checkOffsets(offset1, offset2);
+        for (auto &offset : m_registerAllocationForOffsets)
+            offset.checkOffsets(offset1, offset2);
     }
 #endif
 

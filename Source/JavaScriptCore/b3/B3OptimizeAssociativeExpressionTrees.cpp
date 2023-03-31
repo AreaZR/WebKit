@@ -163,8 +163,8 @@ bool OptimizeAssociativeExpressionTrees::optimizeRootedTree(Value* root, Inserti
     Vector<Value*, 4> leaves;
     Vector<Value*, 3> worklist = { root->child(0), root->child(1) };
     int64_t constant = neutralElement(op);
-    unsigned numVisited = 0;
-    while (!worklist.isEmpty()) {
+    size_t numVisited = 0;
+    do {
         Value* val = worklist.takeLast();
         if (val->opcode() == op && useCounts[val->index()] < 2) {
             worklist.append(val->child(0));
@@ -176,7 +176,7 @@ bool OptimizeAssociativeExpressionTrees::optimizeRootedTree(Value* root, Inserti
             numVisited++;
             leaves.append(val);
         }
-    }
+    } while (!worklist.isEmpty());
     if (isAbsorbingElement(op, constant)) {
         Value* newRoot;
         if (root->type() == Int32)

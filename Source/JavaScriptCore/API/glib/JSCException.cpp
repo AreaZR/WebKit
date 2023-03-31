@@ -391,9 +391,9 @@ char* jsc_exception_report(JSCException* exception)
     if (priv->sourceURI)
         report = g_string_append(report, priv->sourceURI.get());
     if (priv->lineNumber)
-        g_string_append_printf(report, ":%d", priv->lineNumber);
+        g_string_append_printf(report, ":%u", priv->lineNumber);
     if (priv->columnNumber)
-        g_string_append_printf(report, ":%d", priv->columnNumber);
+        g_string_append_printf(report, ":%u", priv->columnNumber);
     report = g_string_append_c(report, ' ');
     GUniquePtr<char> errorMessage(jsc_exception_to_string(exception));
     if (errorMessage)
@@ -402,7 +402,7 @@ char* jsc_exception_report(JSCException* exception)
 
     if (priv->backtrace) {
         GUniquePtr<char*> lines(g_strsplit(priv->backtrace.get(), "\n", 0));
-        for (unsigned i = 0; lines.get()[i]; ++i)
+        for (size_t i = 0; lines.get()[i]; ++i)
             g_string_append_printf(report, "  %s\n", lines.get()[i]);
     }
 

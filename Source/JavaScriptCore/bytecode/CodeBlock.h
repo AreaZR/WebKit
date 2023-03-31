@@ -176,7 +176,7 @@ public:
         Vector<CodeBlock*, 4> codeBlocks;
         codeBlocks.append(this);
 
-        while (!codeBlocks.isEmpty()) {
+        do {
             CodeBlock* currentCodeBlock = codeBlocks.takeLast();
             f(currentCodeBlock);
 
@@ -184,7 +184,7 @@ public:
                 codeBlocks.append(alternative);
             if (CodeBlock* osrEntryBlock = currentCodeBlock->specialOSREntryBlockOrNull())
                 codeBlocks.append(osrEntryBlock);
-        }
+        } while (!codeBlocks.isEmpty());
     }
     
     CodeSpecializationKind specializationKind() const

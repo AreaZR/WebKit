@@ -422,8 +422,8 @@ Stringifier::StringifyResult Stringifier::appendStringifiedValue(StringBuilder& 
         return StringifyFailed;
 
     // Handle cycle detection, and put the holder on the stack.
-    for (unsigned i = 0; i < m_holderStack.size(); i++) {
-        if (m_holderStack[i].object() == object) {
+    for (const auto& holder : m_holderStack) {
+        if (holder.object() == object) {
             throwTypeError(m_globalObject, scope, "JSON.stringify cannot serialize cyclic structures."_s);
             return StringifyFailed;
         }

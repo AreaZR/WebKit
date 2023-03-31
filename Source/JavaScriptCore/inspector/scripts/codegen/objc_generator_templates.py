@@ -130,7 +130,7 @@ ${invocation}
 }""")
 
     ConfigurationCommandProperty = (
-    """@property (nonatomic, retain, setter=set${domainName}Handler:) id<${objcPrefix}${domainName}DomainHandler> ${variableNamePrefix}Handler;""")
+    """@property (nonatomic, strong, setter=set${domainName}Handler:) id<${objcPrefix}${domainName}DomainHandler> ${variableNamePrefix}Handler;""")
 
     ConfigurationEventProperty = (
     """@property (nonatomic, readonly) ${objcPrefix}${domainName}DomainEventDispatcher *${variableNamePrefix}EventDispatcher;""")

@@ -55,10 +55,12 @@
     JSScriptType m_type;
     FileSystem::MappedFileData m_mappedSource;
     String m_source;
-    RetainPtr<NSURL> m_sourceURL;
+    NSURL *m_sourceURL;
     RetainPtr<NSURL> m_cachePath;
     RefPtr<JSC::CachedBytecode> m_cachedBytecode;
 }
+
+@synthesize type = m_type, sourceURL = m_sourceURL;
 
 static JSScript *createError(NSString *message, NSError** error)
 {
@@ -72,7 +74,7 @@ static bool validateBytecodeCachePath(NSURL* cachePath, NSError** error)
     if (!cachePath)
         return true;
 
-    URL cachePathURL([cachePath absoluteURL]);
+    URL cachePathURL(cachePath.absoluteURL);
     if (!cachePathURL.isLocalFile()) {
         createError([NSString stringWithFormat:@"Cache path `%@` is not a local file", static_cast<NSURL *>(cachePathURL)], error);
         return false;
@@ -128,7 +130,7 @@ static bool validateBytecodeCachePath(NSURL* cachePath, NSError** error)
     if (!validateBytecodeCachePath(cachePath, error))
         return nil;
 
-    URL filePathURL([filePath absoluteURL]);
+    URL filePathURL(filePath.absoluteURL);
     if (!filePathURL.isLocalFile())
         return createError([NSString stringWithFormat:@"File path %@ is not a local file", static_cast<NSURL *>(filePathURL)], error);
 
@@ -157,7 +159,7 @@ static bool validateBytecodeCachePath(NSURL* cachePath, NSError** error)
     if (!m_cachePath)
         return;
 
-    String cacheFilename = [m_cachePath path];
+    String cacheFilename = m_cachePath.get().path;
 
     auto fd = FileSystem::openAndLockFile(cacheFilename, FileSystem::FileOpenMode::Read, {FileSystem::FileLockMode::Exclusive, FileSystem::FileLockMode::Nonblocking});
     if (!FileSystem::isHandleValid(fd))
@@ -172,7 +174,7 @@ static bool validateBytecodeCachePath(NSURL* cachePath, NSError** error)
         return;
 
     const uint8_t* fileData = reinterpret_cast<const uint8_t*>(mappedFile.data());
-    unsigned fileTotalSize = mappedFile.size();
+    size_t fileTotalSize = mappedFile.size();
 
     // Ensure we at least have a SHA1::Digest to read.
     if (fileTotalSize < sizeof(SHA1::Digest)) {
@@ -180,7 +182,7 @@ static bool validateBytecodeCachePath(NSURL* cachePath, NSError** error)
         return;
     }
 
-    unsigned fileDataSize = fileTotalSize - sizeof(SHA1::Digest);
+    size_t fileDataSize = fileTotalSize - sizeof(SHA1::Digest);
 
     SHA1::Digest computedHash;
     SHA1 sha1;
@@ -223,16 +225,6 @@ static bool validateBytecodeCachePath(NSURL* cachePath, NSError** error)
     return !!m_cachedBytecode->size();
 }
 
-- (NSURL *)sourceURL
-{
-    return m_sourceURL.get();
-}
-
-- (JSScriptType)type
-{
-    return m_type;
-}
-
 @end
 
 @implementation JSScript(Internal)
@@ -269,7 +261,7 @@ static bool validateBytecodeCachePath(NSURL* cachePath, NSError** error)
     JSC::JSLockHolder locker(vm);
 
     TextPosition startPosition { };
-    String filename = String { [[self sourceURL] absoluteString] };
+    String filename = String { self.sourceURL.absoluteString };
     URL url = URL({ }, filename);
     auto type = m_type == kJSScriptTypeModule ? JSC::SourceProviderSourceType::Module : JSC::SourceProviderSourceType::Program;
     JSC::SourceOrigin origin(url);
@@ -302,7 +294,7 @@ static bool validateBytecodeCachePath(NSURL* cachePath, NSError** error)
     // or nothing). So, we'll write to a temp file first, and rename the temp
     // file to the cache file only after we've finished writing the whole thing.
 
-    NSString *cachePathString = [m_cachePath path];
+    NSString *cachePathString = m_cachePath.get().path;
     const char* cacheFileName = cachePathString.UTF8String;
     const char* tempFileName = [cachePathString stringByAppendingString:@".tmp"].UTF8String;
     int fd = open(cacheFileName, O_CREAT | O_WRONLY | O_EXLOCK | O_NONBLOCK, 0600);

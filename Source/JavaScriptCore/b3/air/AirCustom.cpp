@@ -83,8 +83,7 @@ bool CCallCustom::isValidForm(Inst& inst)
         return false;
 
     // The arguments can only refer to the stack, tmps, or immediates.
-    for (unsigned i = inst.args.size() - 1; i; --i) {
-        Arg arg = inst.args[i];
+    for (const Arg& arg : inst.args) {
         if (!arg.isTmp() && !arg.isStackMemory() && !arg.isSomeImm())
             return false;
     }

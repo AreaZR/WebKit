@@ -5465,10 +5465,8 @@ ForInContext* BytecodeGenerator::findForInContext(RegisterID* property)
 {
     for (size_t i = m_forInContextStack.size(); i--; ) {
         ForInContext& context = m_forInContextStack[i].get();
-        if (context.local() != property)
-            continue;
-
-        return &context;
+        if (context.local() == property)
+            return &context;
     }
 
     return nullptr;

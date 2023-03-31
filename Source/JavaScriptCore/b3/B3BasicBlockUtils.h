@@ -75,13 +75,13 @@ void updatePredecessorsAfter(BasicBlock* root)
 {
     Vector<BasicBlock*, 16> worklist;
     worklist.append(root);
-    while (!worklist.isEmpty()) {
+    do {
         BasicBlock* block = worklist.takeLast();
         for (BasicBlock* successor : block->successorBlocks()) {
             if (addPredecessor(successor, block))
                 worklist.append(successor);
         }
-    }
+    } while (!worklist.isEmpty());
 }
 
 template<typename BasicBlock>
