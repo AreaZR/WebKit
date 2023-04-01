@@ -535,10 +535,10 @@ JSC_DEFINE_HOST_FUNCTION(showModalDialog, (JSGlobalObject* lexicalGlobalObjectPt
     if (!shouldAllowAccess)
         return JSValue::encode(jsUndefined());
 
-    if (UNLIKELY(callFrame.argumentCount() < 1))
+    if (UNLIKELY(!callFrame.argumentCount()))
         return throwVMException(&lexicalGlobalObject, scope, createNotEnoughArgumentsError(&lexicalGlobalObject));
 
-    String urlString = convert<IDLNullable<IDLDOMString>>(lexicalGlobalObject, callFrame.argument(0));
+    String urlString = convert<IDLNullable<IDLDOMString>>(lexicalGlobalObject, callFrame.uncheckedArgument(0));
     RETURN_IF_EXCEPTION(scope, { });
     String dialogFeaturesString = convert<IDLNullable<IDLDOMString>>(lexicalGlobalObject, callFrame.argument(2));
     RETURN_IF_EXCEPTION(scope, { });
@@ -557,7 +557,7 @@ JSValue JSLocalDOMWindow::queueMicrotask(JSGlobalObject& lexicalGlobalObject, Ca
     VM& vm = lexicalGlobalObject.vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    if (UNLIKELY(callFrame.argumentCount() < 1))
+    if (UNLIKELY(!callFrame.argumentCount()))
         return throwException(&lexicalGlobalObject, scope, createNotEnoughArgumentsError(&lexicalGlobalObject));
 
     JSValue functionValue = callFrame.uncheckedArgument(0);

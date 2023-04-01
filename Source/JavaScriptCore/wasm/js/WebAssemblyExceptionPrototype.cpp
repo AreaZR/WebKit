@@ -131,10 +131,10 @@ JSC_DEFINE_HOST_FUNCTION(webAssemblyExceptionProtoFuncIs, (JSGlobalObject* globa
     JSWebAssemblyException* jsException = getException(globalObject, callFrame->thisValue());
     RETURN_IF_EXCEPTION(throwScope, { });
 
-    if (UNLIKELY(callFrame->argumentCount() < 1))
+    if (UNLIKELY(!callFrame->argumentCount()))
         return JSValue::encode(throwException(globalObject, throwScope, createNotEnoughArgumentsError(globalObject)));
 
-    JSWebAssemblyTag* tag = jsDynamicCast<JSWebAssemblyTag*>(callFrame->argument(0));
+    JSWebAssemblyTag* tag = jsDynamicCast<JSWebAssemblyTag*>(callFrame->uncheckedArgument(0));
     if (!tag)
         return throwVMTypeError(globalObject, throwScope, "WebAssembly.Exception.is(): First argument must be a WebAssembly.Tag"_s);
 

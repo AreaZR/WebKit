@@ -6159,7 +6159,11 @@ sub GenerateArgumentsCountCheck
             last;
         }
     }
-    if ($numMandatoryArguments >= 1) {
+    if ($numMandatoryArguments == 1) {
+        push(@$outputArray, $indent . "if (UNLIKELY(!callFrame->argumentCount()))\n");
+        push(@$outputArray, $indent . "    return throwVMError(lexicalGlobalObject, throwScope, createNotEnoughArgumentsError(lexicalGlobalObject));\n");
+    } 
+    if ($numMandatoryArguments > 1) {
         push(@$outputArray, $indent . "if (UNLIKELY(callFrame->argumentCount() < $numMandatoryArguments))\n");
         push(@$outputArray, $indent . "    return throwVMError(lexicalGlobalObject, throwScope, createNotEnoughArgumentsError(lexicalGlobalObject));\n");
     }

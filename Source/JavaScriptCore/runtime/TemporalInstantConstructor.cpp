@@ -97,7 +97,7 @@ JSC_DEFINE_HOST_FUNCTION(constructTemporalInstant, (JSGlobalObject* globalObject
     Structure* structure = JSC_GET_DERIVED_STRUCTURE(vm, instantStructure, newTarget, callFrame->jsCallee());
     RETURN_IF_EXCEPTION(scope, { });
 
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return throwVMTypeError(globalObject, scope, "Missing required epochNanoseconds argument to Temporal.Instant"_s);
 
     RELEASE_AND_RETURN(scope, JSValue::encode(TemporalInstant::tryCreateIfValid(globalObject, callFrame->uncheckedArgument(0), structure)));

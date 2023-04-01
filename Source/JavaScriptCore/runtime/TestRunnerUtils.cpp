@@ -114,28 +114,28 @@ JSValue failNextNewCodeBlock(JSGlobalObject* globalObject)
 
 JSValue numberOfDFGCompiles(JSGlobalObject*, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
     return numberOfDFGCompiles(callFrame->uncheckedArgument(0));
 }
 
 JSValue setNeverInline(JSGlobalObject*, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
     return setNeverInline(callFrame->uncheckedArgument(0));
 }
 
 JSValue setNeverOptimize(JSGlobalObject*, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
     return setNeverOptimize(callFrame->uncheckedArgument(0));
 }
 
 JSValue setCannotUseOSRExitFuzzing(JSGlobalObject*, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     JSValue theFunctionValue = callFrame->uncheckedArgument(0);
@@ -147,7 +147,7 @@ JSValue setCannotUseOSRExitFuzzing(JSGlobalObject*, CallFrame* callFrame)
 
 JSValue optimizeNextInvocation(JSGlobalObject*, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
     return optimizeNextInvocation(callFrame->uncheckedArgument(0));
 }

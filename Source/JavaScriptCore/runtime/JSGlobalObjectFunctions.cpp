@@ -830,7 +830,7 @@ JSC_DEFINE_HOST_FUNCTION(globalFuncImportModule, (JSGlobalObject* globalObject, 
     auto scope = DECLARE_THROW_SCOPE(vm);
 
     auto sourceOrigin = callFrame->callerSourceOrigin(vm);
-    RELEASE_ASSERT(callFrame->argumentCount() >= 1);
+    RELEASE_ASSERT(callFrame->argumentCount());
     auto* specifier = callFrame->uncheckedArgument(0).toString(globalObject);
     RETURN_IF_EXCEPTION(scope, JSValue::encode(promise->rejectWithCaughtException(globalObject, scope)));
 
@@ -900,7 +900,7 @@ JSC_DEFINE_HOST_FUNCTION(globalFuncCopyDataProperties, (JSGlobalObject* globalOb
         excludedSet = &unlinkedCodeBlock->constantIdentifierSets()[setIndex];
         if (callFrame->argumentCount() > 2) {
             newlyCreatedSet.emplace(*excludedSet);
-            for (unsigned index = 2; index < callFrame->argumentCount(); ++index) {
+            for (size_t index = 2; index < callFrame->argumentCount(); ++index) {
                 // This isn't observable since ObjectPatternNode::bindValue() also performs ToPropertyKey.
                 auto propertyName = callFrame->uncheckedArgument(index).toPropertyKey(globalObject);
                 RETURN_IF_EXCEPTION(scope, { });

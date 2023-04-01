@@ -133,7 +133,7 @@ JSValue JSInjectedScriptHost::evaluateWithScopeExtension(JSGlobalObject* globalO
 
 JSValue JSInjectedScriptHost::internalConstructorName(JSGlobalObject* globalObject, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     VM& vm = globalObject->vm();
@@ -143,7 +143,7 @@ JSValue JSInjectedScriptHost::internalConstructorName(JSGlobalObject* globalObje
 
 JSValue JSInjectedScriptHost::isHTMLAllCollection(JSGlobalObject* globalObject, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     VM& vm = globalObject->vm();
@@ -169,7 +169,7 @@ JSValue JSInjectedScriptHost::isPromiseRejectedWithNativeGetterTypeError(JSGloba
 JSValue JSInjectedScriptHost::subtype(JSGlobalObject* globalObject, CallFrame* callFrame)
 {
     VM& vm = globalObject->vm();
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     JSValue value = callFrame->uncheckedArgument(0);
@@ -239,7 +239,7 @@ JSValue JSInjectedScriptHost::subtype(JSGlobalObject* globalObject, CallFrame* c
 
 JSValue JSInjectedScriptHost::functionDetails(JSGlobalObject* globalObject, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     VM& vm = globalObject->vm();
@@ -295,7 +295,7 @@ static JSObject* constructInternalProperty(JSGlobalObject* globalObject, const S
 
 JSValue JSInjectedScriptHost::getInternalProperties(JSGlobalObject* globalObject, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     VM& vm = globalObject->vm();
@@ -438,7 +438,7 @@ JSValue JSInjectedScriptHost::getInternalProperties(JSGlobalObject* globalObject
 
 JSValue JSInjectedScriptHost::proxyTargetValue(CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     JSValue value = callFrame->uncheckedArgument(0);
@@ -455,7 +455,7 @@ JSValue JSInjectedScriptHost::proxyTargetValue(CallFrame* callFrame)
 
 JSValue JSInjectedScriptHost::weakMapSize(JSGlobalObject*, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     JSValue value = callFrame->uncheckedArgument(0);
@@ -468,7 +468,7 @@ JSValue JSInjectedScriptHost::weakMapSize(JSGlobalObject*, CallFrame* callFrame)
 
 JSValue JSInjectedScriptHost::weakMapEntries(JSGlobalObject* globalObject, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     VM& vm = globalObject->vm();
@@ -498,7 +498,7 @@ JSValue JSInjectedScriptHost::weakMapEntries(JSGlobalObject* globalObject, CallF
 
 JSValue JSInjectedScriptHost::weakSetSize(JSGlobalObject*, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     JSValue value = callFrame->uncheckedArgument(0);
@@ -511,7 +511,7 @@ JSValue JSInjectedScriptHost::weakSetSize(JSGlobalObject*, CallFrame* callFrame)
 
 JSValue JSInjectedScriptHost::weakSetEntries(JSGlobalObject* globalObject, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     VM& vm = globalObject->vm();
@@ -561,7 +561,7 @@ static JSObject* cloneSetIteratorObject(JSGlobalObject* globalObject, VM& vm, JS
 
 JSValue JSInjectedScriptHost::iteratorEntries(JSGlobalObject* globalObject, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     VM& vm = globalObject->vm();
@@ -639,7 +639,7 @@ static bool checkForbiddenPrototype(JSGlobalObject* globalObject, JSValue value,
 
 JSValue JSInjectedScriptHost::queryInstances(JSGlobalObject* globalObject, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     VM& vm = globalObject->vm();
@@ -847,7 +847,7 @@ private:
 
 JSValue JSInjectedScriptHost::queryHolders(JSGlobalObject* globalObject, CallFrame* callFrame)
 {
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return jsUndefined();
 
     VM& vm = globalObject->vm();

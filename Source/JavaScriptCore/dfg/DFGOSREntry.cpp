@@ -175,8 +175,8 @@ void* prepareOSREntry(VM& vm, CallFrame* callFrame, CodeBlock* codeBlock, Byteco
         if (!argument)
             value = callFrame->thisValue();
         else
-            value = callFrame->argument(argument - 1);
-        
+            value = callFrame->uncheckedArgument(argument - 1);
+
         if (!entry->m_expectedValues.argument(argument).validateOSREntryValue(value, FlushedJSValue)) {
             dataLogLnIf(Options::verboseOSR(),
                 "    OSR failed because argument ", argument, " is ", value,

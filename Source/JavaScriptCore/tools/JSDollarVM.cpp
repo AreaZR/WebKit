@@ -2232,7 +2232,7 @@ static EncodedJSValue doPrint(JSGlobalObject* globalObject, CallFrame* callFrame
 {
     DollarVMAssertScope assertScope;
     auto scope = DECLARE_THROW_SCOPE(globalObject->vm());
-    for (unsigned i = 0; i < callFrame->argumentCount(); ++i) {
+    for (size_t i = 0; i < callFrame->argumentCount(); ++i) {
         JSValue arg = callFrame->uncheckedArgument(i);
         if (arg.isCell()
             && !arg.isObject()
@@ -2258,8 +2258,9 @@ JSC_DEFINE_HOST_FUNCTION_WITH_ATTRIBUTES(functionCrash, NO_RETURN_DUE_TO_CRASH, 
 
     VM& vm = globalObject->vm();
     auto scope = DECLARE_CATCH_SCOPE(vm);
-    if (callFrame->argumentCount()) {
-        dataLogLn("Dumping ", callFrame->argumentCount(), " values before crashing:");
+    auto count = callFrame->argumentCount();
+    if (count) {
+        dataLogLn("Dumping ", count, " values before crashing:");
         const bool addLineFeed = true;
         doPrint(globalObject, callFrame, addLineFeed);
         if (scope.exception()) {
@@ -2281,7 +2282,7 @@ JSC_DEFINE_HOST_FUNCTION(functionBreakpoint, (JSGlobalObject* globalObject, Call
     VM& vm = globalObject->vm();
     auto scope = DECLARE_CATCH_SCOPE(vm);
     UNUSED_PARAM(scope);
-    if (!callFrame->argumentCount() || callFrame->argument(0).toBoolean(globalObject))
+    if (!callFrame->argumentCount() || callFrame->uncheckedArgument(0).toBoolean(globalObject))
         WTFBreakpointTrap();
 
     return encodedJSUndefined();
@@ -2475,7 +2476,7 @@ JSC_DEFINE_HOST_FUNCTION(functionBaselineJITTrue, (JSGlobalObject* globalObject,
 JSC_DEFINE_HOST_FUNCTION(functionNoInline, (JSGlobalObject*, CallFrame* callFrame))
 {
     DollarVMAssertScope assertScope;
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return JSValue::encode(jsUndefined());
     
     JSValue theFunctionValue = callFrame->uncheckedArgument(0);
@@ -2541,7 +2542,7 @@ JSC_DEFINE_HOST_FUNCTION(functionCallFrame, (JSGlobalObject* globalObject, CallF
 {
     DollarVMAssertScope assertScope;
     unsigned frameNumber = 1;
-    if (callFrame->argumentCount() >= 1) {
+    if (callFrame->argumentCount()) {
         JSValue value = callFrame->uncheckedArgument(0);
         if (!value.isUInt32())
             return JSValue::encode(jsUndefined());
@@ -2562,7 +2563,7 @@ JSC_DEFINE_HOST_FUNCTION(functionCodeBlockForFrame, (JSGlobalObject* globalObjec
 {
     DollarVMAssertScope assertScope;
     unsigned frameNumber = 1;
-    if (callFrame->argumentCount() >= 1) {
+    if (callFrame->argumentCount()) {
         JSValue value = callFrame->uncheckedArgument(0);
         if (!value.isUInt32())
             return JSValue::encode(jsUndefined());
@@ -2583,7 +2584,7 @@ static CodeBlock* codeBlockFromArg(JSGlobalObject* globalObject, CallFrame* call
 {
     DollarVMAssertScope assertScope;
     VM& vm = globalObject->vm();
-    if (callFrame->argumentCount() < 1)
+    if (!callFrame->argumentCount())
         return nullptr;
 
     JSValue value = callFrame->uncheckedArgument(0);
@@ -2697,7 +2698,7 @@ JSC_DEFINE_HOST_FUNCTION(functionDumpRegisters, (JSGlobalObject* globalObject, C
     DollarVMAssertScope assertScope;
     VM& vm = globalObject->vm();
     unsigned requestedFrameIndex = 1;
-    if (callFrame->argumentCount() >= 1) {
+    if (callFrame->argumentCount()) {
         JSValue value = callFrame->uncheckedArgument(0);
         if (!value.isUInt32())
             return JSValue::encode(jsUndefined());
@@ -2787,12 +2788,12 @@ JSC_DEFINE_HOST_FUNCTION(functionValue, (JSGlobalObject* globalObject, CallFrame
 {
     DollarVMAssertScope assertScope;
     WTF::StringPrintStream stream;
-    for (unsigned i = 0; i < callFrame->argumentCount(); ++i) {
+    for (size_t i = 0; i < callFrame->argumentCount(); ++i) {
         if (i)
             stream.print(", ");
         stream.print(callFrame->uncheckedArgument(i));
     }
-    
+
     return JSValue::encode(jsString(globalObject->vm(), stream.toString()));
 }
 
@@ -2890,8 +2891,8 @@ JSC_DEFINE_HOST_FUNCTION_WITH_ATTRIBUTES(functionCallWithStackSize, SUPPRESS_ASA
 
     if (callFrame->argumentCount() < 2)
         return throwVMError(globalObject, throwScope, "Invalid number of arguments"_s);
-    JSValue arg0 = callFrame->argument(0);
-    JSValue arg1 = callFrame->argument(1);
+    JSValue arg0 = callFrame->uncheckedArgument(0);
+    JSValue arg1 = callFrame->uncheckedArgument(1);
     if (!arg0.isCallable())
         return throwVMError(globalObject, throwScope, "arg0 should be a function"_s);
     if (!arg1.isNumber())
@@ -3240,10 +3241,10 @@ JSC_DEFINE_HOST_FUNCTION(functionCreateBuiltin, (JSGlobalObject* globalObject, C
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    if (callFrame->argumentCount() < 1 || !callFrame->argument(0).isString())
+    if (!callFrame->argumentCount() || !callFrame->uncheckedArgument(0).isString())
         return JSValue::encode(jsUndefined());
 
-    String functionText = asString(callFrame->argument(0))->value(globalObject);
+    String functionText = asString(callFrame->uncheckedArgument(0))->value(globalObject);
     RETURN_IF_EXCEPTION(scope, encodedJSValue());
 
     SourceCode source = makeSource(WTFMove(functionText), { });
@@ -4022,8 +4023,8 @@ JSC_DEFINE_HOST_FUNCTION(functionCallFromCPP, (JSGlobalObject* globalObject, Cal
         return JSValue::encode(jsUndefined());
 
     MarkedArgumentBuffer arguments;
-    for (unsigned i = 2; i < callFrame->argumentCount(); ++i)
-        arguments.append(callFrame->argument(i));
+    for (size_t i = 2; i < callFrame->argumentCount(); ++i)
+        arguments.append(callFrame->uncheckedArgument(i));
     ASSERT(!arguments.hasOverflowed());
     RETURN_IF_EXCEPTION(scope, { });
 
@@ -4055,8 +4056,8 @@ JSC_DEFINE_HOST_FUNCTION(functionCachedCallFromCPP, (JSGlobalObject* globalObjec
     CachedCall cachedCall(globalObject, callbackObject, callFrame->argumentCount() - 2);
     RETURN_IF_EXCEPTION(scope, { });
     cachedCall.clearArguments();
-    for (unsigned i = 2; i < callFrame->argumentCount(); ++i)
-        cachedCall.appendArgument(callFrame->argument(i));
+    for (size_t i = 2; i < callFrame->argumentCount(); ++i)
+        cachedCall.appendArgument(callFrame->uncheckedArgument(i));
     cachedCall.setThis(jsNull());
 
     if (UNLIKELY(cachedCall.hasOverflowedArguments()))

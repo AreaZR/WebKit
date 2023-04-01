@@ -207,7 +207,7 @@ static JSValue whenDefinedPromise(JSGlobalObject& lexicalGlobalObject, CallFrame
 {
     auto scope = DECLARE_THROW_SCOPE(lexicalGlobalObject.vm());
 
-    if (UNLIKELY(callFrame.argumentCount() < 1))
+    if (UNLIKELY(!callFrame.argumentCount()))
         return throwException(&lexicalGlobalObject, scope, createNotEnoughArgumentsError(&lexicalGlobalObject));
 
     AtomString localName(callFrame.uncheckedArgument(0).toString(&lexicalGlobalObject)->toAtomString(&lexicalGlobalObject));
