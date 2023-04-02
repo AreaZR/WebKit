@@ -391,7 +391,7 @@ template<typename StringClassA> bool equalIgnoringASCIICaseCommon(const StringCl
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
-size_t findIgnoringASCIICase(const SearchCharacterType* source, const MatchCharacterType* matchCharacters, unsigned startOffset, unsigned searchLength, unsigned matchLength)
+size_t findIgnoringASCIICase(const SearchCharacterType* source, const MatchCharacterType* matchCharacters, size_t startOffset, size_t searchLength, size_t matchLength)
 {
     ASSERT(searchLength >= matchLength);
 
@@ -409,8 +409,8 @@ size_t findIgnoringASCIICase(const SearchCharacterType* source, const MatchChara
 
 inline size_t findIgnoringASCIICaseWithoutLength(const char* source, const char* matchCharacters)
 {
-    unsigned searchLength = strlen(source);
-    unsigned matchLength = strlen(matchCharacters);
+    size_t searchLength = strlen(source);
+    size_t matchLength = strlen(matchCharacters);
 
     return matchLength < searchLength ? findIgnoringASCIICase(source, matchCharacters, 0, searchLength, matchLength) : notFound;
 }
@@ -763,7 +763,7 @@ template<typename CharacterType> inline bool equalLettersIgnoringASCIICase(const
 
 template<typename CharacterType> inline bool equalLettersIgnoringASCIICase(const CharacterType* characters, unsigned charactersLength, ASCIILiteral literal)
 {
-    unsigned literalLength = literal.length();
+    size_t literalLength = literal.length();
     return charactersLength == literalLength && equalLettersIgnoringASCIICase(characters, literal.characters(), literalLength);
 }
 
