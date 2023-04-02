@@ -208,8 +208,8 @@ private:
     void initialize(const LChar*, unsigned length);
     void initialize(const UChar*, unsigned length);
 
-    WTF_EXPORT_PRIVATE size_t find(const LChar* match, unsigned matchLength, size_t start) const;
-    WTF_EXPORT_PRIVATE size_t reverseFind(const LChar* match, unsigned matchLength, size_t start) const;
+    WTF_EXPORT_PRIVATE size_t find(const LChar* match, size_t matchLength, size_t start) const;
+    WTF_EXPORT_PRIVATE size_t reverseFind(const LChar* match, size_t matchLength, size_t start) const;
 
     template<typename CharacterType, typename MatchedCharacterPredicate>
     StringView stripLeadingAndTrailingMatchedCharacters(const CharacterType*, const MatchedCharacterPredicate&) const;
@@ -232,7 +232,7 @@ private:
     void clear();
 
     const void* m_characters { nullptr };
-    unsigned m_length { 0 };
+    size_t m_length { 0 };
     bool m_is8Bit { true };
 
 #if CHECK_STRINGVIEW_LIFETIME
@@ -1128,7 +1128,7 @@ inline StringView StringView::stripLeadingAndTrailingMatchedCharacters(const Cha
         return *this;
 
     size_t start = 0;
-    unsigned end = m_length - 1;
+    size_t end = m_length - 1;
 
     while (start <= end && predicate(characters[start]))
         ++start;
@@ -1220,7 +1220,7 @@ inline size_t findCommon(StringView haystack, StringView needle, size_t start)
 inline size_t findIgnoringASCIICase(StringView source, StringView stringToFind, size_t start)
 {
     unsigned sourceStringLength = source.length();
-    unsigned matchLength = stringToFind.length();
+    size_t matchLength = stringToFind.length();
     if (!matchLength)
         return std::min(start, sourceStringLength);
 
@@ -1409,7 +1409,7 @@ inline bool String::hasInfixStartingAt(StringView prefix, size_t start) const
     return m_impl && prefix && m_impl->hasInfixStartingAt(prefix, start);
 }
 
-inline bool String::hasInfixEndingAt(StringView suffix, unsigned end) const
+inline bool String::hasInfixEndingAt(StringView suffix, size_t end) const
 {
     return m_impl && suffix && m_impl->hasInfixEndingAt(suffix, end);
 }

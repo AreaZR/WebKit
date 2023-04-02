@@ -60,13 +60,13 @@ bool equalLettersIgnoringASCIICase(const char*, ASCIILiteral);
 #if (CPU(X86_64) || CPU(ARM64)) && !ASAN_ENABLED
 ALWAYS_INLINE bool equal(const LChar* aLChar, const LChar* bLChar, size_t length)
 {
-    unsigned dwordLength = length >> 3;
+    size_t dwordLength = length >> 3;
 
     const char* a = reinterpret_cast<const char*>(aLChar);
     const char* b = reinterpret_cast<const char*>(bLChar);
 
     if (dwordLength) {
-        for (unsigned i = 0; i != dwordLength; ++i) {
+        for (size_t i = 0; i != dwordLength; ++i) {
             if (unalignedLoad<uint64_t>(a) != unalignedLoad<uint64_t>(b))
                 return false;
 
