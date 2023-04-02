@@ -43,13 +43,13 @@ template<typename CharacterType> inline bool isLatin1(CharacterType character)
 
 using CodeUnitMatchFunction = bool (*)(UChar);
 
-template<typename CharacterTypeA, typename CharacterTypeB> bool equalIgnoringASCIICase(const CharacterTypeA*, const CharacterTypeB*, unsigned length);
-template<typename CharacterTypeA, typename CharacterTypeB> bool equalIgnoringASCIICase(const CharacterTypeA*, unsigned lengthA, const CharacterTypeB*, unsigned lengthB);
+template<typename CharacterTypeA, typename CharacterTypeB> bool equalIgnoringASCIICase(const CharacterTypeA*, const CharacterTypeB*, size_t length);
+template<typename CharacterTypeA, typename CharacterTypeB> bool equalIgnoringASCIICase(const CharacterTypeA*, size_t lengthA, const CharacterTypeB*, size_t lengthB);
 
 template<typename StringClassA, typename StringClassB> bool equalIgnoringASCIICaseCommon(const StringClassA&, const StringClassB&);
 
-template<typename CharacterType> bool equalLettersIgnoringASCIICase(const CharacterType*, const char* lowercaseLetters, unsigned length);
-template<typename CharacterType> bool equalLettersIgnoringASCIICase(const CharacterType*, unsigned charactersLength, ASCIILiteral);
+template<typename CharacterType> bool equalLettersIgnoringASCIICase(const CharacterType*, const char* lowercaseLetters, size_t length);
+template<typename CharacterType> bool equalLettersIgnoringASCIICase(const CharacterType*, size_t charactersLength, ASCIILiteral);
 
 template<typename StringClass> bool equalLettersIgnoringASCIICaseCommon(const StringClass&, ASCIILiteral);
 
@@ -58,7 +58,7 @@ bool equalLettersIgnoringASCIICase(const char*, ASCIILiteral);
 
 // Do comparisons 8 or 4 bytes-at-a-time on architectures where it's safe.
 #if (CPU(X86_64) || CPU(ARM64)) && !ASAN_ENABLED
-ALWAYS_INLINE bool equal(const LChar* aLChar, const LChar* bLChar, unsigned length)
+ALWAYS_INLINE bool equal(const LChar* aLChar, const LChar* bLChar, size_t length)
 {
     unsigned dwordLength = length >> 3;
 
