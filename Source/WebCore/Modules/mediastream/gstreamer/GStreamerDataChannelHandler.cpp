@@ -166,7 +166,7 @@ void GStreamerDataChannelHandler::setClient(RTCDataChannelHandlerClient& client,
             DC_DEBUG("Notifying queued raw data (size: %zu)", data->size());
             client.didReceiveRawData(data->makeContiguous()->data(), data->size());
         }, [&](String& text) {
-            DC_DEBUG("Notifying queued string of size %d", text.sizeInBytes());
+            DC_DEBUG("Notifying queued string of size %u", text.sizeInBytes());
             DC_TRACE("Notifying queued string %s", text.ascii().data());
             client.didReceiveStringData(text);
         }, [&](StateChange stateChange) {

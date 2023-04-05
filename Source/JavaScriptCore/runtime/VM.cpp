@@ -1114,7 +1114,7 @@ void VM::dumpRegExpTrace()
             gcUnprotect(*iter);
         }
 
-        dataLogF("%d Regular Expressions\n", reCount);
+        dataLogF("%u Regular Expressions\n", reCount);
     }
     
     m_rtTraceList.clear();

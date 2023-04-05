@@ -103,7 +103,7 @@ static void printTransitions(const DFA& dfa, unsigned sourceNodeId)
 
     // Then we go over each one an display the ranges one by one.
     for (const auto& transitionPerTarget : transitionsPerTarget) {
-        dataLogF("        %d -> %d [label=\"", sourceNodeId, transitionPerTarget.key);
+        dataLogF("        %u -> %u [label=\"", sourceNodeId, transitionPerTarget.key);
 
         Vector<uint16_t> incomingCharacters = transitionPerTarget.value;
         std::sort(incomingCharacters.begin(), incomingCharacters.end());
@@ -137,7 +137,7 @@ void DFA::debugPrintDot() const
         if (nodes[i].isKilled())
             continue;
 
-        dataLogF("         %d [label=<Node %d", i, i);
+        dataLogF("         %u [label=<Node %u", i, i);
         const Vector<uint64_t>& actions = nodes[i].actions(*this);
         if (!actions.isEmpty()) {
             dataLogF("<BR/>Actions: ");

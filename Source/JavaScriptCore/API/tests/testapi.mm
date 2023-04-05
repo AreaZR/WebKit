@@ -2321,7 +2321,7 @@ static void testCanCacheManyFilesWithTheSameVM()
     NSMutableArray *scripts = [[NSMutableArray alloc] init];
 
     for (unsigned i = 0; i < 10000; ++i)
-        [cachePaths addObject:cacheFileInDataVault([NSString stringWithFormat:@"cache-%d.cache", i])];
+        [cachePaths addObject:cacheFileInDataVault([NSString stringWithFormat:@"cache-%u.cache", i])];
 
     JSVirtualMachine *vm = [[JSVirtualMachine alloc] init];
     bool cachedAll = true;

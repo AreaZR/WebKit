@@ -705,7 +705,7 @@ public:
 #endif
 
 #if PLATFORM(IOS_FAMILY)
-    int accessibilitySecureFieldLength() override;
+    size_t accessibilitySecureFieldLength() override;
     bool hasTouchEventListener() const override;
     bool isInputTypePopupButton() const override;
 #endif

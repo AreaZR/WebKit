@@ -1085,11 +1085,11 @@ bool Position::rendersInDifferentPosition(const Position& position) const
     auto box2 = position.inlineBoxAndOffset(Affinity::Downstream).box;
 
     LOG(Editing, "renderer:               %p\n", renderer);
-    LOG(Editing, "thisRenderedOffset:         %d\n", thisRenderedOffset);
+    LOG(Editing, "thisRenderedOffset:         %u\n", thisRenderedOffset);
     LOG(Editing, "posRenderer:            %p\n", positionRenderer);
-    LOG(Editing, "posRenderedOffset:      %d\n", positionRenderedOffset);
-    LOG(Editing, "node min/max:           %d:%d\n", caretMinOffset(*deprecatedNode()), caretMaxOffset(*deprecatedNode()));
-    LOG(Editing, "pos node min/max:       %d:%d\n", caretMinOffset(*position.deprecatedNode()), caretMaxOffset(*position.deprecatedNode()));
+    LOG(Editing, "posRenderedOffset:      %u\n", positionRenderedOffset);
+    LOG(Editing, "node min/max:           %u:%u\n", caretMinOffset(*deprecatedNode()), caretMaxOffset(*deprecatedNode()));
+    LOG(Editing, "pos node min/max:       %u:%u\n", caretMinOffset(*position.deprecatedNode()), caretMaxOffset(*position.deprecatedNode()));
     LOG(Editing, "----------------------------------------------------------------------\n");
 
     if (!box1 || !box2)
@@ -1393,7 +1393,7 @@ void Position::debugPosition(const char* msg) const
     if (isNull())
         fprintf(stderr, "Position [%s]: null\n", msg);
     else
-        fprintf(stderr, "Position [%s]: %s [%p] at %d\n", msg, deprecatedNode()->nodeName().utf8().data(), deprecatedNode(), m_offset);
+        fprintf(stderr, "Position [%s]: %s [%p] at %u\n", msg, deprecatedNode()->nodeName().utf8().data(), deprecatedNode(), m_offset);
 }
 
 String Position::debugDescription() const
@@ -1424,7 +1424,7 @@ void Position::showAnchorTypeAndOffset() const
         fputs("after", stderr);
         break;
     }
-    fprintf(stderr, ", offset:%d\n", m_offset);
+    fprintf(stderr, ", offset:%u\n", m_offset);
 }
 
 void Position::showTreeForThis() const

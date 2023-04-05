@@ -249,7 +249,7 @@ void WebInspectorUIExtensionController::evaluateScriptForExtension(const Inspect
         if (auto parsedError = weakThis->parseExtensionErrorFromEvaluationResult(result)) {
             if (!result.value().has_value()) {
                 auto exceptionDetails = result.value().error();
-                LOG(Inspector, "Internal error encountered while evaluating upon the frontend at %s:%d:%d: %s", exceptionDetails.sourceURL.utf8().data(), exceptionDetails.lineNumber, exceptionDetails.columnNumber, exceptionDetails.message.utf8().data());
+                LOG(Inspector, "Internal error encountered while evaluating upon the frontend at %s:%u:%u: %s", exceptionDetails.sourceURL.utf8().data(), exceptionDetails.lineNumber, exceptionDetails.columnNumber, exceptionDetails.message.utf8().data());
             } else
                 LOG(Inspector, "Internal error encountered while evaluating upon the frontend: %s", extensionErrorToString(parsedError.value()).utf8().data());
 
@@ -356,7 +356,7 @@ void WebInspectorUIExtensionController::showExtensionTab(const Inspector::Extens
         if (auto parsedError = weakThis->parseExtensionErrorFromEvaluationResult(result)) {
             if (!result.value().has_value()) {
                 auto exceptionDetails = result.value().error();
-                LOG(Inspector, "Internal error encountered while showing extension tab at %s:%d:%d: %s", exceptionDetails.sourceURL.utf8().data(), exceptionDetails.lineNumber, exceptionDetails.columnNumber, exceptionDetails.message.utf8().data());
+                LOG(Inspector, "Internal error encountered while showing extension tab at %s:%u:%u: %s", exceptionDetails.sourceURL.utf8().data(), exceptionDetails.lineNumber, exceptionDetails.columnNumber, exceptionDetails.message.utf8().data());
             } else
                 LOG(Inspector, "Internal error encountered while showing extension tab.");
 
@@ -433,7 +433,7 @@ void WebInspectorUIExtensionController::evaluateScriptInExtensionTab(const Inspe
         if (auto parsedError = weakThis->parseExtensionErrorFromEvaluationResult(result)) {
             if (!result.value().has_value()) {
                 auto exceptionDetails = result.value().error();
-                LOG(Inspector, "Internal error encountered while evaluating upon the frontend: at %s:%d:%d: %s", exceptionDetails.sourceURL.utf8().data(), exceptionDetails.lineNumber, exceptionDetails.columnNumber, exceptionDetails.message.utf8().data());
+                LOG(Inspector, "Internal error encountered while evaluating upon the frontend: at %s:%u:%u: %s", exceptionDetails.sourceURL.utf8().data(), exceptionDetails.lineNumber, exceptionDetails.columnNumber, exceptionDetails.message.utf8().data());
             } else
                 LOG(Inspector, "Internal error encountered while evaluating upon the frontend.");
 

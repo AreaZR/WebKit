@@ -159,7 +159,7 @@ bool MachineThreads::tryCopyOtherThreadStacks(const AbstractLocker& locker, void
                         // These threads will be removed from the ThreadGroup. Thus, we do not do anything here except for reporting.
                         ASSERT(result.error() != KERN_SUCCESS);
                         WTFReportError(__FILE__, __LINE__, WTF_PRETTY_FUNCTION,
-                            "JavaScript garbage collection encountered an invalid thread (err 0x%x): Thread [%d/%d: %p].",
+                            "JavaScript garbage collection encountered an invalid thread (err 0x%x): Thread [%u/%u: %p].",
                             result.error(), index, threads.size(), thread.ptr());
 #endif
                     }

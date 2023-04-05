@@ -60,7 +60,7 @@ PaymentCoordinator::~PaymentCoordinator() = default;
 bool PaymentCoordinator::supportsVersion(Document&, unsigned version) const
 {
     auto supportsVersion = m_client->supportsVersion(version);
-    PAYMENT_COORDINATOR_RELEASE_LOG("supportsVersion(%d) -> %d", version, supportsVersion);
+    PAYMENT_COORDINATOR_RELEASE_LOG("supportsVersion(%u) -> %d", version, supportsVersion);
     return supportsVersion;
 }
 

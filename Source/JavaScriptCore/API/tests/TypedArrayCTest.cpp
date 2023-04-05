@@ -111,20 +111,20 @@ static int testAccess(JSGlobalContextRef context, JSObjectRef typedArray, JSType
 
     unsigned length = JSObjectGetTypedArrayLength(context, typedArray, &exception);
     if (elementLength != length || exception) {
-        fprintf(stderr, "TypedArray length FAILED: %p (%s), got: %d, expected: %d\n", typedArray, typeToString[type], length, elementLength);
+        fprintf(stderr, "TypedArray length FAILED: %p (%s), got: %u, expected: %u\n", typedArray, typeToString[type], length, elementLength);
         return 1;
     }
 
     unsigned byteLength = JSObjectGetTypedArrayByteLength(context, typedArray, &exception);
     unsigned expectedLength = byteSizes[type] * elementLength;
     if (byteLength != expectedLength || exception) {
-        fprintf(stderr, "TypedArray byteLength FAILED: %p (%s), got: %d, expected: %d\n", typedArray, typeToString[type], byteLength, expectedLength);
+        fprintf(stderr, "TypedArray byteLength FAILED: %p (%s), got: %u, expected: %u\n", typedArray, typeToString[type], byteLength, expectedLength);
         return 1;
     }
 
     unsigned offset = JSObjectGetTypedArrayByteOffset(context, typedArray, &exception);
     if (expectedOffset != offset || exception) {
-        fprintf(stderr, "TypedArray byteOffset FAILED: %p (%s), got: %d, expected: %d\n", typedArray, typeToString[type], offset, expectedOffset);
+        fprintf(stderr, "TypedArray byteOffset FAILED: %p (%s), got: %u, expected: %u\n", typedArray, typeToString[type], offset, expectedOffset);
         return 1;
     }
 

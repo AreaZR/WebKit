@@ -1123,8 +1123,8 @@ void CachedResourceStreamingClient::dataReceived(PlatformMediaResource&, const S
         members->downloadStartTime = WallTime::now();
     }
 
-    int length = data.size();
-    GST_LOG_OBJECT(src, "R%u: Have %d bytes of data", m_requestNumber, length);
+    size_t length = data.size();
+    GST_LOG_OBJECT(src, "R%u: Have %zu bytes of data", m_requestNumber, length);
 
     members->readPosition += length;
     ASSERT(!members->haveSize || members->readPosition <= members->size);

@@ -552,7 +552,7 @@ void AppendPipeline::consumeAppsinksAvailableSamples()
     ASSERT(isMainThread());
 
     GRefPtr<GstSample> sample;
-    int batchedSampleCount = 0;
+    unsigned batchedSampleCount = 0;
     for (std::unique_ptr<Track>& track : m_tracks) {
         while ((sample = adoptGRef(gst_app_sink_try_pull_sample(GST_APP_SINK(track->appsink.get()), 0)))) {
             appsinkNewSample(*track, WTFMove(sample));
@@ -560,7 +560,7 @@ void AppendPipeline::consumeAppsinksAvailableSamples()
         }
     }
 
-    GST_TRACE_OBJECT(pipeline(), "batchedSampleCount = %d", batchedSampleCount);
+    GST_TRACE_OBJECT(pipeline(), "batchedSampleCount = %u", batchedSampleCount);
 }
 
 void AppendPipeline::resetParserState()

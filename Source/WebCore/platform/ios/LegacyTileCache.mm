@@ -564,7 +564,7 @@ void LegacyTileCache::drawLayer(LegacyTileLayer* layer, CGContextRef context, Dr
     ++layer.paintCount;
     if (m_tilePaintCountersVisible) {
         char text[16];
-        snprintf(text, sizeof(text), "%d", layer.paintCount);
+        snprintf(text, sizeof(text), "%u", layer.paintCount);
 
         CGContextSaveGState(context);
 

@@ -44,7 +44,7 @@ void NFA::debugPrintDot() const
     dataLogF("    {\n");
 
     for (unsigned i = 0; i < nodes.size(); ++i) {
-        dataLogF("         %d [label=<Node %d", i, i);
+        dataLogF("         %u [label=<Node %u", i, i);
 
         const auto& node = nodes[i];
 
@@ -83,7 +83,7 @@ void NFA::debugPrintDot() const
         }
 
         for (const auto& slot : transitionsPerTarget) {
-            dataLogF("        %d -> %d [label=\"", i, slot.key);
+            dataLogF("        %u -> %u [label=\"", i, slot.key);
 
             bool isFirst = true;
             for (uint32_t rangeIndex : slot.value) {
@@ -110,7 +110,7 @@ void NFA::debugPrintDot() const
 
         for (uint32_t epsilonTargetIndex = node.epsilonTransitionTargetsStart; epsilonTargetIndex < node.epsilonTransitionTargetsEnd; ++epsilonTargetIndex) {
             uint32_t target = epsilonTransitionsTargets[epsilonTargetIndex];
-            dataLogF("        %d -> %d [label=\"ɛ\"]\n", i, target);
+            dataLogF("        %u -> %u [label=\"ɛ\"]\n", i, target);
         }
     }
 

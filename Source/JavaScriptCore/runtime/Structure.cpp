@@ -131,14 +131,14 @@ void Structure::dumpStatistics()
         }
     }
 
-    dataLogF("Number of live Structures: %d\n", liveStructureSet.size());
-    dataLogF("Number of Structures using the single item optimization for transition map: %d\n", numberUsingSingleSlot);
-    dataLogF("Number of Structures that are leaf nodes: %d\n", numberLeaf);
-    dataLogF("Number of Structures that singletons: %d\n", numberSingletons);
-    dataLogF("Number of Structures with PropertyTables: %d\n", numberWithPropertyTables);
+    dataLogF("Number of live Structures: %u\n", liveStructureSet.size());
+    dataLogF("Number of Structures using the single item optimization for transition map: %u\n", numberUsingSingleSlot);
+    dataLogF("Number of Structures that are leaf nodes: %u\n", numberLeaf);
+    dataLogF("Number of Structures that singletons: %u\n", numberSingletons);
+    dataLogF("Number of Structures with PropertyTables: %u\n", numberWithPropertyTables);
 
-    dataLogF("Size of a single Structures: %d\n", static_cast<unsigned>(sizeof(Structure)));
-    dataLogF("Size of sum of all property maps: %d\n", totalPropertyTablesSize);
+    dataLogF("Size of a single Structures: %u\n", static_cast<unsigned>(sizeof(Structure)));
+    dataLogF("Size of sum of all property maps: %u\n", totalPropertyTablesSize);
     dataLogF("Size of average of all property maps: %f\n", static_cast<double>(totalPropertyTablesSize) / static_cast<double>(liveStructureSet.size()));
 #else
     dataLogF("Dumping Structure statistics is not enabled.\n");
@@ -1054,14 +1054,14 @@ PropertyTableStatisticsExitLogger::~PropertyTableStatisticsExitLogger()
     unsigned finds = propertyTableStats->numFinds;
     unsigned collisions = propertyTableStats->numCollisions;
     dataLogF("\nJSC::PropertyTable statistics for process %d\n\n", getCurrentProcessID());
-    dataLogF("%d finds\n", finds);
-    dataLogF("%d collisions (%.1f%%)\n", collisions, 100.0 * collisions / finds);
-    dataLogF("%d lookups\n", propertyTableStats->numLookups.load());
-    dataLogF("%d lookup probings\n", propertyTableStats->numLookupProbing.load());
-    dataLogF("%d adds\n", propertyTableStats->numAdds.load());
-    dataLogF("%d removes\n", propertyTableStats->numRemoves.load());
-    dataLogF("%d rehashes\n", propertyTableStats->numRehashes.load());
-    dataLogF("%d reinserts\n", propertyTableStats->numReinserts.load());
+    dataLogF("%u finds\n", finds);
+    dataLogF("%u collisions (%.1f%%)\n", collisions, 100.0 * collisions / finds);
+    dataLogF("%u lookups\n", propertyTableStats->numLookups.load());
+    dataLogF("%u lookup probings\n", propertyTableStats->numLookupProbing.load());
+    dataLogF("%u adds\n", propertyTableStats->numAdds.load());
+    dataLogF("%u removes\n", propertyTableStats->numRemoves.load());
+    dataLogF("%u rehashes\n", propertyTableStats->numRehashes.load());
+    dataLogF("%u reinserts\n", propertyTableStats->numReinserts.load());
 }
 
 #endif

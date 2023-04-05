@@ -202,7 +202,7 @@ void CryptoKeyRSA::generatePair(CryptoAlgorithmIdentifier algorithm, CryptoAlgor
     }
 
     PAL::GCrypt::Handle<gcry_sexp_t> genkeySexp;
-    gcry_error_t error = gcry_sexp_build(&genkeySexp, nullptr, "(genkey(rsa(nbits %d)(rsa-use-e %d)))", modulusLength, *e);
+    gcry_error_t error = gcry_sexp_build(&genkeySexp, nullptr, "(genkey(rsa(nbits %u)(rsa-use-e %u)))", modulusLength, *e);
     if (error != GPG_ERR_NO_ERROR) {
         PAL::GCrypt::logError(error);
         failureCallback();

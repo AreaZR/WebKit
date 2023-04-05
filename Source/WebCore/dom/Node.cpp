@@ -1916,14 +1916,14 @@ void Node::showNodePathForThis() const
             const AtomString& idattr = element.getIdAttribute();
             bool hasIdAttr = !idattr.isNull() && !idattr.isEmpty();
             if (node->previousSibling() || node->nextSibling()) {
-                int count = 0;
+                unsigned count = 0;
                 for (Node* previous = node->previousSibling(); previous; previous = previous->previousSibling())
                     if (previous->nodeName() == node->nodeName())
                         ++count;
                 if (hasIdAttr)
-                    fprintf(stderr, "[@id=\"%s\" and position()=%d]", idattr.string().utf8().data(), count);
+                    fprintf(stderr, "[@id=\"%s\" and position()=%u]", idattr.string().utf8().data(), count);
                 else
-                    fprintf(stderr, "[%d]", count);
+                    fprintf(stderr, "[%u]", count);
             } else if (hasIdAttr)
                 fprintf(stderr, "[@id=\"%s\"]", idattr.string().utf8().data());
             break;

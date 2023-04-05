@@ -3873,7 +3873,7 @@ int runJSC(const CommandLine& options, bool isWorker, const Func& func)
     if (options.m_exitCode) {
         printf("jsc exiting %d", result);
         if (asyncTestExpectedPasses != asyncTestPasses)
-            printf(" because expected: %d async test passes but got: %d async test passes", asyncTestExpectedPasses, asyncTestPasses);
+            printf(" because expected: %u async test passes but got: %u async test passes", asyncTestExpectedPasses, asyncTestPasses);
         printf("\n");
     }
 

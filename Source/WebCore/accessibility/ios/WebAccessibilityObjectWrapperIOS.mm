@@ -1539,18 +1539,18 @@ static void appendStringToResult(NSMutableString *result, NSString *string)
     if (backingObject->supportsCheckedState()) {
         switch (backingObject->checkboxOrRadioValue()) {
         case AccessibilityButtonState::Off:
-            return [NSString stringWithFormat:@"%d", 0];
+            return @"0";
         case AccessibilityButtonState::On:
-            return [NSString stringWithFormat:@"%d", 1];
+            return @"1";
         case AccessibilityButtonState::Mixed:
-            return [NSString stringWithFormat:@"%d", 2];
+            return @"2";
         }
         ASSERT_NOT_REACHED();
-        return [NSString stringWithFormat:@"%d", 0];
+        return @"0";
     }
 
     if (backingObject->isButton() && backingObject->isPressed())
-        return [NSString stringWithFormat:@"%d", 1];
+        return @"1";
 
     // If self has the header trait, value should be the heading level.
     if (self.accessibilityTraits & self._axHeaderTrait) {
@@ -1560,14 +1560,14 @@ static void appendStringToResult(NSMutableString *result, NSString *string)
         ASSERT(heading);
 
         if (heading)
-            return [NSString stringWithFormat:@"%d", heading->headingLevel()];
+            return [NSString stringWithFormat:@"%u", heading->headingLevel()];
     }
 
     // rdar://8131388 WebKit should expose the same info as UIKit for its password fields.
     if (backingObject->isSecureField() && ![self _accessibilityIsStrongPasswordField]) {
-        int secureTextLength = backingObject->accessibilitySecureFieldLength();
+        size_t secureTextLength = backingObject->accessibilitySecureFieldLength();
         NSMutableString* string = [NSMutableString string];
-        for (int k = 0; k < secureTextLength; ++k)
+        for (size_t k = 0; k < secureTextLength; ++k)
             [string appendString:@"•"];
         return string;
     }

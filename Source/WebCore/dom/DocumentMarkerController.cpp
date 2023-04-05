@@ -767,11 +767,11 @@ SimpleRange makeSimpleRange(Node& node, const DocumentMarker& marker)
 
 void DocumentMarkerController::showMarkers() const
 {
-    fprintf(stderr, "%d nodes have markers:\n", m_markers.size());
+    fprintf(stderr, "%u nodes have markers:\n", m_markers.size());
     for (auto& nodeMarkers : m_markers) {
         fprintf(stderr, "%p", nodeMarkers.key.get());
         for (auto& marker : *nodeMarkers.value)
-            fprintf(stderr, " %d:[%d:%d]", marker.type(), marker.startOffset(), marker.endOffset());
+            fprintf(stderr, " %u:[%u:%u]", marker.type(), marker.startOffset(), marker.endOffset());
         fputc('\n', stderr);
     }
 }

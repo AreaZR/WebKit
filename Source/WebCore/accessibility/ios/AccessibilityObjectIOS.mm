@@ -82,14 +82,14 @@ void AccessibilityObject::overrideAttachmentParent(AXCoreObject*)
 }
     
 // In iPhone only code for now. It's debateable whether this is desired on all platforms.
-int AccessibilityObject::accessibilitySecureFieldLength()
+size_t AccessibilityObject::accessibilitySecureFieldLength()
 {
     if (!isSecureField())
         return 0;
     RenderObject* renderObject = downcast<AccessibilityRenderObject>(*this).renderer();
     
     if (!renderObject || !is<HTMLInputElement>(renderObject->node()))
-        return false;
+        return 0;
     
     HTMLInputElement& inputElement = downcast<HTMLInputElement>(*renderObject->node());
     return inputElement.value().length();

@@ -40,7 +40,7 @@ typedef UnsafeVectorOverflow ContentExtensionsOverflowHandler;
 #endif
 
 #if CONTENT_EXTENSIONS_PERFORMANCE_REPORTING
-#define LOG_LARGE_STRUCTURES(name, size) if (size > 1000000) { dataLogF("NAME: %s SIZE %d\n", #name, (int)(size)); };
+#define LOG_LARGE_STRUCTURES(name, size) if (size > 1000000) { dataLogF("NAME: %s SIZE %u\n", #name, (unsigned)(size)); };
 #else
 #define LOG_LARGE_STRUCTURES(name, size)
 #endif

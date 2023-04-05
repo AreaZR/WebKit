@@ -506,7 +506,7 @@ SUPPRESS_ASAN void VMInspector::dumpRegisters(CallFrame* callFrame)
             unsigned line = 0;
             unsigned unusedColumn = 0;
             visitor->computeLineAndColumn(line, unusedColumn);
-            dataLogF("% 2d.1  ReturnVPC        : %10p  %d (line %d)\n", registerNumber, it, visitor->bytecodeIndex().offset(), line);
+            dataLogF("% 2d.1  ReturnVPC        : %10p  %u (line %u)\n", registerNumber, it, visitor->bytecodeIndex().offset(), line);
             return IterationStatus::Done;
         }
         return IterationStatus::Continue;

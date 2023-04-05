@@ -103,10 +103,10 @@
 - (id)invokeUndefinedMethodFromWebScript:(NSString *)name withArguments:(NSArray *)args
 {
     NSLog (@"Call to undefined method %@", name);
-    NSLog (@"%d args\n", [args count]);
+    NSLog (@"%u args\n", [args count]);
     int i;
     for (i = 0; i < [args count]; i++) {
-            NSLog (@"%d: %@\n", i, [args objectAtIndex:i]);
+            NSLog (@"%u: %@\n", i, [args objectAtIndex:i]);
     }
     return @"success";
 }

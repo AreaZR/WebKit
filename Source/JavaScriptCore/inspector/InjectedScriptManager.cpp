@@ -187,9 +187,9 @@ InjectedScript InjectedScriptManager::injectedScriptFor(JSGlobalObject* globalOb
         unsigned line = 0;
         unsigned column = 0;
         auto& stack = error->stack();
-        if (stack.size() > 0)
+        if (stack.size())
             stack[0].computeLineAndColumn(line, column);
-        WTFLogAlways("Error when creating injected script: %s (%d:%d)\n", error->value().toWTFString(globalObject).utf8().data(), line, column);
+        WTFLogAlways("Error when creating injected script: %s (%u:%u)\n", error->value().toWTFString(globalObject).utf8().data(), line, column);
         RELEASE_ASSERT_NOT_REACHED();
     }
     if (!createResult.value()) {

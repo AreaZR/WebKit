@@ -730,7 +730,7 @@ void AudioNode::printNodeCounts()
     fprintf(stderr, "===========================\n");
 
     for (unsigned i = 0; i <= NodeTypeLast; ++i)
-        fprintf(stderr, "%d: %d\n", i, s_nodeCount[i]);
+        fprintf(stderr, "%u: %d\n", i, s_nodeCount[i]);
 
     fprintf(stderr, "===========================\n\n\n");
 }

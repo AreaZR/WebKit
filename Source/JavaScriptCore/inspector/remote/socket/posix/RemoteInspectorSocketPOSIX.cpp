@@ -54,7 +54,7 @@ std::optional<PlatformSocketType> connect(const char* serverAddress, uint16_t se
 
     int fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (fd < 0) {
-        LOG_ERROR("Failed to create socket for %s:%d, errno = %d", serverAddress, serverPort, errno);
+        LOG_ERROR("Failed to create socket for %s:%u, errno = %d", serverAddress, serverPort, errno);
         return std::nullopt;
     }
 

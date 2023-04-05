@@ -2115,7 +2115,7 @@ RefPtr<WebGLActiveInfo> WebGLRenderingContextBase::getActiveAttrib(WebGLProgram&
     if (!m_context->getActiveAttrib(program.object(), index, info))
         return nullptr;
 
-    LOG(WebGL, "Returning active attribute %d: %s", index, info.name.utf8().data());
+    LOG(WebGL, "Returning active attribute %u: %s", index, info.name.utf8().data());
 
     return WebGLActiveInfo::create(info.name, info.type, info.size);
 }
@@ -2132,7 +2132,7 @@ RefPtr<WebGLActiveInfo> WebGLRenderingContextBase::getActiveUniform(WebGLProgram
         if (info.size > 1 && !info.name.endsWith("[0]"_s))
             info.name = makeString(info.name, "[0]"_s);
 
-    LOG(WebGL, "Returning active uniform %d: %s", index, info.name.utf8().data());
+    LOG(WebGL, "Returning active uniform %u: %s", index, info.name.utf8().data());
 
     return WebGLActiveInfo::create(info.name, info.type, info.size);
 }

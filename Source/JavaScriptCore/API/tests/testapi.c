@@ -113,10 +113,14 @@ static void assertEqualsAsUTF8String(JSValueRef value, const char* expectedValue
     char* jsBuffer = (char*)malloc(jsSize);
     JSStringGetUTF8CString(valueAsString, jsBuffer, jsSize);
 
-    unsigned i;
+    size_t i;
     for (i = 0; jsBuffer[i]; i++) {
         if (jsBuffer[i] != expectedValue[i]) {
-            fprintf(stderr, "assertEqualsAsUTF8String failed at character %d: %c(%d) != %c(%d)\n", i, jsBuffer[i], jsBuffer[i], expectedValue[i], expectedValue[i]);
+#if OS(WINDOWS)
+            fprintf(stderr, "assertEqualsAsUTF8String failed at character %Iu: %c(%d) != %c(%d)\n", i, jsBuffer[i], jsBuffer[i], expectedValue[i], expectedValue[i]);
+#else
+            fprintf(stderr, "assertEqualsAsUTF8String failed at character %zu: %c(%d) != %c(%d)\n", i, jsBuffer[i], jsBuffer[i], expectedValue[i], expectedValue[i]);
+#endif
             fprintf(stderr, "value: %s\n", jsBuffer);
             fprintf(stderr, "expectedValue: %s\n", expectedValue);
             failed = 1;

@@ -1139,7 +1139,7 @@ void showTree(const WebCore::Range* range)
 {
     if (range) {
         range->startContainer().showTreeAndMark(&range->startContainer(), "S", &range->endContainer(), "E");
-        fprintf(stderr, "start offset: %d, end offset: %d\n", range->startOffset(), range->endOffset());
+        fprintf(stderr, "start offset: %u, end offset: %u\n", range->startOffset(), range->endOffset());
     }
 }
 

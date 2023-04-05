@@ -253,7 +253,7 @@ void MemoryCache::pruneLiveResourcesToSize(unsigned targetSize, bool shouldDestr
     if (m_inPruneResources)
         return;
 
-    LOG(ResourceLoading, "MemoryCache::pruneLiveResourcesToSize(%d, shouldDestroyDecodedDataForAllLiveResources = %d)", targetSize, shouldDestroyDecodedDataForAllLiveResources);
+    LOG(ResourceLoading, "MemoryCache::pruneLiveResourcesToSize(%u, shouldDestroyDecodedDataForAllLiveResources = %d)", targetSize, shouldDestroyDecodedDataForAllLiveResources);
 
     SetForScope reentrancyProtector(m_inPruneResources, true);
 
@@ -319,7 +319,7 @@ void MemoryCache::pruneDeadResourcesToSize(unsigned targetSize)
     if (m_inPruneResources)
         return;
 
-    LOG(ResourceLoading, "MemoryCache::pruneDeadResourcesToSize(%d)", targetSize);
+    LOG(ResourceLoading, "MemoryCache::pruneDeadResourcesToSize(%u)", targetSize);
 
     SetForScope reentrancyProtector(m_inPruneResources, true);
  

@@ -71,9 +71,9 @@ void InjectedScriptModule::ensureInjected(InjectedScriptManager* injectedScriptM
         unsigned line = 0;
         unsigned column = 0;
         auto& stack = error->stack();
-        if (stack.size() > 0)
+        if (stack.size()
             stack[0].computeLineAndColumn(line, column);
-        WTFLogAlways("Error when calling 'hasInjectedModule' for '%s': %s (%d:%d)\n", name().utf8().data(), error->value().toWTFString(injectedScript.globalObject()).utf8().data(), line, column);
+        WTFLogAlways("Error when calling 'hasInjectedModule' for '%s': %s (%u:%u)\n", name().utf8().data(), error->value().toWTFString(injectedScript.globalObject()).utf8().data(), line, column);
         RELEASE_ASSERT_NOT_REACHED();
     }
     if (!hasInjectedModuleResult.value().isBoolean() || !hasInjectedModuleResult.value().asBoolean()) {
@@ -88,9 +88,9 @@ void InjectedScriptModule::ensureInjected(InjectedScriptManager* injectedScriptM
             unsigned line = 0;
             unsigned column = 0;
             auto& stack = error->stack();
-            if (stack.size() > 0)
+            if (stack.size())
                 stack[0].computeLineAndColumn(line, column);
-            WTFLogAlways("Error when calling 'injectModule' for '%s': %s (%d:%d)\n", name().utf8().data(), error->value().toWTFString(injectedScript.globalObject()).utf8().data(), line, column);
+            WTFLogAlways("Error when calling 'injectModule' for '%s': %s (%u:%u)\n", name().utf8().data(), error->value().toWTFString(injectedScript.globalObject()).utf8().data(), line, column);
             RELEASE_ASSERT_NOT_REACHED();
         }
     }
