@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -1102,7 +1102,7 @@
 				};
 			};
 			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "WebKitTestRunner" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -1390,6 +1390,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BC793427118F7DAF005EA8E2 /* DebugRelease.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
+				TVOS_DEPLOYMENT_TARGET = 16.1;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
 			};
 			name = Debug;
 		};
@@ -1397,6 +1401,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BC793427118F7DAF005EA8E2 /* DebugRelease.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
+				TVOS_DEPLOYMENT_TARGET = 16.1;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
 			};
 			name = Release;
 		};
@@ -1522,6 +1530,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BC793426118F7D3C005EA8E2 /* Base.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
+				TVOS_DEPLOYMENT_TARGET = 16.1;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
 			};
 			name = Production;
 		};

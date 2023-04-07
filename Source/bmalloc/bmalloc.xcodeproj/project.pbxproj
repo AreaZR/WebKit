@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -2661,7 +2661,7 @@
 				};
 			};
 			buildConfigurationList = 145F683A179DC45F00D65598 /* Build configuration list for PBXProject "bmalloc" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -2918,6 +2918,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 14B650C518F39F4800751968 /* Base.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
+				TVOS_DEPLOYMENT_TARGET = 16.1;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
 			};
 			name = Production;
 		};
@@ -2939,6 +2943,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 14B650C718F39F4800751968 /* DebugRelease.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
+				TVOS_DEPLOYMENT_TARGET = 16.1;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
 			};
 			name = Debug;
 		};
@@ -2946,6 +2954,10 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 14B650C718F39F4800751968 /* DebugRelease.xcconfig */;
 			buildSettings = {
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
+				TVOS_DEPLOYMENT_TARGET = 16.1;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
 			};
 			name = Release;
 		};
