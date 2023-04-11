@@ -42,10 +42,6 @@
 #import <objc/runtime.h>
 #import <wtf/RetainPtr.h>
 
-#if __has_feature(objc_arc)
-#error This file cannot be compiled under ARC
-#endif
-
 class CallbackArgument {
     WTF_MAKE_FAST_ALLOCATED;
 public:
@@ -62,7 +58,7 @@ CallbackArgument::~CallbackArgument()
 class CallbackArgumentBoolean final : public CallbackArgument {
     void set(NSInvocation *invocation, NSInteger argumentNumber, JSContext *context, JSValueRef argument, JSValueRef*) final
     {
-        bool value = JSValueToBoolean(context.JSGlobalContextRef, argument);
+        bool value = JSValueToBoolean([context JSGlobalContextRef], argument);
         [invocation setArgument:&value atIndex:argumentNumber];
     }
 };
@@ -72,7 +68,7 @@ class CallbackArgumentInteger final : public CallbackArgument {
     void set(NSInvocation *invocation, NSInteger argumentNumber, JSContext *context, JSValueRef argument, JSValueRef* exception) final
     {
         ASSERT(exception && !*exception);
-        T value = (T)JSC::toInt32(JSValueToNumber(context.JSGlobalContextRef, argument, exception));
+        T value = (T)JSC::toInt32(JSValueToNumber([context JSGlobalContextRef], argument, exception));
         if (*exception)
             return;
         [invocation setArgument:&value atIndex:argumentNumber];
@@ -84,7 +80,7 @@ class CallbackArgumentDouble final : public CallbackArgument {
     void set(NSInvocation *invocation, NSInteger argumentNumber, JSContext *context, JSValueRef argument, JSValueRef* exception) final
     {
         ASSERT(exception && !*exception);
-        T value = (T)JSValueToNumber(context.JSGlobalContextRef, argument, exception);
+        T value = (T)JSValueToNumber([context JSGlobalContextRef], argument, exception);
         if (*exception)
             return;
         [invocation setArgument:&value atIndex:argumentNumber];
@@ -118,7 +114,7 @@ private:
     void set(NSInvocation *invocation, NSInteger argumentNumber, JSContext *context, JSValueRef argument, JSValueRef* exception) final
     {
         ASSERT(exception && !*exception);
-        JSGlobalContextRef contextRef = context.JSGlobalContextRef;
+        JSGlobalContextRef contextRef = [context JSGlobalContextRef];
 
         id object = tryUnwrapObjcObject(contextRef, argument);
         if (object && [object isKindOfClass:m_class.get()]) {
@@ -142,7 +138,7 @@ class CallbackArgumentNSNumber final : public CallbackArgument {
     void set(NSInvocation *invocation, NSInteger argumentNumber, JSContext *context, JSValueRef argument, JSValueRef* exception) final
     {
         ASSERT(exception && !*exception);
-        id value = valueToNumber(context.JSGlobalContextRef, argument, exception);
+        id value = valueToNumber([context JSGlobalContextRef], argument, exception);
         if (*exception)
             return;
         [invocation setArgument:&value atIndex:argumentNumber];
@@ -153,7 +149,7 @@ class CallbackArgumentNSString final : public CallbackArgument {
     void set(NSInvocation *invocation, NSInteger argumentNumber, JSContext *context, JSValueRef argument, JSValueRef* exception) final
     {
         ASSERT(exception && !*exception);
-        id value = valueToString(context.JSGlobalContextRef, argument, exception);
+        id value = valueToString([context JSGlobalContextRef], argument, exception);
         if (*exception)
             return;
         [invocation setArgument:&value atIndex:argumentNumber];
@@ -164,7 +160,7 @@ class CallbackArgumentNSDate final : public CallbackArgument {
     void set(NSInvocation *invocation, NSInteger argumentNumber, JSContext *context, JSValueRef argument, JSValueRef* exception) final
     {
         ASSERT(exception && !*exception);
-        id value = valueToDate(context.JSGlobalContextRef, argument, exception);
+        id value = valueToDate([context JSGlobalContextRef], argument, exception);
         if (*exception)
             return;
         [invocation setArgument:&value atIndex:argumentNumber];
@@ -175,7 +171,7 @@ class CallbackArgumentNSArray final : public CallbackArgument {
     void set(NSInvocation *invocation, NSInteger argumentNumber, JSContext *context, JSValueRef argument, JSValueRef* exception) final
     {
         ASSERT(exception && !*exception);
-        id value = valueToArray(context.JSGlobalContextRef, argument, exception);
+        id value = valueToArray([context JSGlobalContextRef], argument, exception);
         if (*exception)
             return;
         [invocation setArgument:&value atIndex:argumentNumber];
@@ -186,7 +182,7 @@ class CallbackArgumentNSDictionary final : public CallbackArgument {
     void set(NSInvocation *invocation, NSInteger argumentNumber, JSContext *context, JSValueRef argument, JSValueRef* exception) final
     {
         ASSERT(exception && !*exception);
-        id value = valueToDictionary(context.JSGlobalContextRef, argument, exception);
+        id value = valueToDictionary([context JSGlobalContextRef], argument, exception);
         if (*exception)
             return;
         [invocation setArgument:&value atIndex:argumentNumber];
@@ -296,7 +292,7 @@ public:
 class CallbackResultVoid final : public CallbackResult {
     JSValueRef get(NSInvocation *, JSContext *context, JSValueRef*) final
     {
-        return JSValueMakeUndefined(context.JSGlobalContextRef);
+        return JSValueMakeUndefined([context JSGlobalContextRef]);
     }
 };
 
@@ -315,7 +311,7 @@ class CallbackResultNumeric final : public CallbackResult {
     {
         T value;
         [invocation getReturnValue:&value];
-        return JSValueMakeNumber(context.JSGlobalContextRef, value);
+        return JSValueMakeNumber([context JSGlobalContextRef], value);
     }
 };
 
@@ -324,7 +320,7 @@ class CallbackResultBoolean final : public CallbackResult {
     {
         bool value;
         [invocation getReturnValue:&value];
-        return JSValueMakeBoolean(context.JSGlobalContextRef, value);
+        return JSValueMakeBoolean([context JSGlobalContextRef], value);
     }
 };
 
@@ -431,7 +427,7 @@ public:
         // We need to explicitly release the target since we didn't call 
         // -retainArguments on m_invocation (and we don't want to do so).
         if (m_type == CallbackBlock || m_type == CallbackClassMethod)
-            heap.releaseSoon(adoptNS(m_invocation.get().target));
+            heap.releaseSoon(adoptNS([m_invocation.get() target]));
         m_instanceClass = nil;
     }
 
@@ -439,14 +435,14 @@ public:
 
     id wrappedBlock()
     {
-        return m_type == CallbackBlock ? m_invocation.get().target : nil;
+        return m_type == CallbackBlock ? [m_invocation target] : nil;
     }
 
     id wrappedConstructor()
     {
         switch (m_type) {
         case CallbackBlock:
-            return m_invocation.get().target;
+            return [m_invocation target];
         case CallbackInitMethod:
             return m_instanceClass.get();
         default:
@@ -486,7 +482,7 @@ static JSValueRef objCCallbackFunctionCallAsFunction(JSContextRef callerContext,
     JSContext *context = [JSContext contextWithJSGlobalContextRef:toGlobalRef(callback->globalObject())];
 
     if (impl->type() == CallbackInitMethod) {
-        JSGlobalContextRef contextRef = context.JSGlobalContextRef;
+        JSGlobalContextRef contextRef = [context JSGlobalContextRef];
         *exception = toRef(JSC::createTypeError(toJS(contextRef), "Cannot call a class constructor without |new|"_s));
         if (*exception)
             return nullptr;
@@ -528,7 +524,7 @@ static JSObjectRef objCCallbackFunctionCallAsConstructor(JSContextRef callerCont
     if (*exception)
         return nullptr;
 
-    JSGlobalContextRef contextRef = context.JSGlobalContextRef;
+    JSGlobalContextRef contextRef = [context JSGlobalContextRef];
     if (!JSValueIsObject(contextRef, result)) {
         *exception = toRef(JSC::createTypeError(toJS(contextRef), "Objective-C blocks called as constructors must return an object."_s));
         return nullptr;
@@ -587,7 +583,7 @@ String ObjCCallbackFunctionImpl::name()
 JSValueRef ObjCCallbackFunctionImpl::call(JSContext *context, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef* exception)
 {
     ASSERT(exception && !*exception);
-    JSGlobalContextRef contextRef = context.JSGlobalContextRef;
+    JSGlobalContextRef contextRef = [context JSGlobalContextRef];
 
     id target;
     size_t firstArgument;
@@ -601,7 +597,7 @@ JSValueRef ObjCCallbackFunctionImpl::call(JSContext *context, JSObjectRef thisOb
                 return nullptr;
             return JSValueMakeUndefined(contextRef);
         }
-        m_invocation.get().target = target;
+        [m_invocation setTarget:target];
         firstArgument = 2;
         break;
     }
@@ -613,7 +609,7 @@ JSValueRef ObjCCallbackFunctionImpl::call(JSContext *context, JSObjectRef thisOb
                 return nullptr;
             return JSValueMakeUndefined(contextRef);
         }
-        m_invocation.get().target = target;
+        [m_invocation setTarget:target];
         firstArgument = 2;
         break;
     }
@@ -710,7 +706,7 @@ static JSObjectRef objCCallbackFunctionForInvocation(JSContext *context, NSInvoc
         nextArgument = &(*nextArgument)->m_next;
     }
 
-    JSC::JSGlobalObject* globalObject = toJS(context.JSGlobalContextRef);
+    JSC::JSGlobalObject* globalObject = toJS([context JSGlobalContextRef]);
     JSC::VM& vm = globalObject->vm();
     JSC::JSLockHolder locker(vm);
     auto impl = makeUnique<JSC::ObjCCallbackFunctionImpl>(invocation, type, instanceClass, WTFMove(arguments), WTFMove(result));
@@ -721,23 +717,21 @@ static JSObjectRef objCCallbackFunctionForInvocation(JSContext *context, NSInvoc
 JSObjectRef objCCallbackFunctionForInit(JSContext *context, Class cls, Protocol *protocol, SEL sel, const char* types)
 {
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[NSMethodSignature signatureWithObjCTypes:types]];
-    invocation.selector = sel;
+    [invocation setSelector:sel];
     return objCCallbackFunctionForInvocation(context, invocation, CallbackInitMethod, cls, _protocol_getMethodTypeEncoding(protocol, sel, YES, YES));
 }
 
 JSObjectRef objCCallbackFunctionForMethod(JSContext *context, Class cls, Protocol *protocol, BOOL isInstanceMethod, SEL sel, const char* types)
 {
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[NSMethodSignature signatureWithObjCTypes:types]];
-    invocation.selector = sel;
-
-    if (isInstanceMethod)
-        return objCCallbackFunctionForInvocation(context, invocation, CallbackInstanceMethod, cls, _protocol_getMethodTypeEncoding(protocol, sel, YES, YES));
-
-    // We need to retain the target Class because invocation doesn't retain it by default (and we don't want it to).
-    // FIXME: What releases it?
-    invocation.target = [cls retain];
-
-    return objCCallbackFunctionForInvocation(context, invocation, CallbackClassMethod, nil, _protocol_getMethodTypeEncoding(protocol, sel, YES, NO));
+    [invocation setSelector:sel];
+    if (!isInstanceMethod) {
+        [invocation setTarget:cls];
+        // We need to retain the target Class because m_invocation doesn't retain it by default (and we don't want it to).
+        // FIXME: What releases it?
+        CFRetain((__bridge CFTypeRef)cls);
+    }
+    return objCCallbackFunctionForInvocation(context, invocation, isInstanceMethod ? CallbackInstanceMethod : CallbackClassMethod, isInstanceMethod ? cls : nil, _protocol_getMethodTypeEncoding(protocol, sel, YES, isInstanceMethod));
 }
 
 JSObjectRef objCCallbackFunctionForBlock(JSContext *context, id target)
@@ -751,7 +745,7 @@ JSObjectRef objCCallbackFunctionForBlock(JSContext *context, id target)
     // would be retained indefinitely between invocations of the callback.
     // Additionally, we copy the target because we want the block to stick around
     // until the ObjCCallbackFunctionImpl is destroyed.
-    invocation.target = [target copy];
+    [invocation setTarget:[target copy]];
 
     return objCCallbackFunctionForInvocation(context, invocation, CallbackBlock, nil, signature);
 }
