@@ -175,7 +175,7 @@ void printCallback(Probe::Context& probeContext)
 {
     auto& out = WTF::dataFile();
     PrintRecordList& list = *probeContext.arg<PrintRecordList*>();
-    for (const auto& record : list) {
+    for (auto& record : list) {
         Context context(probeContext, record.data);
         record.printer(out, context);
     }
