@@ -788,7 +788,7 @@ public:
             }
         }
         
-        if (!m_worklist.isEmpty()) {
+        while (!m_worklist.isEmpty()) {
             do {
                 Node* node = m_worklist.last();
                 m_worklist.removeLast();
