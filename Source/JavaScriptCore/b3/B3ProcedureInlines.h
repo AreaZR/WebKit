@@ -40,7 +40,7 @@ ValueType* Procedure::add(Arguments... arguments)
     return static_cast<ValueType*>(addValueImpl(Value::allocate<ValueType>(arguments...)));
 }
 
-inline Type Procedure::extractFromTuple(Type tuple, unsigned index) const
+inline Type Procedure::extractFromTuple(Type tuple, size_t index) const
 {
     ASSERT(tuple.tupleIndex() < m_tuples.size());
     ASSERT(index < m_tuples[tuple.tupleIndex()].size());

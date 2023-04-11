@@ -123,8 +123,8 @@ public:
     Type extractFromTuple(Type tuple, unsigned index) const;
     JS_EXPORT_PRIVATE const Vector<Type>& tupleForType(Type tuple) const;
 
-    unsigned resultCount(Type type) const { return type.isTuple() ? tupleForType(type).size() : type.isNumeric(); }
-    Type typeAtOffset(Type type, unsigned index) const { ASSERT(index < resultCount(type)); return type.isTuple() ? extractFromTuple(type, index) : type; }
+    size_t resultCount(Type type) const { return type.isTuple() ? tupleForType(type).size() : type.isNumeric(); }
+    Type typeAtOffset(Type type, size_t index) const { ASSERT(index < resultCount(type)); return type.isTuple() ? extractFromTuple(type, index) : type; }
 
     template<typename ValueType, typename... Arguments>
     ValueType* add(Arguments...);

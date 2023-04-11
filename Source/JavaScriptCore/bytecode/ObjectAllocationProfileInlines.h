@@ -145,12 +145,12 @@ ALWAYS_INLINE unsigned ObjectAllocationProfileBase<Derived>::possibleDefaultProp
     if (prototype == prototype->globalObject()->objectPrototype())
         return 0;
 
-    size_t count = 0;
+    unsigned count = 0;
     PropertyNameArray propertyNameArray(vm, PropertyNameMode::StringsAndSymbols, PrivateSymbolMode::Include);
     prototype->structure()->getPropertyNamesFromStructure(vm, propertyNameArray, DontEnumPropertiesMode::Include);
     PropertyNameArrayData::PropertyNameVector& propertyNameVector = propertyNameArray.data()->propertyNameVector();
-    for (const auto& vector : propertyNameVector) {
-        JSValue value = prototype->getDirect(vm, vector);
+    for (const auto &i : vector) {
+        JSValue value = prototype->getDirect(vm, propertyNameVector[i]);
 
         // Functions are common, and are usually class-level objects that are not overridden.
         if (jsDynamicCast<JSFunction*>(value))
