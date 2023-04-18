@@ -14555,8 +14555,8 @@ IGNORE_CLANG_WARNINGS_END
         
         Vector<ValueFromBlock, 1> results;
         
-        for (unsigned i = set.size(); i--;) {
-            m_out.appendTo(blocks[i], i + 1 < set.size() ? blocks[i + 1] : dummyDefault);
+        for (size_t i = set.size(); i--;) {
+            m_out.appendTo(blocks[i], i < set.size() - 1 ? blocks[i + 1] : dummyDefault);
             
             RegisteredStructure structure = set.at(i);
             

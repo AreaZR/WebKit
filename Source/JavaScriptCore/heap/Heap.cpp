@@ -3164,13 +3164,15 @@ void Heap::verifyGC()
     m_isMarkingForGCVerifier = true;
 
     VerifierSlotVisitor& visitor = *m_verifierSlotVisitor;
-
-    do {
-        while (!visitor.isEmpty())
-            visitor.drain();
-        m_constraintSet->executeAllSynchronously(visitor);
-        visitor.executeConstraintTasks();
-    } while (!visitor.isEmpty());
+    
+    while (!visitor.isEmpty()) {
+    drainAgain:
+        visitor.drain();
+    }
+    m_constraintSet->executeAllSynchronously(visitor);
+    visitor.executeConstraintTasks();
+    if (!visitor.isEmpty())
+        goto drainAgain;
 
     m_isMarkingForGCVerifier = false;
 

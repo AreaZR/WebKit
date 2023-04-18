@@ -97,7 +97,7 @@ private:
         // - Any candidate that forwards into a Phi turns that Phi into a candidate.
         // - Any Phi-1 that forwards into another Phi-2, where Phi-2 is a candidate,
         //   makes Phi-1 a candidate too.
-        do {
+        while (true) {
             HashSet<Node*> eligiblePhis;
             for (Node* candidate : candidates) {
                 if (candidate->op() == Phi) {
@@ -119,9 +119,9 @@ private:
 
             if (!sawNewCandidate)
                 break;
-        } while (true);
+        }
 
-        do {
+        while (true) {
             HashSet<Node*> toRemove;
 
             auto isEscaped = [&] (Node* node) {
@@ -220,7 +220,7 @@ private:
 
             for (Node* node : toRemove)
                 candidates.remove(node);
-        } while (true);
+        }
 
         if (!candidates.size())
             return false;

@@ -322,7 +322,7 @@ static void scanExternalObjectGraph(JSC::VM& vm, JSC::AbstractSlotVisitor& visit
         Lock& externalDataMutex = [virtualMachine externalDataMutex];
         Vector<void*> stack;
         stack.append(root);
-        while (!stack.isEmpty()) {
+        do {
             void* nextRoot = stack.last();
             stack.removeLast();
             if (!visitor.addOpaqueRoot(nextRoot))
@@ -340,7 +340,7 @@ static void scanExternalObjectGraph(JSC::VM& vm, JSC::AbstractSlotVisitor& visit
                 Locker locker { externalDataMutex };
                 appendOwnedObjects();
             }
-        }
+        } while (!stack.isEmpty());
     }
 }
 

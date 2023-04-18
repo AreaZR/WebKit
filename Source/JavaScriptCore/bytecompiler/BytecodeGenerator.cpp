@@ -3877,7 +3877,7 @@ LabelScope* BytecodeGenerator::breakTarget(const Identifier& name)
     // label:
     //     break;
     if (name.isEmpty()) {
-        for (int i = m_labelScopes.size() - 1; i >= 0; --i) {
+        for (size_t i = m_labelScopes.size() - 1; i--;) {
             LabelScope& scope = m_labelScopes[i];
             if (scope.type() != LabelScope::NamedLabel)
                 return &scope;
@@ -3885,7 +3885,7 @@ LabelScope* BytecodeGenerator::breakTarget(const Identifier& name)
         return nullptr;
     }
 
-    for (int i = m_labelScopes.size() - 1; i >= 0; --i) {
+    for (size_t i = m_labelScopes.size() - 1; i--;) {
         LabelScope& scope = m_labelScopes[i];
         if (scope.name() && *scope.name() == name)
             return &scope;
