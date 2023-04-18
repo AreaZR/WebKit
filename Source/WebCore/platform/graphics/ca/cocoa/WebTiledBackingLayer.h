@@ -36,12 +36,11 @@ class TiledBacking;
     std::unique_ptr<WebCore::TileController> _tileController;
 }
 
-- (WebCore::TileController*)createTileController:(WebCore::PlatformCALayer*)rootLayer;
-- (WebCore::TiledBacking*)tiledBacking;
+- (WebCore::TileController*)createTileController:(WebCore::PlatformCALayer*)rootLayer NS_RETURNS_INNER_POINTER;
+@property (nonatomic, readonly) WebCore::TiledBacking *tiledBacking;
 - (void)invalidate;
 
-- (void)setWantsDeepColorBackingStore:(BOOL)wantsDeepColor;
-- (BOOL)wantsDeepColorBackingStore;
+@property (nonatomic) BOOL wantsDeepColorBackingStore;
 
 @end
 

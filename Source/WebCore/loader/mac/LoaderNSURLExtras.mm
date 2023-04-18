@@ -42,22 +42,22 @@ using namespace WebCore;
 NSString *suggestedFilenameWithMIMEType(NSURL *url, const String& mimeType)
 {
     // Get the filename from the URL. Try the lastPathComponent first.
-    NSString *lastPathComponent = [[url path] lastPathComponent];
+    NSString *lastPathComponent = url.path.lastPathComponent;
     NSString *filename = filenameByFixingIllegalCharacters(lastPathComponent);
     NSString *extension = nil;
 
-    if ([filename length] == 0 || [lastPathComponent isEqualToString:@"/"]) {
+    if (filename.length == 0 || [lastPathComponent isEqualToString:@"/"]) {
         // lastPathComponent is no good, try the host.
         auto host = URL(url).host().createNSString();
         filename = filenameByFixingIllegalCharacters(host.get());
-        if ([filename length] == 0) {
+        if (filename.length == 0) {
             // Can't make a filename using this URL, use "unknown".
             filename = copyImageUnknownFileLabel();
         }
     } else {
         // Save the extension for later correction. Only correct the extension of the lastPathComponent.
         // For example, if the filename ends up being the host, we wouldn't want to correct ".com" in "www.apple.com".
-        extension = [filename pathExtension];
+        extension = filename.pathExtension;
     }
 
     // Do not correct filenames that are reported with a mime type of tar, and 
@@ -76,7 +76,7 @@ NSString *suggestedFilenameWithMIMEType(NSURL *url, const String& mimeType)
         if (extensions.isEmpty() || !extensions.contains(String(extension))) {
             // The extension doesn't match the MIME type. Correct this.
             NSString *correctExtension = MIMETypeRegistry::preferredExtensionForMIMEType(mimeType);
-            if ([correctExtension length] != 0) {
+            if (correctExtension.length != 0) {
                 // Append the correct extension.
                 filename = [filename stringByAppendingPathExtension:correctExtension];
             }

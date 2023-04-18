@@ -40,7 +40,7 @@ namespace WebCore {
 
 std::optional<Vector<PasteboardItemInfo>> PlatformPasteboard::allPasteboardItemInfo(int64_t changeCount)
 {
-    if (changeCount != [m_pasteboard changeCount])
+    if (changeCount != m_pasteboard.changeCount)
         return std::nullopt;
 
     Vector<PasteboardItemInfo> itemInfo;
@@ -87,7 +87,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
         NSURL *URLFromPasteboard = [NSURL URLWithString:stringForType(urlPasteboardType)];
         // Cannot drop other schemes unless <rdar://problem/10562662> and <rdar://problem/11187315> are fixed.
         if (URL { URLFromPasteboard }.protocolIsInHTTPFamily())
-            return [URLByCanonicalizingURL(URLFromPasteboard) absoluteString];
+            return URLByCanonicalizingURL(URLFromPasteboard).absoluteString;
     }
 
     if (types.contains(stringPasteboardType)) {
@@ -96,7 +96,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
         // The result of this function is used to initiate navigation, so we shouldn't allow arbitrary file URLs.
         // FIXME: Should we allow only http family schemes, or anything non-local?
         if (URL { URLFromPasteboard }.protocolIsInHTTPFamily())
-            return [URLByCanonicalizingURL(URLFromPasteboard) absoluteString];
+            return URLByCanonicalizingURL(URLFromPasteboard).absoluteString;
     }
 
 #if PLATFORM(MAC)
@@ -107,7 +107,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
             BOOL isDirectory;
             if ([[NSFileManager defaultManager] fileExistsAtPath:files[0] isDirectory:&isDirectory] && isDirectory)
                 return String();
-            return [URLByCanonicalizingURL([NSURL fileURLWithPath:files[0]]) absoluteString];
+            return URLByCanonicalizingURL([NSURL fileURLWithPath:files[0]]).absoluteString;
         }
     }
 #endif

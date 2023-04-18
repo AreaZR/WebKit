@@ -89,7 +89,7 @@ constexpr Seconds progressAnimationRepeatInterval = 33_ms; // 30 fps
 
 @implementation WebCoreRenderThemeNotificationObserver
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (!self)
@@ -98,7 +98,7 @@ constexpr Seconds progressAnimationRepeatInterval = 33_ms; // 30 fps
     [[NSNotificationCenter defaultCenter] addObserver:self
         selector:@selector(systemColorsDidChange:) name:NSSystemColorsDidChangeNotification object:nil];
 
-    [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self
+    [[NSWorkspace sharedWorkspace].notificationCenter addObserver:self
         selector:@selector(systemColorsDidChange:) name:NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification object:nil];
 
     return self;
@@ -401,11 +401,11 @@ static Color activeButtonTextColor()
     // we need to create an NSButtonCell just to determine the correct color.
 
     auto cell = adoptNS([[NSButtonCell alloc] init]);
-    [cell setBezelStyle:NSBezelStyleRounded];
+    cell.bezelStyle = NSBezelStyleRounded;
     [cell setHighlighted:YES];
 
     NSColor *activeButtonTextColor;
-    if ([cell interiorBackgroundStyle] == NSBackgroundStyleEmphasized)
+    if (cell.interiorBackgroundStyle == NSBackgroundStyleEmphasized)
         activeButtonTextColor = [NSColor alternateSelectedControlTextColor];
     else
         activeButtonTextColor = [NSColor controlTextColor];
@@ -791,7 +791,7 @@ void RenderThemeMac::adjustRepaintRect(const RenderObject& renderer, FloatRect& 
 
     if (appearance == StyleAppearance::Menulist) {
         setPopupButtonCellState(renderer, IntSize(rect.size()));
-        IntSize size = popupButtonSizes()[[popupButton() controlSize]];
+        IntSize size = popupButtonSizes()[popupButton().controlSize];
         size.setHeight(size.height() * zoomLevel);
         size.setWidth(rect.width());
         rect = inflateRect(rect, size, popupButtonMargins(), zoomLevel);
@@ -800,42 +800,42 @@ void RenderThemeMac::adjustRepaintRect(const RenderObject& renderer, FloatRect& 
 
 void RenderThemeMac::updateCheckedState(NSCell* cell, const RenderObject& o)
 {
-    bool oldIndeterminate = [cell state] == NSControlStateValueMixed;
+    bool oldIndeterminate = cell.state == NSControlStateValueMixed;
     bool indeterminate = isIndeterminate(o);
     bool checked = isChecked(o);
 
     if (oldIndeterminate != indeterminate) {
-        [cell setState:indeterminate ? NSControlStateValueMixed : (checked ? NSControlStateValueOn : NSControlStateValueOff)];
+        cell.state = indeterminate ? NSControlStateValueMixed : (checked ? NSControlStateValueOn : NSControlStateValueOff);
         return;
     }
 
-    bool oldChecked = [cell state] == NSControlStateValueOn;
+    bool oldChecked = cell.state == NSControlStateValueOn;
     if (checked != oldChecked)
-        [cell setState:checked ? NSControlStateValueOn : NSControlStateValueOff];
+        cell.state = checked ? NSControlStateValueOn : NSControlStateValueOff;
 }
 
 void RenderThemeMac::updateEnabledState(NSCell* cell, const RenderObject& o)
 {
-    bool oldEnabled = [cell isEnabled];
+    bool oldEnabled = cell.enabled;
     bool enabled = isEnabled(o);
     if (enabled != oldEnabled)
-        [cell setEnabled:enabled];
+        cell.enabled = enabled;
 }
 
 void RenderThemeMac::updateFocusedState(NSCell *cell, const RenderObject* o)
 {
-    bool oldFocused = [cell showsFirstResponder];
+    bool oldFocused = cell.showsFirstResponder;
     bool focused = o && isFocused(*o) && o->style().outlineStyleIsAuto() == OutlineIsAuto::On;
     if (focused != oldFocused)
-        [cell setShowsFirstResponder:focused];
+        cell.showsFirstResponder = focused;
 }
 
 void RenderThemeMac::updatePressedState(NSCell* cell, const RenderObject& o)
 {
-    bool oldPressed = [cell isHighlighted];
+    bool oldPressed = cell.highlighted;
     bool pressed = isPressed(o);
     if (pressed != oldPressed)
-        [cell setHighlighted:pressed];
+        cell.highlighted = pressed;
 }
 
 bool RenderThemeMac::controlSupportsTints(const RenderObject& o) const
@@ -889,8 +889,8 @@ NSControlSize RenderThemeMac::controlSizeForCell(NSCell*, const IntSize* sizes, 
 void RenderThemeMac::setControlSize(NSCell* cell, const IntSize* sizes, const IntSize& minSize, float zoomLevel)
 {
     NSControlSize size = controlSizeForCell(cell, sizes, minSize, zoomLevel);
-    if (size != [cell controlSize]) // Only update if we have to, since AppKit does work even if the size is the same.
-        [cell setControlSize:size];
+    if (size != cell.controlSize) // Only update if we have to, since AppKit does work even if the size is the same.
+        cell.controlSize = size;
 }
 
 IntSize RenderThemeMac::sizeForFont(const RenderStyle& style, const IntSize* sizes) const
@@ -928,8 +928,8 @@ void RenderThemeMac::setFontFromControlSize(RenderStyle& style, NSControlSize co
 
     NSFont* font = [NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:controlSize]];
     fontDescription.setOneFamily("-apple-system"_s);
-    fontDescription.setComputedSize([font pointSize] * style.effectiveZoom());
-    fontDescription.setSpecifiedSize([font pointSize] * style.effectiveZoom());
+    fontDescription.setComputedSize(font.pointSize * style.effectiveZoom());
+    fontDescription.setSpecifiedSize(font.pointSize * style.effectiveZoom());
 
     // Reset line height
     style.setLineHeight(RenderStyle::initialLineHeight());
@@ -988,7 +988,7 @@ const int* RenderThemeMac::popupButtonMargins() const
         { 0, 1, 0, 1 },
         { 0, 6, 2, 6 },
     };
-    return margins[[popupButton() controlSize]];
+    return margins[popupButton().controlSize];
 }
 
 const IntSize* RenderThemeMac::popupButtonSizes() const
@@ -1308,8 +1308,8 @@ NSPopUpButtonCell* RenderThemeMac::popupButton() const
     if (!m_popupButton) {
         m_popupButton = adoptNS([[NSPopUpButtonCell alloc] initTextCell:@"" pullsDown:NO]);
         [m_popupButton setUsesItemFromMenu:NO];
-        [m_popupButton setFocusRingType:NSFocusRingTypeExterior];
-        [m_popupButton setUserInterfaceLayoutDirection:NSUserInterfaceLayoutDirectionLeftToRight];
+        m_popupButton.focusRingType = NSFocusRingTypeExterior;
+        m_popupButton.userInterfaceLayoutDirection = NSUserInterfaceLayoutDirectionLeftToRight;
     }
 
     return m_popupButton.get();
@@ -1471,7 +1471,7 @@ static std::pair<RefPtr<Image>, float> createAttachmentPlaceholderImage(float de
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
     auto image = [NSImage _imageWithSystemSymbolName:@"arrow.down.circle"];
 ALLOW_DEPRECATED_DECLARATIONS_END
-    auto imageSize = FloatSize([image size]);
+    auto imageSize = FloatSize(image.size);
     auto imageSizeScales = deviceScaleFactor * layout.iconRect.size() / imageSize;
     imageSize.scale(std::min(imageSizeScales.width(), imageSizeScales.height()));
     auto imageRect = NSMakeRect(0, 0, imageSize.width(), imageSize.height());

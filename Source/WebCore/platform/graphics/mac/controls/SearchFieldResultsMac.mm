@@ -49,8 +49,8 @@ void SearchFieldResultsMac::updateCellStates(const FloatRect& rect, const Contro
 {
     SearchControlMac::updateCellStates(rect, style);
 
-    if ([m_searchFieldCell searchMenuTemplate] != m_searchMenuTemplate)
-        [m_searchFieldCell setSearchMenuTemplate:m_searchMenuTemplate.get()];
+    if (m_searchFieldCell.searchMenuTemplate != m_searchMenuTemplate)
+        m_searchFieldCell.searchMenuTemplate = m_searchMenuTemplate.get();
 }
 
 void SearchFieldResultsMac::draw(GraphicsContext& context, const FloatRoundedRect& borderRect, float deviceScaleFactor, const ControlStyle& style)
@@ -66,7 +66,7 @@ void SearchFieldResultsMac::draw(GraphicsContext& context, const FloatRoundedRec
         context.scale(style.zoomFactor);
     }
 
-    drawCell(context, logicalRect, deviceScaleFactor, style, [m_searchFieldCell searchButtonCell], true);
+    drawCell(context, logicalRect, deviceScaleFactor, style, m_searchFieldCell.searchButtonCell, true);
 }
 
 } // namespace WebCore

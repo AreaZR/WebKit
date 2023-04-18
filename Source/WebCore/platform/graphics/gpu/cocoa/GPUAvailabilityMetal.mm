@@ -38,7 +38,7 @@ bool isGPUAvailable()
     static bool metalAvailable = false;
     dispatch_once(&once, ^{
         auto devices = adoptNS(MTLCopyAllDevices());
-        metalAvailable = devices && [devices.get() count] > 0;
+        metalAvailable = devices && devices.get().count > 0;
     });
     return metalAvailable;
 }

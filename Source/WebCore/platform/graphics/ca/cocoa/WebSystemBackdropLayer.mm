@@ -38,18 +38,18 @@
 
 @implementation WebLightSystemBackdropLayer
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (!self)
         return nil;
 
 #ifndef NDEBUG
-    [self setName:@"WebLightSystemBackdropLayer"];
+    self.name = @"WebLightSystemBackdropLayer";
 #endif
 
     CGFloat components[4] = { 0.8, 0.8, 0.8, 0.8 };
-    [super setBackgroundColor:adoptCF(CGColorCreate(WebCore::sRGBColorSpaceRef(), components)).get()];
+    super.backgroundColor = adoptCF(CGColorCreate(WebCore::sRGBColorSpaceRef(), components)).get();
 
     return self;
 }
@@ -64,18 +64,18 @@
 
 @implementation WebDarkSystemBackdropLayer
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (!self)
         return nil;
 
 #ifndef NDEBUG
-    [self setName:@"WebDarkSystemBackdropLayer"];
+    self.name = @"WebDarkSystemBackdropLayer";
 #endif
 
     CGFloat components[4] = { 0.2, 0.2, 0.2, 0.8 };
-    [super setBackgroundColor:adoptCF(CGColorCreate(WebCore::sRGBColorSpaceRef(), components)).get()];
+    super.backgroundColor = adoptCF(CGColorCreate(WebCore::sRGBColorSpaceRef(), components)).get();
 
     return self;
 }

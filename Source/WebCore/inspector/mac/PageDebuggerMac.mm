@@ -40,7 +40,7 @@ bool PageDebugger::platformShouldContinueRunningEventLoopWhilePaused()
     //  - <https://webkit.org/b/210177> <rdar://problem/61485723>
 
 #if ENABLE(WEBPROCESS_NSRUNLOOP)
-    if (![NSApp isRunning]) {
+    if (!NSApp.running) {
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.05]];
         return true;
     }

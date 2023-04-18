@@ -87,15 +87,15 @@ NSBezelStyle ButtonMac::bezelStyle(const FloatRect& rect, const ControlStyle& st
 void ButtonMac::updateCellStates(const FloatRect& rect, const ControlStyle& style)
 {
     ButtonControlMac::updateCellStates(rect, style);
-    [m_buttonCell setBezelStyle:bezelStyle(rect, style)];
+    m_buttonCell.bezelStyle = bezelStyle(rect, style);
 }
 
 FloatRect ButtonMac::rectForBounds(const FloatRect& bounds, const ControlStyle& style) const
 {
-    if ([m_buttonCell bezelStyle] != NSBezelStyleRounded)
+    if (m_buttonCell.bezelStyle != NSBezelStyleRounded)
         return bounds;
 
-    auto controlSize = [m_buttonCell controlSize];
+    auto controlSize = m_buttonCell.controlSize;
 
     // Explicitly use `FloatSize` to support non-integral sizes following zoom.
     FloatSize size = cellSize(controlSize, style);

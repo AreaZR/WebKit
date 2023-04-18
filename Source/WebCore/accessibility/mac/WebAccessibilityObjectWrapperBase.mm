@@ -283,7 +283,7 @@ NSArray *makeNSArray(const WebCore::AXCoreObject::AccessibilityChildrenVector& c
 
 @synthesize identifier = _identifier;
 
-- (id)initWithAccessibilityObject:(AccessibilityObject*)axObject
+- (instancetype)initWithAccessibilityObject:(AccessibilityObject*)axObject
 {
     ASSERT(isMainThread());
 
@@ -750,11 +750,11 @@ static NSArray *arrayRemovingNonSupportedTypes(NSArray *array)
     ASSERT([array isKindOfClass:[NSArray class]]);
     auto mutableArray = adoptNS([array mutableCopy]);
     for (NSUInteger i = 0; i < [mutableArray count];) {
-        id value = [mutableArray objectAtIndex:i];
+        id value = mutableArray[i];
         if ([value isKindOfClass:[NSDictionary class]])
-            [mutableArray replaceObjectAtIndex:i withObject:dictionaryRemovingNonSupportedTypes(value)];
+            mutableArray[i] = dictionaryRemovingNonSupportedTypes(value);
         else if ([value isKindOfClass:[NSArray class]])
-            [mutableArray replaceObjectAtIndex:i withObject:arrayRemovingNonSupportedTypes(value)];
+            mutableArray[i] = arrayRemovingNonSupportedTypes(value);
         else if (!isValueTypeSupported(value)) {
             [mutableArray removeObjectAtIndex:i];
             continue;
@@ -771,11 +771,11 @@ static NSDictionary *dictionaryRemovingNonSupportedTypes(NSDictionary *dictionar
     ASSERT([dictionary isKindOfClass:[NSDictionary class]]);
     auto mutableDictionary = adoptNS([dictionary mutableCopy]);
     for (NSString *key in dictionary) {
-        id value = [dictionary objectForKey:key];
+        id value = dictionary[key];
         if ([value isKindOfClass:[NSDictionary class]])
-            [mutableDictionary setObject:dictionaryRemovingNonSupportedTypes(value) forKey:key];
+            mutableDictionary[key] = dictionaryRemovingNonSupportedTypes(value);
         else if ([value isKindOfClass:[NSArray class]])
-            [mutableDictionary setObject:arrayRemovingNonSupportedTypes(value) forKey:key];
+            mutableDictionary[key] = arrayRemovingNonSupportedTypes(value);
         else if (!isValueTypeSupported(value))
             [mutableDictionary removeObjectForKey:key];
     }
@@ -787,7 +787,7 @@ static NSDictionary *dictionaryRemovingNonSupportedTypes(NSDictionary *dictionar
     if (accessibilityShouldRepostNotifications) {
         ASSERT(notificationName);
         userInfo = dictionaryRemovingNonSupportedTypes(userInfo);
-        NSDictionary *info = [NSDictionary dictionaryWithObjectsAndKeys:notificationName, @"notificationName", userInfo, @"userInfo", nil];
+        NSDictionary *info = @{@"notificationName": notificationName, @"userInfo": userInfo};
         [[NSNotificationCenter defaultCenter] postNotificationName:@"AXDRTNotification" object:self userInfo:info];
     }
 }
@@ -887,13 +887,13 @@ static std::optional<AccessibilitySearchKey> makeVectorElement(const Accessibili
 
 AccessibilitySearchCriteria accessibilitySearchCriteriaForSearchPredicateParameterizedAttribute(const NSDictionary *parameterizedAttribute)
 {
-    NSString *directionParameter = [parameterizedAttribute objectForKey:@"AXDirection"];
-    NSNumber *immediateDescendantsOnlyParameter = [parameterizedAttribute objectForKey:NSAccessibilityImmediateDescendantsOnly];
-    NSNumber *resultsLimitParameter = [parameterizedAttribute objectForKey:@"AXResultsLimit"];
-    NSString *searchTextParameter = [parameterizedAttribute objectForKey:@"AXSearchText"];
-    WebAccessibilityObjectWrapperBase *startElementParameter = [parameterizedAttribute objectForKey:@"AXStartElement"];
-    NSNumber *visibleOnlyParameter = [parameterizedAttribute objectForKey:@"AXVisibleOnly"];
-    id searchKeyParameter = [parameterizedAttribute objectForKey:@"AXSearchKey"];
+    NSString *directionParameter = parameterizedAttribute[@"AXDirection"];
+    NSNumber *immediateDescendantsOnlyParameter = parameterizedAttribute[NSAccessibilityImmediateDescendantsOnly];
+    NSNumber *resultsLimitParameter = parameterizedAttribute[@"AXResultsLimit"];
+    NSString *searchTextParameter = parameterizedAttribute[@"AXSearchText"];
+    WebAccessibilityObjectWrapperBase *startElementParameter = parameterizedAttribute[@"AXStartElement"];
+    NSNumber *visibleOnlyParameter = parameterizedAttribute[@"AXVisibleOnly"];
+    id searchKeyParameter = parameterizedAttribute[@"AXSearchKey"];
     
     AccessibilitySearchDirection direction = AccessibilitySearchDirection::Next;
     if ([directionParameter isKindOfClass:[NSString class]])
@@ -901,11 +901,11 @@ AccessibilitySearchCriteria accessibilitySearchCriteriaForSearchPredicateParamet
     
     bool immediateDescendantsOnly = false;
     if ([immediateDescendantsOnlyParameter isKindOfClass:[NSNumber class]])
-        immediateDescendantsOnly = [immediateDescendantsOnlyParameter boolValue];
+        immediateDescendantsOnly = immediateDescendantsOnlyParameter.boolValue;
     
     unsigned resultsLimit = 0;
     if ([resultsLimitParameter isKindOfClass:[NSNumber class]])
-        resultsLimit = [resultsLimitParameter unsignedIntValue];
+        resultsLimit = resultsLimitParameter.unsignedIntValue;
     
     String searchText;
     if ([searchTextParameter isKindOfClass:[NSString class]])
@@ -917,7 +917,7 @@ AccessibilitySearchCriteria accessibilitySearchCriteriaForSearchPredicateParamet
 
     bool visibleOnly = false;
     if ([visibleOnlyParameter isKindOfClass:[NSNumber class]])
-        visibleOnly = [visibleOnlyParameter boolValue];
+        visibleOnly = visibleOnlyParameter.boolValue;
     
     AccessibilitySearchCriteria criteria = AccessibilitySearchCriteria(startElement, direction, searchText, resultsLimit, visibleOnly, immediateDescendantsOnly);
     

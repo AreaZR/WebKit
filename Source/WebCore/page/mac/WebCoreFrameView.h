@@ -41,9 +41,9 @@ class LocalFrame;
 
 - (void)setScrollBarsSuppressed:(BOOL)suppressed repaintOnUnsuppress:(BOOL)repaint;
 - (void)setScrollOrigin:(NSPoint)origin updatePositionAtAll:(BOOL)updatePositionAtAll immediately:(BOOL)updatePositionImmediately;
-- (NSPoint)scrollOrigin;
+@property (nonatomic, readonly) NSPoint scrollOrigin;
 @end
 
 @protocol WebCoreFrameView
-- (NakedPtr<WebCore::LocalFrame>)_web_frame;
+@property (nonatomic, readonly) NakedPtr<WebCore::LocalFrame> _web_frame;
 @end

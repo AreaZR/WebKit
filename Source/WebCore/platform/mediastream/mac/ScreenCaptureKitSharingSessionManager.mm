@@ -58,7 +58,7 @@ using namespace WebCore;
     Vector<RetainPtr<SCContentSharingSession>> _sessions;
 }
 
-- (instancetype)initWithCallback:(ScreenCaptureKitSharingSessionManager*)callback;
+- (instancetype)initWithCallback:(ScreenCaptureKitSharingSessionManager*)callback NS_DESIGNATED_INITIALIZER;
 - (void)disconnect;
 - (void)startObservingSession:(SCContentSharingSession *)session;
 - (void)stopObservingSession:(SCContentSharingSession *)session;
@@ -94,7 +94,7 @@ using namespace WebCore;
 {
     ASSERT(!_sessions.contains(session));
     _sessions.append(RetainPtr { session });
-    [session setDelegate:self];
+    session.delegate = self;
 }
 
 - (void)stopObservingSession:(SCContentSharingSession *)session

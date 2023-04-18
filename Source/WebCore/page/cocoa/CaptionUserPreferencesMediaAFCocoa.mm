@@ -66,7 +66,7 @@ RefPtr<CaptionUserPreferencesMediaAF> CaptionUserPreferencesMediaAF::extractCapt
     RetainPtr strongObserver { dynamic_objc_cast<WebCaptionUserPreferencesMediaAFWeakObserver>(reinterpret_cast<id>(observer)) };
     if (!strongObserver)
         return nullptr;
-    return [strongObserver userPreferences];
+    return strongObserver.userPreferences;
 }
 
 } // namespace WebCore

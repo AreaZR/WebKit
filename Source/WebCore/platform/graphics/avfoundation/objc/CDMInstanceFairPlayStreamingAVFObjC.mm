@@ -62,7 +62,7 @@ static const NSInteger SecurityLevelError = -42811;
 @end
 
 @implementation WebCoreFPSContentKeySessionDelegate
-- (id)initWithParent:(WebCore::AVContentKeySessionDelegateClient *)parent
+- (instancetype)initWithParent:(WebCore::AVContentKeySessionDelegateClient *)parent
 {
     if (!(self = [super init]))
         return nil;
@@ -561,7 +561,7 @@ void CDMInstanceFairPlayStreamingAVFObjC::sessionIdentifierChanged(NSData *)
 void CDMInstanceFairPlayStreamingAVFObjC::groupSessionIdentifierChanged(AVContentKeyReportGroup* group, NSData *sessionIdentifier)
 {
 #if HAVE(AVCONTENTKEYREPORTGROUP)
-    if (group == [m_session defaultContentKeyGroup]) {
+    if (group == m_session.defaultContentKeyGroup) {
         INFO_LOG(LOGIDENTIFIER, "- default unused group identifier changed; dropping");
         return;
     }
@@ -993,7 +993,7 @@ void CDMInstanceSessionFairPlayStreamingAVFObjC::loadSession(LicenseType license
         for (NSData* expiredSessionData in [PAL::getAVContentKeySessionClass() pendingExpiredSessionReportsWithAppIdentifier:appIdentifier.get() storageDirectoryAtURL:storageURL]) {
             static const NSString *PlaybackSessionIdKey = @"PlaybackSessionID";
             NSDictionary *expiredSession = [NSPropertyListSerialization propertyListWithData:expiredSessionData options:kCFPropertyListImmutable format:nullptr error:nullptr];
-            NSString *playbackSessionIdValue = (NSString *)[expiredSession objectForKey:PlaybackSessionIdKey];
+            NSString *playbackSessionIdValue = (NSString *)expiredSession[PlaybackSessionIdKey];
             if (![playbackSessionIdValue isKindOfClass:[NSString class]])
                 continue;
 
@@ -1061,7 +1061,7 @@ void CDMInstanceSessionFairPlayStreamingAVFObjC::removeSessionData(const String&
         for (NSData* expiredSessionData in [PAL::getAVContentKeySessionClass() pendingExpiredSessionReportsWithAppIdentifier:appIdentifier.get() storageDirectoryAtURL:storageURL]) {
             NSDictionary *expiredSession = [NSPropertyListSerialization propertyListWithData:expiredSessionData options:kCFPropertyListImmutable format:nullptr error:nullptr];
             static const NSString *PlaybackSessionIdKey = @"PlaybackSessionID";
-            NSString *playbackSessionIdValue = (NSString *)[expiredSession objectForKey:PlaybackSessionIdKey];
+            NSString *playbackSessionIdValue = (NSString *)expiredSession[PlaybackSessionIdKey];
             if (![playbackSessionIdValue isKindOfClass:[NSString class]])
                 continue;
 
@@ -1089,7 +1089,7 @@ void CDMInstanceSessionFairPlayStreamingAVFObjC::removeSessionData(const String&
             return;
         }
 
-        id propertyList = expiredSessionsCount == 1 ? [expiredSessionsArray firstObject] : expiredSessionsArray.get();
+        id propertyList = expiredSessionsCount == 1 ? expiredSessionsArray.firstObject : expiredSessionsArray.get();
 
         RetainPtr<NSData> expiredSessionsData = [NSPropertyListSerialization dataWithPropertyList:propertyList format:NSPropertyListBinaryFormat_v1_0 options:kCFPropertyListImmutable error:nullptr];
 

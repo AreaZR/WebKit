@@ -409,7 +409,7 @@ void AttachmentLayout::buildWrappedLines(String& text, CTFontRef font, NSDiction
     // Combine it into one last line, and center-truncate it.
     auto firstRemainingLine = (CTLineRef)CFArrayGetValueAtIndex(ctLines, lineIndex);
     auto remainingRangeStart = CTLineGetStringRange(firstRemainingLine).location;
-    auto remainingRange = CFRangeMake(remainingRangeStart, [attributedText length] - remainingRangeStart);
+    auto remainingRange = CFRangeMake(remainingRangeStart, attributedText.length - remainingRangeStart);
     auto remainingPath = adoptCF(CGPathCreateWithRect(CGRectMake(0, 0, CGFLOAT_MAX, CGFLOAT_MAX), nullptr));
     auto remainingFrame = adoptCF(CTFramesetterCreateFrame(framesetter.get(), remainingRange, remainingPath.get(), nullptr));
     auto ellipsisString = adoptNS([[NSAttributedString alloc] initWithString:@"\u2026" attributes:textAttributes]);

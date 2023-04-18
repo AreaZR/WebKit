@@ -54,7 +54,7 @@ ControlMac::ControlMac(ControlPart& owningPart, ControlFactoryMac& controlFactor
 
 bool ControlMac::userPrefersContrast()
 {
-    return [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldIncreaseContrast];
+    return [NSWorkspace sharedWorkspace].accessibilityDisplayShouldIncreaseContrast;
 }
 
 FloatRect ControlMac::inflatedRect(const FloatRect& bounds, const FloatSize& size, const IntOutsets& outsets, const ControlStyle& style)
@@ -73,10 +73,10 @@ FloatRect ControlMac::inflatedRect(const FloatRect& bounds, const FloatSize& siz
 
 void ControlMac::updateCheckedState(NSCell *cell, const ControlStyle& style)
 {
-    bool oldIndeterminate = [cell state] == NSControlStateValueMixed;
+    bool oldIndeterminate = cell.state == NSControlStateValueMixed;
     bool indeterminate = style.states.contains(ControlStyle::State::Indeterminate);
 
-    bool oldChecked = [cell state] == NSControlStateValueOn;
+    bool oldChecked = cell.state == NSControlStateValueOn;
     bool checked = style.states.contains(ControlStyle::State::Checked);
 
     if (oldIndeterminate == indeterminate && oldChecked == checked)
@@ -87,30 +87,30 @@ void ControlMac::updateCheckedState(NSCell *cell, const ControlStyle& style)
     if ([cell isKindOfClass:[NSButtonCell class]])
         [(NSButtonCell *)cell _setState:newState animated:false];
     else
-        [cell setState:newState];
+        cell.state = newState;
 }
 
 void ControlMac::updateEnabledState(NSCell *cell, const ControlStyle& style)
 {
-    bool oldEnabled = [cell isEnabled];
+    bool oldEnabled = cell.enabled;
     bool enabled = style.states.contains(ControlStyle::State::Enabled);
     if (enabled == oldEnabled)
         return;
-    [cell setEnabled:enabled];
+    cell.enabled = enabled;
 }
 
 void ControlMac::updateFocusedState(NSCell *cell, const ControlStyle& style)
 {
-    bool oldFocused = [cell showsFirstResponder];
+    bool oldFocused = cell.showsFirstResponder;
     bool focused = style.states.contains(ControlStyle::State::Focused);
     if (focused == oldFocused)
         return;
-    [cell setShowsFirstResponder:focused];
+    cell.showsFirstResponder = focused;
 }
 
 void ControlMac::updatePressedState(NSCell *cell, const ControlStyle& style)
 {
-    bool oldPressed = [cell isHighlighted];
+    bool oldPressed = cell.highlighted;
     bool pressed = style.states.contains(ControlStyle::State::Pressed);
     if (pressed == oldPressed)
         return;
@@ -118,7 +118,7 @@ void ControlMac::updatePressedState(NSCell *cell, const ControlStyle& style)
     if ([cell isKindOfClass:[NSButtonCell class]])
         [(NSButtonCell *)cell _setHighlighted:pressed animated:false];
     else
-        [cell setHighlighted:pressed];
+        cell.highlighted = pressed;
 }
 
 NSControlSize ControlMac::controlSizeForFont(const ControlStyle& style) const
@@ -199,11 +199,11 @@ static void applyViewlessCellSettings(float deviceScaleFactor, const ControlStyl
 {
     ASSERT(supportsViewlessCells());
 
-    [cell _setFallbackBackingScaleFactor:deviceScaleFactor];
+    cell._fallbackBackingScaleFactor = deviceScaleFactor;
 
 #if USE(NSVIEW_SEMANTICCONTEXT)
     if (style.states.contains(ControlStyle::State::FormSemanticContext))
-        [cell _setFallbackSemanticContext:NSViewSemanticContextForm];
+        cell._fallbackSemanticContext = NSViewSemanticContextForm;
 #else
     UNUSED_PARAM(style);
 #endif

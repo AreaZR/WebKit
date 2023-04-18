@@ -719,7 +719,7 @@ static TextStream& operator<<(TextStream& ts, SetNonVolatileResult state)
 
 TextStream& operator<<(TextStream& ts, const IOSurface& surface)
 {
-    return ts << "IOSurface " << surface.surfaceID() << " name " << [surfaceNameToNSString(surface.name()) UTF8String] << " size " << surface.size() << " format " << surface.m_format << " state " << surface.state();
+    return ts << "IOSurface " << surface.surfaceID() << " name " << surfaceNameToNSString(surface.name()).UTF8String << " size " << surface.size() << " format " << surface.m_format << " state " << surface.state();
 }
 
 } // namespace WebCore

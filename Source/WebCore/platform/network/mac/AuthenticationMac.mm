@@ -37,14 +37,14 @@ using namespace WebCore;
 {
     AuthenticationClient* m_client;
 }
-- (id)initWithAuthenticationClient:(AuthenticationClient*)client;
-- (AuthenticationClient*)client;
+- (instancetype)initWithAuthenticationClient:(AuthenticationClient*)client;
+@property (nonatomic, readonly) WebCore::AuthenticationClient *client;
 - (void)detachClient;
 @end
 
 @implementation WebCoreAuthenticationClientAsChallengeSender
 
-- (id)initWithAuthenticationClient:(AuthenticationClient*)client
+- (instancetype)initWithAuthenticationClient:(AuthenticationClient*)client
 {
     self = [self init];
     if (!self)
@@ -111,12 +111,12 @@ AuthenticationChallenge::AuthenticationChallenge(const ProtectionSpace& protecti
 }
 
 AuthenticationChallenge::AuthenticationChallenge(NSURLAuthenticationChallenge *challenge)
-    : AuthenticationChallengeBase(ProtectionSpace([challenge protectionSpace]),
-                                  Credential([challenge proposedCredential]),
-                                  [challenge previousFailureCount],
-                                  [challenge failureResponse],
-                                  [challenge error])
-    , m_sender([challenge sender])
+    : AuthenticationChallengeBase(ProtectionSpace(challenge.protectionSpace),
+                                  Credential(challenge.proposedCredential),
+                                  challenge.previousFailureCount,
+                                  challenge.failureResponse,
+                                  challenge.error)
+    , m_sender(challenge.sender)
     , m_nsChallenge(challenge)
 {
 }

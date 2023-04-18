@@ -50,10 +50,10 @@ static NSDecimalNumber *toDecimalNumber(const String& amount)
 static String fromDecimalNumber(NSDecimalNumber *number)
 {
     auto numberFormatter = adoptNS([[NSNumberFormatter alloc] init]);
-    [numberFormatter setNumberStyle:NSNumberFormatterNoStyle];
-    [numberFormatter setMinimumIntegerDigits:1];
-    [numberFormatter setMinimumFractionDigits:2];
-    [numberFormatter setMaximumFractionDigits:[numberFormatter maximumIntegerDigits]];
+    numberFormatter.numberStyle = NSNumberFormatterNoStyle;
+    numberFormatter.minimumIntegerDigits = 1;
+    numberFormatter.minimumFractionDigits = 2;
+    numberFormatter.maximumFractionDigits = numberFormatter.maximumIntegerDigits;
     return [numberFormatter stringFromNumber:number];
 }
 
@@ -146,12 +146,12 @@ static RetainPtr<id> makeNSArrayElement(const ApplePayInstallmentItem& item)
 {
     ASSERT(PAL::getPKPaymentInstallmentItemClass());
     auto installmentItem = adoptNS([PAL::allocPKPaymentInstallmentItemInstance() init]);
-    [installmentItem setInstallmentItemType:platformItemType(item.type)];
-    [installmentItem setAmount:toDecimalNumber(item.amount)];
-    [installmentItem setCurrencyCode:item.currencyCode];
-    [installmentItem setProgramIdentifier:item.programIdentifier];
-    [installmentItem setApr:toDecimalNumber(item.apr)];
-    [installmentItem setProgramTerms:item.programTerms];
+    installmentItem.installmentItemType = platformItemType(item.type);
+    installmentItem.amount = toDecimalNumber(item.amount);
+    installmentItem.currencyCode = item.currencyCode;
+    installmentItem.programIdentifier = item.programIdentifier;
+    installmentItem.apr = toDecimalNumber(item.apr);
+    installmentItem.programTerms = item.programTerms;
     return installmentItem;
 }
 
@@ -162,12 +162,12 @@ static std::optional<ApplePayInstallmentItem> makeVectorElement(const ApplePayIn
 
     PKPaymentInstallmentItem *item = arrayElement;
     return ApplePayInstallmentItem {
-        applePayItemType([item installmentItemType]),
-        fromDecimalNumber([item amount]),
-        [item currencyCode],
-        [item programIdentifier],
-        fromDecimalNumber([item apr]),
-        [item programTerms],
+        applePayItemType(item.installmentItemType),
+        fromDecimalNumber(item.amount),
+        item.currencyCode,
+        item.programIdentifier,
+        fromDecimalNumber(item.apr),
+        item.programTerms,
     };
 }
 
@@ -178,24 +178,24 @@ static RetainPtr<PKPaymentInstallmentConfiguration> createPlatformConfiguration(
 
     auto configuration = adoptNS([PAL::allocPKPaymentInstallmentConfigurationInstance() init]);
 
-    [configuration setFeature:platformFeatureType(coreConfiguration.featureType)];
+    configuration.feature = platformFeatureType(coreConfiguration.featureType);
 
-    [configuration setBindingTotalAmount:toDecimalNumber(coreConfiguration.bindingTotalAmount)];
-    [configuration setCurrencyCode:coreConfiguration.currencyCode];
-    [configuration setInStorePurchase:coreConfiguration.isInStorePurchase];
-    [configuration setOpenToBuyThresholdAmount:toDecimalNumber(coreConfiguration.openToBuyThresholdAmount)];
+    configuration.bindingTotalAmount = toDecimalNumber(coreConfiguration.bindingTotalAmount);
+    configuration.currencyCode = coreConfiguration.currencyCode;
+    configuration.inStorePurchase = coreConfiguration.isInStorePurchase;
+    configuration.openToBuyThresholdAmount = toDecimalNumber(coreConfiguration.openToBuyThresholdAmount);
 
     auto merchandisingImageData = adoptNS([[NSData alloc] initWithBase64EncodedString:coreConfiguration.merchandisingImageData options:0]);
-    [configuration setMerchandisingImageData:merchandisingImageData.get()];
-    [configuration setInstallmentMerchantIdentifier:coreConfiguration.merchantIdentifier];
-    [configuration setReferrerIdentifier:coreConfiguration.referrerIdentifier];
+    configuration.merchandisingImageData = merchandisingImageData.get();
+    configuration.installmentMerchantIdentifier = coreConfiguration.merchantIdentifier;
+    configuration.referrerIdentifier = coreConfiguration.referrerIdentifier;
 
     if (!PAL::getPKPaymentInstallmentItemClass())
         return configuration;
 
-    [configuration setInstallmentItems:createNSArray(coreConfiguration.items).get()];
-    [configuration setApplicationMetadata:applicationMetadata];
-    [configuration setRetailChannel:platformRetailChannel(coreConfiguration.retailChannel)];
+    configuration.installmentItems = createNSArray(coreConfiguration.items).get();
+    configuration.applicationMetadata = applicationMetadata;
+    configuration.retailChannel = platformRetailChannel(coreConfiguration.retailChannel);
 
     return configuration;
 }
@@ -234,32 +234,32 @@ ApplePayInstallmentConfiguration PaymentInstallmentConfiguration::applePayInstal
     if (!PAL::getPKPaymentInstallmentConfigurationClass())
         return installmentConfiguration;
 
-    if (auto featureType = applePaySetupFeatureType([m_configuration feature]))
+    if (auto featureType = applePaySetupFeatureType(m_configuration.feature))
         installmentConfiguration.featureType = *featureType;
     else
         return installmentConfiguration;
 
-    installmentConfiguration.bindingTotalAmount = fromDecimalNumber([m_configuration bindingTotalAmount]);
-    installmentConfiguration.currencyCode = [m_configuration currencyCode];
-    installmentConfiguration.isInStorePurchase = [m_configuration isInStorePurchase];
-    installmentConfiguration.openToBuyThresholdAmount = fromDecimalNumber([m_configuration openToBuyThresholdAmount]);
+    installmentConfiguration.bindingTotalAmount = fromDecimalNumber(m_configuration.bindingTotalAmount);
+    installmentConfiguration.currencyCode = m_configuration.currencyCode;
+    installmentConfiguration.isInStorePurchase = m_configuration.inStorePurchase;
+    installmentConfiguration.openToBuyThresholdAmount = fromDecimalNumber(m_configuration.openToBuyThresholdAmount);
 
-    installmentConfiguration.merchandisingImageData = [[m_configuration merchandisingImageData] base64EncodedStringWithOptions:0];
-    installmentConfiguration.merchantIdentifier = [m_configuration installmentMerchantIdentifier];
-    installmentConfiguration.referrerIdentifier = [m_configuration referrerIdentifier];
+    installmentConfiguration.merchandisingImageData = [m_configuration.merchandisingImageData base64EncodedStringWithOptions:0];
+    installmentConfiguration.merchantIdentifier = m_configuration.installmentMerchantIdentifier;
+    installmentConfiguration.referrerIdentifier = m_configuration.referrerIdentifier;
 
     if (!PAL::getPKPaymentInstallmentItemClass())
         return installmentConfiguration;
 
     RetainPtr<NSString> applicationMetadataString;
-    if (NSDictionary *applicationMetadataDictionary = [m_configuration applicationMetadata]) {
+    if (NSDictionary *applicationMetadataDictionary = m_configuration.applicationMetadata) {
         if (NSData *applicationMetadata = [NSJSONSerialization dataWithJSONObject:applicationMetadataDictionary options:NSJSONWritingSortedKeys error:nil])
             applicationMetadataString = adoptNS([[NSString alloc] initWithData:applicationMetadata encoding:NSUTF8StringEncoding]);
     }
 
-    installmentConfiguration.items = makeVector<ApplePayInstallmentItem>([m_configuration installmentItems]);
+    installmentConfiguration.items = makeVector<ApplePayInstallmentItem>(m_configuration.installmentItems);
     installmentConfiguration.applicationMetadata = applicationMetadataString.get();
-    installmentConfiguration.retailChannel = applePayRetailChannel([m_configuration retailChannel]);
+    installmentConfiguration.retailChannel = applePayRetailChannel(m_configuration.retailChannel);
 
     return installmentConfiguration;
 }

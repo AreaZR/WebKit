@@ -35,7 +35,7 @@ namespace WebCore {
 GraphicsLayerAsyncContentsDisplayDelegateCocoa::GraphicsLayerAsyncContentsDisplayDelegateCocoa(GraphicsLayerCA& layer)
 {
     m_layer = adoptNS([[CALayer alloc] init]);
-    [m_layer setName:@"OffscreenCanvasLayer"];
+    m_layer.name = @"OffscreenCanvasLayer";
 
     layer.setContentsToPlatformLayer(m_layer.get(), GraphicsLayer::ContentsLayerPurpose::Canvas);
 }
@@ -47,7 +47,7 @@ bool GraphicsLayerAsyncContentsDisplayDelegateCocoa::tryCopyToLayer(ImageBuffer&
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
 
-    [m_layer setContents:(__bridge id)native->platformImage().get()];
+    m_layer.contents = (__bridge id)native->platformImage().get();
 
     [CATransaction commit];
 

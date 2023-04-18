@@ -44,7 +44,7 @@
 #import <wtf/text/cf/StringConcatenateCF.h>
 
 @interface NSURL ()
-- (CFURLRef)_cfurl;
+@property (nonatomic, readonly) CFURLRef _cfurl;
 @end
 
 namespace WebCore {
@@ -141,7 +141,7 @@ void NetworkStorageSession::setAllCookiesToSameSiteStrict(const RegistrableDomai
     for (NSHTTPCookie *nsCookie in nsCookieStorage().cookies) {
         if (RegistrableDomain::uncheckedCreateFromHost(nsCookie.domain) == domain && nsCookie.sameSitePolicy != NSHTTPCookieSameSiteStrict) {
             [oldCookiesToDelete addObject:nsCookie];
-            RetainPtr<NSMutableDictionary<NSHTTPCookiePropertyKey, id>> mutableProperties = adoptNS([[nsCookie properties] mutableCopy]);
+            RetainPtr<NSMutableDictionary<NSHTTPCookiePropertyKey, id>> mutableProperties = adoptNS([nsCookie.properties mutableCopy]);
             mutableProperties.get()[NSHTTPCookieSameSitePolicy] = NSHTTPCookieSameSiteStrict;
             NSHTTPCookie *strictCookie = [NSHTTPCookie cookieWithProperties:mutableProperties.get()];
             [newCookiesToAdd addObject:strictCookie];
@@ -211,7 +211,7 @@ RetainPtr<CFURLStorageSessionRef> createPrivateStorageSession(CFStringRef identi
         if (!cache)
             return nullptr;
 
-        CFURLCacheSetMemoryCapacity(cache.get(), [[NSURLCache sharedURLCache] memoryCapacity]);
+        CFURLCacheSetMemoryCapacity(cache.get(), [NSURLCache sharedURLCache].memoryCapacity);
     }
 
     auto cookieStorage = adoptCF(_CFURLStorageSessionCopyCookieStorage(kCFAllocatorDefault, storageSession.get()));
@@ -222,7 +222,7 @@ RetainPtr<CFURLStorageSessionRef> createPrivateStorageSession(CFStringRef identi
     if (cookieAcceptPolicy)
         nsCookieAcceptPolicy = toNSHTTPCookieAcceptPolicy(*cookieAcceptPolicy);
     else
-        nsCookieAcceptPolicy = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookieAcceptPolicy];
+        nsCookieAcceptPolicy = [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy;
 
     // FIXME: Use _CFHTTPCookieStorageGetDefault when USE(CFNETWORK) is defined in WebKit for consistency.
     CFHTTPCookieStorageSetCookieAcceptPolicy(cookieStorage.get(), nsCookieAcceptPolicy);
@@ -235,7 +235,7 @@ RetainPtr<NSArray> NetworkStorageSession::httpCookies(CFHTTPCookieStorageRef coo
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanAccessRawCookies) || m_isInMemoryCookieStore);
     if (!cookieStorage) {
         RELEASE_ASSERT(!m_isInMemoryCookieStore);
-        return [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+        return [NSHTTPCookieStorage sharedHTTPCookieStorage].cookies;
     }
     
     auto cookies = adoptCF(CFHTTPCookieStorageCopyCookies(cookieStorage));
@@ -266,7 +266,7 @@ static RetainPtr<NSDictionary> policyProperties(const SameSiteInfo& sameSiteInfo
     static NSURL *emptyURL = [[NSURL alloc] initWithString:@""];
     NSDictionary *policyProperties = @{
         @"_kCFHTTPCookiePolicyPropertySiteForCookies": sameSiteInfo.isSameSite ? url : emptyURL,
-        @"_kCFHTTPCookiePolicyPropertyIsTopLevelNavigation": [NSNumber numberWithBool:sameSiteInfo.isTopSite],
+        @"_kCFHTTPCookiePolicyPropertyIsTopLevelNavigation": @(sameSiteInfo.isTopSite),
     };
     return policyProperties;
 }
@@ -340,13 +340,13 @@ RetainPtr<NSArray> NetworkStorageSession::httpCookiesForURL(CFHTTPCookieStorageR
 
 NSHTTPCookie *NetworkStorageSession::capExpiryOfPersistentCookie(NSHTTPCookie *cookie, Seconds cap)
 {
-    if ([cookie isSessionOnly])
+    if (cookie.sessionOnly)
         return cookie;
 
     if (!cookie.expiresDate || cookie.expiresDate.timeIntervalSinceNow > cap.seconds()) {
-        auto properties = adoptNS([[cookie properties] mutableCopy]);
+        auto properties = adoptNS([cookie.properties mutableCopy]);
         auto date = adoptNS([[NSDate alloc] initWithTimeIntervalSinceNow:cap.seconds()]);
-        [properties setObject:date.get() forKey:NSHTTPCookieExpires];
+        properties[NSHTTPCookieExpires] = date.get();
         cookie = [NSHTTPCookie cookieWithProperties:properties.get()];
     }
     return cookie;
@@ -372,22 +372,22 @@ std::pair<String, bool> NetworkStorageSession::cookiesForSession(const URL& firs
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
     auto cookies = cookiesForURL(firstParty, sameSiteInfo, url, frameID, pageID, applyTrackingPrevention, shouldRelaxThirdPartyCookieBlocking);
-    if (![cookies count])
+    if (!cookies.count)
         return { String(), false }; // Return a null string; StringBuilder below would create an empty one.
 
     StringBuilder cookiesBuilder;
     bool didAccessSecureCookies = false;
     for (NSHTTPCookie *cookie in cookies.get()) {
-        if (![[cookie name] length])
+        if (!cookie.name.length)
             continue;
-        if (!includeHTTPOnly && [cookie isHTTPOnly])
+        if (!includeHTTPOnly && cookie.HTTPOnly)
             continue;
-        if ([cookie isSecure]) {
+        if (cookie.secure) {
             didAccessSecureCookies = true;
             if (includeSecureCookies == IncludeSecureCookies::No)
                 continue;
         }
-        cookiesBuilder.append(cookiesBuilder.isEmpty() ? "" : "; ", [cookie name], '=', [cookie value]);
+        cookiesBuilder.append(cookiesBuilder.isEmpty() ? "" : "; ", cookie.name, '=', cookie.value);
     }
     return { cookiesBuilder.toString(), didAccessSecureCookies };
 
@@ -426,7 +426,7 @@ static NSHTTPCookie *parseDOMCookie(String cookieString, NSURL* cookieURL, std::
         return nil;
 
 #if ENABLE(JS_COOKIE_CHECKING)
-    auto mutableProperties = adoptNS([[initialCookie properties] mutableCopy]);
+    auto mutableProperties = adoptNS([initialCookie.properties mutableCopy]);
     [mutableProperties.get() setValue:@1 forKey:@"SetInJavaScript"];
     NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:mutableProperties.get()];
 #else
@@ -437,10 +437,10 @@ static NSHTTPCookie *parseDOMCookie(String cookieString, NSURL* cookieURL, std::
     // which would be sent as "Cookie: =". We have a workaround in setCookies() to prevent
     // that, but we also need to avoid sending cookies that were previously stored, and
     // there's no harm to doing this check because such a cookie is never valid.
-    if (![[cookie name] length])
+    if (!cookie.name.length)
         return nil;
 
-    if ([cookie isHTTPOnly])
+    if (cookie.HTTPOnly)
         return nil;
 
     // Cap lifetime of persistent, client-side cookies.
@@ -486,7 +486,7 @@ static NSHTTPCookieAcceptPolicy httpCookieAcceptPolicy(CFHTTPCookieStorageRef co
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanAccessRawCookies));
 
     if (!cookieStorage)
-        return [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookieAcceptPolicy];
+        return [NSHTTPCookieStorage sharedHTTPCookieStorage].cookieAcceptPolicy;
 
     return static_cast<NSHTTPCookieAcceptPolicy>(CFHTTPCookieStorageGetCookieAcceptPolicy(cookieStorage));
 }
@@ -507,10 +507,10 @@ bool NetworkStorageSession::getRawCookies(const URL& firstParty, const SameSiteI
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
     RetainPtr<NSArray> cookies = cookiesForURL(firstParty, sameSiteInfo, url, frameID, pageID, applyTrackingPrevention, shouldRelaxThirdPartyCookieBlocking);
-    NSUInteger count = [cookies count];
+    NSUInteger count = cookies.count;
     rawCookies.reserveCapacity(count);
     for (NSUInteger i = 0; i < count; ++i) {
-        NSHTTPCookie *cookie = (NSHTTPCookie *)[cookies objectAtIndex:i];
+        NSHTTPCookie *cookie = (NSHTTPCookie *)cookies[i];
         rawCookies.uncheckedAppend({ cookie });
     }
 
@@ -531,10 +531,10 @@ void NetworkStorageSession::deleteCookie(const URL& url, const String& cookieNam
 
     NSString *cookieNameString = cookieName;
 
-    NSUInteger count = [cookies count];
+    NSUInteger count = cookies.count;
     for (NSUInteger i = 0; i < count; ++i) {
-        NSHTTPCookie *cookie = (NSHTTPCookie *)[cookies objectAtIndex:i];
-        if ([[cookie name] isEqualToString:cookieNameString])
+        NSHTTPCookie *cookie = (NSHTTPCookie *)cookies[i];
+        if ([cookie.name isEqualToString:cookieNameString])
             deleteHTTPCookie(cookieStorage.get(), cookie, [aggregator] { });
     }
 
@@ -548,7 +548,7 @@ void NetworkStorageSession::getHostnamesWithCookies(HashSet<String>& hostnames)
     RetainPtr<NSArray> cookies = httpCookies(cookieStorage().get());
     
     for (NSHTTPCookie* cookie in cookies.get()) {
-        if (NSString *domain = [cookie domain])
+        if (NSString *domain = cookie.domain)
             hostnames.add(domain);
         else
             ASSERT_NOT_REACHED();
@@ -564,7 +564,7 @@ void NetworkStorageSession::deleteAllCookies(CompletionHandler<void()>&& complet
     auto work = [completionHandler = WTFMove(completionHandler), cookieStorage = RetainPtr { cookieStorage() }] () mutable {
         if (!cookieStorage) {
             NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-            NSArray *cookies = [cookieStorage cookies];
+            NSArray *cookies = cookieStorage.cookies;
             for (NSHTTPCookie *cookie in cookies)
                 [cookieStorage deleteCookie:cookie];
         } else
@@ -621,7 +621,7 @@ void NetworkStorageSession::deleteCookiesForHostnames(const Vector<String>& host
         if (!cookie.domain || (includeHttpOnlyCookies == IncludeHttpOnlyCookies::No && cookie.isHTTPOnly))
             return false;
 #if ENABLE(JS_COOKIE_CHECKING)
-        bool setInJS = [[cookie properties] valueForKey:@"SetInJavaScript"];
+        bool setInJS = [cookie.properties valueForKey:@"SetInJavaScript"];
         if (scriptWrittenCookiesOnly == ScriptWrittenCookiesOnly::Yes && !setInJS)
             return false;
 #else

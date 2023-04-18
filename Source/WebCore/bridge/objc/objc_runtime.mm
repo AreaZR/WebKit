@@ -69,7 +69,7 @@ ObjcMethod::ObjcMethod(ClassStructPtr aClass, SEL selector)
 
 int ObjcMethod::numParameters() const
 {
-    return [getMethodSignature() numberOfArguments] - 2;
+    return getMethodSignature().numberOfArguments - 2;
 }
 
 NSMethodSignature* ObjcMethod::getMethodSignature() const
@@ -116,7 +116,7 @@ JSValue ObjcField::valueFromInstance(JSGlobalObject* lexicalGlobalObject, const 
         }
     } @catch(NSException* localException) {
         JSLockHolder lock(lexicalGlobalObject);
-        throwError(lexicalGlobalObject, scope, [localException reason]);
+        throwError(lexicalGlobalObject, scope, localException.reason);
     }
 
     return result;
@@ -150,7 +150,7 @@ bool ObjcField::setValueToInstance(JSGlobalObject* lexicalGlobalObject, const In
         return true;
     } @catch(NSException* localException) {
         JSLockHolder lock(lexicalGlobalObject);
-        throwError(lexicalGlobalObject, scope, [localException reason]);
+        throwError(lexicalGlobalObject, scope, localException.reason);
         return false;
     }
 }
@@ -199,7 +199,7 @@ JSValue ObjcArray::valueAt(JSGlobalObject* lexicalGlobalObject, unsigned int ind
     if (index > [_array count])
         return throwException(lexicalGlobalObject, scope, createRangeError(lexicalGlobalObject, "Index exceeds array size."_s));
     @try {
-        id obj = [_array objectAtIndex:index];
+        id obj = _array[index];
         if (obj)
             return convertObjcValueToValue (lexicalGlobalObject, &obj, ObjcObjectType, m_rootObject.get());
     } @catch(NSException* localException) {

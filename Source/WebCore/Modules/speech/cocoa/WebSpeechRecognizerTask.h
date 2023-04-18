@@ -39,7 +39,7 @@ typedef struct opaqueCMSampleBuffer *CMSampleBufferRef;
     RetainPtr<WebSpeechRecognizerTaskImpl> _impl;
 }
 
-- (instancetype)initWithIdentifier:(WebCore::SpeechRecognitionConnectionClientIdentifier)identifier locale:(NSString*)localeIdentifier doMultipleRecognitions:(BOOL)continuous reportInterimResults:(BOOL)interimResults maxAlternatives:(unsigned long)alternatives delegateCallback:(void(^)(const WebCore::SpeechRecognitionUpdate&))callback;
+- (instancetype)initWithIdentifier:(WebCore::SpeechRecognitionConnectionClientIdentifier)identifier locale:(NSString*)localeIdentifier doMultipleRecognitions:(BOOL)continuous reportInterimResults:(BOOL)interimResults maxAlternatives:(unsigned long)alternatives delegateCallback:(void(^)(const WebCore::SpeechRecognitionUpdate&))callback NS_DESIGNATED_INITIALIZER;
 - (void)audioSamplesAvailable:(CMSampleBufferRef)sampleBuffer;
 - (void)abort;
 - (void)stop;

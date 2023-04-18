@@ -68,7 +68,7 @@ std::optional<String> PrivateClickMeasurement::calculateAndUpdateUnlinkableToken
     if (!unlinkableToken.waitingToken)
         return makeString("Did not get a ", contextForLogMessage, " unlinkable token waiting token.");
 
-    unlinkableToken.valueBase64URL = base64URLEncodeToString([unlinkableToken.waitingToken blindedMessage].bytes, [unlinkableToken.waitingToken blindedMessage].length);
+    unlinkableToken.valueBase64URL = base64URLEncodeToString(unlinkableToken.waitingToken.blindedMessage.bytes, unlinkableToken.waitingToken.blindedMessage.length);
     return std::nullopt;
 #else
     UNUSED_PARAM(serverPublicKeyBase64URL);
@@ -117,9 +117,9 @@ std::optional<String> PrivateClickMeasurement::calculateAndUpdateSecretToken(con
             return makeString("Did not get a ", contextForLogMessage, " unlinkable token ready token.");
     }
 
-    secretToken.tokenBase64URL = base64URLEncodeToString([unlinkableToken.readyToken tokenContent].bytes, [unlinkableToken.readyToken tokenContent].length);
-    secretToken.keyIDBase64URL = base64URLEncodeToString([unlinkableToken.readyToken keyId].bytes, [unlinkableToken.readyToken keyId].length);
-    secretToken.signatureBase64URL = base64URLEncodeToString([unlinkableToken.readyToken signature].bytes, [unlinkableToken.readyToken signature].length);
+    secretToken.tokenBase64URL = base64URLEncodeToString(unlinkableToken.readyToken.tokenContent.bytes, unlinkableToken.readyToken.tokenContent.length);
+    secretToken.keyIDBase64URL = base64URLEncodeToString(unlinkableToken.readyToken.keyId.bytes, unlinkableToken.readyToken.keyId.length);
+    secretToken.signatureBase64URL = base64URLEncodeToString(unlinkableToken.readyToken.signature.bytes, unlinkableToken.readyToken.signature.length);
 
     return std::nullopt;
 #else

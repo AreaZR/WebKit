@@ -53,7 +53,7 @@ using namespace WebCore;
     WeakPtr<ScreenCaptureKitCaptureSource> _callback;
 }
 
-- (instancetype)initWithCallback:(WeakPtr<ScreenCaptureKitCaptureSource>&&)callback;
+- (instancetype)initWithCallback:(WeakPtr<ScreenCaptureKitCaptureSource>&&)callback NS_DESIGNATED_INITIALIZER;
 - (void)disconnect;
 - (void)stream:(SCStream *)stream didStopWithError:(NSError *)error;
 - (void)stream:(SCStream *)stream didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer ofType:(SCStreamOutputType)type;
@@ -99,7 +99,7 @@ using namespace WebCore;
         if (!statusNumber)
             return;
 
-        status = (SCFrameStatus)[statusNumber integerValue];
+        status = (SCFrameStatus)statusNumber.integerValue;
         *stop = YES;
     }).get()];
 
@@ -210,15 +210,15 @@ void ScreenCaptureKitCaptureSource::sessionFilterDidChange(SCContentFilter* cont
     ASSERT(isMainThread());
 
     std::optional<CaptureDevice> device;
-    switch ([contentFilter type]) {
+    switch (contentFilter.type) {
     case SCContentFilterTypeDesktopIndependentWindow: {
-        auto *window = [contentFilter desktopIndependentWindowInfo].window;
+        auto *window = contentFilter.desktopIndependentWindowInfo.window;
         device = CaptureDevice(String::number(window.windowID), CaptureDevice::DeviceType::Window, window.title, emptyString(), true);
         m_content = window;
         break;
     }
     case SCContentFilterTypeDisplay: {
-        auto *display = [contentFilter displayInfo].display;
+        auto *display = contentFilter.displayInfo.display;
         device = CaptureDevice(String::number(display.displayID), CaptureDevice::DeviceType::Screen, makeString("Screen"), emptyString(), true);
         m_content = display;
         break;
@@ -272,18 +272,18 @@ RetainPtr<SCStreamConfiguration> ScreenCaptureKitCaptureSource::streamConfigurat
     ALWAYS_LOG_IF_POSSIBLE(LOGIDENTIFIER);
 
     m_streamConfiguration = adoptNS([PAL::allocSCStreamConfigurationInstance() init]);
-    [m_streamConfiguration setPixelFormat:preferedPixelBufferFormat()];
+    m_streamConfiguration.pixelFormat = preferedPixelBufferFormat();
     [m_streamConfiguration setShowsCursor:YES];
-    [m_streamConfiguration setQueueDepth:6];
-    [m_streamConfiguration setColorSpaceName:kCGColorSpaceSRGB];
-    [m_streamConfiguration setColorMatrix:kCGDisplayStreamYCbCrMatrix_SMPTE_240M_1995];
+    m_streamConfiguration.queueDepth = 6;
+    m_streamConfiguration.colorSpaceName = kCGColorSpaceSRGB;
+    m_streamConfiguration.colorMatrix = kCGDisplayStreamYCbCrMatrix_SMPTE_240M_1995;
 
     if (m_frameRate)
-        [m_streamConfiguration setMinimumFrameInterval:PAL::CMTimeMakeWithSeconds(1 / m_frameRate, 1000)];
+        m_streamConfiguration.minimumFrameInterval = PAL::CMTimeMakeWithSeconds(1 / m_frameRate, 1000);
 
     if (m_width && m_height) {
-        [m_streamConfiguration setWidth:m_width];
-        [m_streamConfiguration setHeight:m_height];
+        m_streamConfiguration.width = m_width;
+        m_streamConfiguration.height = m_height;
     }
 
     return m_streamConfiguration;
@@ -357,10 +357,10 @@ IntSize ScreenCaptureKitCaptureSource::intrinsicSize() const
 
     auto frame = switchOn(m_content.value(),
         [] (const RetainPtr<SCDisplay> display) -> CGRect {
-            return [display frame];
+            return display.frame;
         },
         [] (const RetainPtr<SCWindow> window) -> CGRect {
-            return [window frame];
+            return window.frame;
         }
     );
 
@@ -418,7 +418,7 @@ void ScreenCaptureKitCaptureSource::streamDidOutputVideoSampleBuffer(RetainPtr<C
         if (!statusNumber)
             return;
 
-        status = (SCFrameStatus)[statusNumber integerValue];
+        status = (SCFrameStatus)statusNumber.integerValue;
         *stop = YES;
     }).get()];
 

@@ -34,31 +34,31 @@ namespace WebCore {
     
 void VideoFullscreenCaptions::setTrackRepresentationImage(PlatformImagePtr textTrack)
 {
-    [m_captionsLayer setContents:(__bridge id)textTrack.get()];
+    m_captionsLayer.contents = (__bridge id)textTrack.get();
 }
 
 void VideoFullscreenCaptions::setTrackRepresentationContentsScale(float scale)
 {
-    [m_captionsLayer setContentsScale:scale];
+    m_captionsLayer.contentsScale = scale;
 }
 
 void VideoFullscreenCaptions::setTrackRepresentationHidden(bool hidden)
 {
-    [m_captionsLayer setHidden:hidden];
+    m_captionsLayer.hidden = hidden;
 }
 
 CALayer *VideoFullscreenCaptions::captionsLayer()
 {
     if (!m_captionsLayer) {
         m_captionsLayer = adoptNS([[CALayer alloc] init]);
-        [m_captionsLayer setName:@"Captions layer"];
+        m_captionsLayer.name = @"Captions layer";
     }
     return m_captionsLayer.get();
 }
 
 void VideoFullscreenCaptions::setCaptionsFrame(const CGRect& frame)
 {
-    [captionsLayer() setFrame:frame];
+    captionsLayer().frame = frame;
 }
 
 void VideoFullscreenCaptions::setupCaptionsLayer(CALayer* parent, const WebCore::FloatSize& initialSize)
@@ -68,8 +68,8 @@ void VideoFullscreenCaptions::setupCaptionsLayer(CALayer* parent, const WebCore:
     [captionsLayer() removeFromSuperlayer];
     [parent addSublayer:captionsLayer()];
     captionsLayer().zPosition = FLT_MAX;
-    [captionsLayer() setAnchorPoint:CGPointZero];
-    [captionsLayer() setBounds:CGRectMake(0, 0, initialSize.width(), initialSize.height())];
+    captionsLayer().anchorPoint = CGPointZero;
+    captionsLayer().bounds = CGRectMake(0, 0, initialSize.width(), initialSize.height());
     [CATransaction commit];
 }
 

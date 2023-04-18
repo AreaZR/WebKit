@@ -128,7 +128,7 @@ static RetainPtr<NSAttributedString> selectionInImageOverlayAsAttributedString(c
 
     auto string = stringForRange(*cachedResult, characterRange);
     __block bool hasAnyAttributes = false;
-    [string enumerateAttributesInRange:NSMakeRange(0, [string length]) options:0 usingBlock:^(NSDictionary *attributes, NSRange, BOOL *stop) {
+    [string enumerateAttributesInRange:NSMakeRange(0, string.length) options:0 usingBlock:^(NSDictionary *attributes, NSRange, BOOL *stop) {
         if (attributes.count) {
             hasAnyAttributes = true;
             *stop = YES;
@@ -163,7 +163,7 @@ void Editor::writeSelectionToPasteboard(Pasteboard& pasteboard)
     content.canSmartCopyOrDelete = canSmartCopyOrDelete();
     if (!pasteboard.isStatic()) {
         content.dataInWebArchiveFormat = selectionInWebArchiveFormat();
-        content.dataInRTFDFormat = [string containsAttachments] ? dataInRTFDFormat(string.get()) : nullptr;
+        content.dataInRTFDFormat = string.containsAttachments ? dataInRTFDFormat(string.get()) : nullptr;
         content.dataInRTFFormat = dataInRTFFormat(string.get());
         content.dataInAttributedStringFormat = archivedDataForAttributedString(string.get());
         client()->getClientPasteboardData(selectedRange(), content.clientTypes, content.clientData);
@@ -182,7 +182,7 @@ void Editor::writeSelection(PasteboardWriterData& pasteboardWriterData)
     webContent.contentOrigin = m_document.originIdentifierForPasteboard();
     webContent.canSmartCopyOrDelete = canSmartCopyOrDelete();
     webContent.dataInWebArchiveFormat = selectionInWebArchiveFormat();
-    webContent.dataInRTFDFormat = [string containsAttachments] ? dataInRTFDFormat(string.get()) : nullptr;
+    webContent.dataInRTFDFormat = string.containsAttachments ? dataInRTFDFormat(string.get()) : nullptr;
     webContent.dataInRTFFormat = dataInRTFFormat(string.get());
     webContent.dataInAttributedStringFormat = archivedDataForAttributedString(string.get());
     webContent.dataInHTMLFormat = selectionInHTMLFormat();

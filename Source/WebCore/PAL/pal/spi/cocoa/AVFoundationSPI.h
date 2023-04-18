@@ -131,7 +131,7 @@ typedef NS_OPTIONS(NSUInteger, AVOutputDeviceFeatures) {
 @property (nonatomic, readonly) NSString *deviceName;
 @property (nonatomic, readonly) AVOutputDeviceFeatures deviceFeatures;
 @property (nonatomic, readonly) BOOL supportsHeadTrackedSpatialAudio;
-- (BOOL)allowsHeadTrackedSpatialAudio;
+@property (nonatomic, readonly) BOOL allowsHeadTrackedSpatialAudio;
 @end
 
 #if !PLATFORM(IOS_FAMILY)
@@ -158,8 +158,8 @@ NS_ASSUME_NONNULL_END
 NS_ASSUME_NONNULL_BEGIN
 @interface AVAssetCache ()
 + (AVAssetCache *)assetCacheWithURL:(NSURL *)URL;
-- (id)initWithURL:(NSURL *)URL;
-- (NSArray *)allKeys;
+- (instancetype)initWithURL:(NSURL *)URL;
+@property (nonatomic, readonly, copy) NSArray * _Nonnull allKeys;
 - (NSDate *)lastModifiedDateOfEntryForKey:(NSString *)key;
 - (void)removeEntryForKey:(NSString *)key;
 @property (nonatomic, readonly, copy) NSURL *URL;
@@ -233,7 +233,7 @@ NS_ASSUME_NONNULL_END
 
 @interface AVContentKeySession (AVContentKeyGroup_Support)
 @property (readonly, nullable) AVContentKeyReportGroup *defaultContentKeyGroup;
-- (nonnull AVContentKeyReportGroup *)makeContentKeyGroup;
+@property (nonatomic, readonly, strong) AVContentKeyReportGroup * _Nonnull makeContentKeyGroup;
 @end
 #endif
 
@@ -253,7 +253,7 @@ typedef NS_ENUM(NSInteger, AVExternalContentProtectionStatus) {
 };
 
 @interface AVContentKeyRequest (AVContentKeyRequest_PendingProtectionStatus)
-- (AVExternalContentProtectionStatus)externalContentProtectionStatus;
+@property (nonatomic, readonly) AVExternalContentProtectionStatus externalContentProtectionStatus;
 @end
 #endif
 
@@ -289,7 +289,7 @@ NS_ASSUME_NONNULL_END
 @class AVVideoPerformanceMetrics;
 NS_ASSUME_NONNULL_BEGIN
 @interface AVPlayerLayer (AVPlayerLayerVideoPerformanceMetrics)
-- (AVVideoPerformanceMetrics *)videoPerformanceMetrics;
+@property (nonatomic, readonly, strong) AVVideoPerformanceMetrics * _Nonnull videoPerformanceMetrics;
 @end
 NS_ASSUME_NONNULL_END
 #endif
@@ -351,7 +351,7 @@ NS_ASSUME_NONNULL_END
 #import <AVFoundation/AVSampleBufferDisplayLayer.h>
 NS_ASSUME_NONNULL_BEGIN
 @interface AVSampleBufferDisplayLayer (VideoPerformanceMetrics)
-- (AVVideoPerformanceMetrics *)videoPerformanceMetrics;
+@property (nonatomic, readonly, strong) AVVideoPerformanceMetrics * _Nonnull videoPerformanceMetrics;
 @end
 NS_ASSUME_NONNULL_END
 #else
@@ -377,7 +377,7 @@ NS_ASSUME_NONNULL_END
 
 #if HAVE(AVSAMPLEBUFFERDISPLAYLAYER_COPYDISPLAYEDPIXELBUFFER)
 @interface AVSampleBufferDisplayLayer (Staging_94324932)
-- (nullable CVPixelBufferRef)copyDisplayedPixelBuffer;
+@property (nonatomic, readonly) CVPixelBufferRef _Nullable copyDisplayedPixelBuffer;
 @end
 #endif
 

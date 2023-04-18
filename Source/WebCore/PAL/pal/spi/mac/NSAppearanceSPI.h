@@ -34,7 +34,7 @@
 @interface NSAppearance ()
 
 - (void)_drawInRect:(NSRect)rect context:(CGContextRef)context options:(NSDictionary *)options;
-- (BOOL)_usesMetricsAppearance;
+@property (nonatomic, readonly) BOOL _usesMetricsAppearance;
 - (NSAppearance *)appearanceByApplyingTintColor:(NSColor *)tintColor;
 
 @property (readonly) NSColor *tintColor;

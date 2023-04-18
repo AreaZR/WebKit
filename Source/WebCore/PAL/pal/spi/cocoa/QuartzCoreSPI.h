@@ -75,7 +75,7 @@ typedef struct _CARenderContext CARenderContext;
 @end
 
 @interface CAFenceHandle ()
-- (mach_port_t)copyPort;
+@property (nonatomic, readonly) mach_port_t copyPort;
 - (void)invalidate;
 @end
 #endif
@@ -96,7 +96,7 @@ typedef struct _CARenderContext CARenderContext;
 - (void)deleteSlot:(uint32_t)name;
 - (void)invalidate;
 - (void)invalidateFences;
-- (mach_port_t)createFencePort;
+@property (nonatomic, readonly) mach_port_t createFencePort;
 - (void)setFencePort:(mach_port_t)port;
 - (void)setFencePort:(mach_port_t)port commitHandler:(void(^)(void))block;
 
@@ -132,10 +132,10 @@ typedef struct _CARenderContext CARenderContext;
 @end
 
 @interface CALayer ()
-- (CAContext *)context;
+@property (nonatomic, readonly, strong) CAContext *context;
 - (void)setContextId:(uint32_t)contextID;
-- (CGSize)size;
-- (void *)regionBeingDrawn;
+@property (nonatomic, readonly) CGSize size;
+@property (nonatomic, readonly) void *regionBeingDrawn;
 - (void)reloadValueForKeyPath:(NSString *)keyPath;
 - (void)setCornerRadius:(CGFloat)cornerRadius;
 - (void)addPresentationModifier:(CAPresentationModifier *)modifier;

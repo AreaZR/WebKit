@@ -57,25 +57,25 @@ ValidationBubble::ValidationBubble(NSView* view, const String& message, const Se
     RetainPtr<NSViewController> controller = adoptNS([[NSViewController alloc] init]);
 
     RetainPtr<NSView> popoverView = adoptNS([[NSView alloc] initWithFrame:NSZeroRect]);
-    [controller setView:popoverView.get()];
+    controller.view = popoverView.get();
 
     RetainPtr<NSTextField> label = adoptNS([[NSTextField alloc] init]);
     [label setEditable:NO];
     [label setDrawsBackground:NO];
     [label setBordered:NO];
-    [label setStringValue:message];
+    label.stringValue = message;
     m_fontSize = std::max(settings.minimumFontSize, 13.0);
-    [label setFont:[NSFont systemFontOfSize:m_fontSize]];
-    [label setMaximumNumberOfLines:4];
-    [[label cell] setTruncatesLastVisibleLine:YES];
+    label.font = [NSFont systemFontOfSize:m_fontSize];
+    label.maximumNumberOfLines = 4;
+    [label.cell setTruncatesLastVisibleLine:YES];
     [popoverView addSubview:label.get()];
     NSSize labelSize = [label sizeThatFits:NSMakeSize(maxLabelWidth, CGFLOAT_MAX)];
-    [label setFrame:NSMakeRect(horizontalPadding, verticalPadding, labelSize.width, labelSize.height)];
-    [popoverView setFrame:NSMakeRect(0, 0, labelSize.width + horizontalPadding * 2, labelSize.height + verticalPadding * 2)];
+    label.frame = NSMakeRect(horizontalPadding, verticalPadding, labelSize.width, labelSize.height);
+    popoverView.frame = NSMakeRect(0, 0, labelSize.width + horizontalPadding * 2, labelSize.height + verticalPadding * 2);
 
     m_popover = adoptNS([[WebValidationPopover alloc] init]);
-    [m_popover setContentViewController:controller.get()];
-    [m_popover setBehavior:NSPopoverBehaviorTransient];
+    m_popover.contentViewController = controller.get();
+    m_popover.behavior = NSPopoverBehaviorTransient;
     [m_popover setAnimates:NO];
 }
 

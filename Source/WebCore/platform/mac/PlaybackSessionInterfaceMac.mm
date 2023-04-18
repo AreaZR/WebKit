@@ -99,8 +99,8 @@ void PlaybackSessionInterfaceMac::rateChanged(OptionSet<PlaybackSessionModel::Pl
     WebPlaybackControlsManager* controlsManager = playBackControlsManager();
     [controlsManager setDefaultPlaybackRate:defaultPlaybackRate fromJavaScript:YES];
     [controlsManager setRate:isPlaying ? playbackRate : 0. fromJavaScript:YES];
-    [controlsManager setPlaying:isPlaying];
-    updatePlaybackControlsManagerTiming(m_playbackSessionModel ? m_playbackSessionModel->currentTime() : 0, [[NSProcessInfo processInfo] systemUptime], playbackRate, isPlaying);
+    controlsManager.playing = isPlaying;
+    updatePlaybackControlsManagerTiming(m_playbackSessionModel ? m_playbackSessionModel->currentTime() : 0, [NSProcessInfo processInfo].systemUptime, playbackRate, isPlaying);
 #else
     UNUSED_PARAM(isPlaying);
     UNUSED_PARAM(playbackRate);
@@ -110,7 +110,7 @@ void PlaybackSessionInterfaceMac::rateChanged(OptionSet<PlaybackSessionModel::Pl
 void PlaybackSessionInterfaceMac::willBeginScrubbing()
 {
 #if ENABLE(WEB_PLAYBACK_CONTROLS_MANAGER)
-    updatePlaybackControlsManagerTiming(m_playbackSessionModel ? m_playbackSessionModel->currentTime() : 0, [[NSProcessInfo processInfo] systemUptime], 0, false);
+    updatePlaybackControlsManagerTiming(m_playbackSessionModel ? m_playbackSessionModel->currentTime() : 0, [NSProcessInfo processInfo].systemUptime, 0, false);
 #endif
 }
 
@@ -145,7 +145,7 @@ static RetainPtr<NSMutableArray> timeRangesToArray(const TimeRanges& timeRanges)
 void PlaybackSessionInterfaceMac::seekableRangesChanged(const TimeRanges& timeRanges, double, double)
 {
 #if ENABLE(WEB_PLAYBACK_CONTROLS_MANAGER)
-    [playBackControlsManager() setSeekableTimeRanges:timeRangesToArray(timeRanges).get()];
+    playBackControlsManager().seekableTimeRanges = timeRangesToArray(timeRanges).get();
 #else
     UNUSED_PARAM(timeRanges);
 #endif
@@ -233,7 +233,7 @@ void PlaybackSessionInterfaceMac::setPlayBackControlsManager(WebPlaybackControls
     if (!manager || !m_playbackSessionModel)
         return;
 
-    NSTimeInterval anchorTimeStamp = ![manager rate] ? NAN : [[NSProcessInfo processInfo] systemUptime];
+    NSTimeInterval anchorTimeStamp = !manager.rate ? NAN : [NSProcessInfo processInfo].systemUptime;
     manager.timing = [getAVValueTimingClass() valueTimingWithAnchorValue:m_playbackSessionModel->currentTime() anchorTimeStamp:anchorTimeStamp rate:0];
     double duration = m_playbackSessionModel->duration();
     manager.contentDuration = duration;
@@ -256,7 +256,7 @@ void PlaybackSessionInterfaceMac::updatePlaybackControlsManagerCanTogglePictureI
         return;
     }
 
-    [playBackControlsManager() setCanTogglePictureInPicture:model->isPictureInPictureSupported() && !model->externalPlaybackEnabled()];
+    playBackControlsManager().canTogglePictureInPicture = model->isPictureInPictureSupported() && !model->externalPlaybackEnabled();
 }
 
 void PlaybackSessionInterfaceMac::updatePlaybackControlsManagerTiming(double currentTime, double anchorTime, double playbackRate, bool isPlaying)

@@ -75,7 +75,7 @@ static NSOperationQueue *operationQueueForAsyncClients()
     static NeverDestroyed queue = [] {
         auto queue = adoptNS([[NSOperationQueue alloc] init]);
         // Default concurrent operation count depends on current system workload, but delegate methods are mostly idling in IPC, so we can run as many as needed.
-        [queue setMaxConcurrentOperationCount:NSOperationQueueDefaultMaxConcurrentOperationCount];
+        queue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
         return queue;
     }();
     return queue.get().get();
@@ -185,7 +185,7 @@ void ResourceHandle::createNSURLConnection(id delegate, bool shouldUseCredential
 
     if (!shouldUseCredentialStorage) {
         // Avoid using existing connections, because they may be already authenticated.
-        [streamProperties setObject:@"WebKitPrivateSession" forKey:@"_kCFURLConnectionSessionID"];
+        streamProperties[@"_kCFURLConnectionSessionID"] = @"WebKitPrivateSession";
     }
 
     if (schedulingBehavior == SchedulingBehavior::Synchronous) {
@@ -194,12 +194,12 @@ void ResourceHandle::createNSURLConnection(id delegate, bool shouldUseCredential
         // requests may get stuck waiting for delegate calls while we are in nested run loop, and the sync
         // request won't start because there are no available connections.
         // Connections are grouped by their socket stream properties, with each group having a separate count.
-        [streamProperties setObject:@TRUE forKey:@"_WebKitSynchronousRequest"];
+        streamProperties[@"_WebKitSynchronousRequest"] = @TRUE;
     }
 
     RetainPtr<CFDataRef> sourceApplicationAuditData = d->m_context->sourceApplicationAuditData();
     if (sourceApplicationAuditData)
-        [streamProperties setObject:(__bridge NSData *)sourceApplicationAuditData.get() forKey:@"kCFStreamPropertySourceApplication"];
+        streamProperties[@"kCFStreamPropertySourceApplication"] = (__bridge NSData *)sourceApplicationAuditData.get();
 
 #if PLATFORM(IOS_FAMILY)
     NSMutableDictionary *propertyDictionary = [NSMutableDictionary dictionaryWithDictionary:connectionProperties];
@@ -213,11 +213,11 @@ void ResourceHandle::createNSURLConnection(id delegate, bool shouldUseCredential
     NSMutableDictionary *propertyDictionary = [NSMutableDictionary dictionaryWithObject:streamProperties.get() forKey:@"kCFURLConnectionSocketStreamProperties"];
     const bool usesCache = true;
 #endif
-    [propertyDictionary setObject:@{@"_kCFURLConnectionPropertyTimingDataOptions": @(_TimingDataOptionsEnableW3CNavigationTiming)} forKey:@"kCFURLConnectionURLConnectionProperties"];
+    propertyDictionary[@"kCFURLConnectionURLConnectionProperties"] = @{@"_kCFURLConnectionPropertyTimingDataOptions": @(_TimingDataOptionsEnableW3CNavigationTiming)};
 
     // This is used to signal that to CFNetwork that this connection should be considered
     // web content for purposes of App Transport Security.
-    [propertyDictionary setObject:@{@"NSAllowsArbitraryLoadsInWebContent": @YES} forKey:@"_kCFURLConnectionPropertyATSFrameworkOverrides"];
+    propertyDictionary[@"_kCFURLConnectionPropertyATSFrameworkOverrides"] = @{@"NSAllowsArbitraryLoadsInWebContent": @YES};
 
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
     d->m_connection = adoptNS([[NSURLConnection alloc] _initWithRequest:nsRequest.get() delegate:delegate usesCache:usesCache maxContentLength:0 startImmediately:NO connectionProperties:propertyDictionary]);
@@ -285,7 +285,7 @@ void ResourceHandle::cancel()
 
     // Leaks were seen on HTTP tests without this; can be removed once <rdar://problem/6886937> is fixed.
     if (d->m_currentMacChallenge)
-        [[d->m_currentMacChallenge sender] cancelAuthenticationChallenge:d->m_currentMacChallenge];
+        [d->m_currentMacChallenge.sender cancelAuthenticationChallenge:d->m_currentMacChallenge];
 
     [d->m_connection.get() cancel];
 }
@@ -599,10 +599,10 @@ void ResourceHandle::receivedCredential(const AuthenticationChallenge& challenge
         if (challenge.failureResponse().httpStatusCode() == 401)
             urlToStore = challenge.failureResponse().url();
         if (auto* networkStorageSession = d->m_context->storageSession())
-            networkStorageSession->credentialStorage().set(d->m_partition, webCredential, ProtectionSpace([d->m_currentMacChallenge protectionSpace]), urlToStore);
-        [[d->m_currentMacChallenge sender] useCredential:webCredential.nsCredential() forAuthenticationChallenge:d->m_currentMacChallenge];
+            networkStorageSession->credentialStorage().set(d->m_partition, webCredential, ProtectionSpace(d->m_currentMacChallenge.protectionSpace), urlToStore);
+        [d->m_currentMacChallenge.sender useCredential:webCredential.nsCredential() forAuthenticationChallenge:d->m_currentMacChallenge];
     } else
-        [[d->m_currentMacChallenge sender] useCredential:credential.nsCredential() forAuthenticationChallenge:d->m_currentMacChallenge];
+        [d->m_currentMacChallenge.sender useCredential:credential.nsCredential() forAuthenticationChallenge:d->m_currentMacChallenge];
 
     clearAuthentication();
 }
@@ -615,7 +615,7 @@ void ResourceHandle::receivedRequestToContinueWithoutCredential(const Authentica
     if (!AuthenticationChallengeBase::equalForWebKitLegacyChallengeComparison(challenge, d->m_currentWebChallenge))
         return;
 
-    [[d->m_currentMacChallenge sender] continueWithoutCredentialForAuthenticationChallenge:d->m_currentMacChallenge];
+    [d->m_currentMacChallenge.sender continueWithoutCredentialForAuthenticationChallenge:d->m_currentMacChallenge];
 
     clearAuthentication();
 }
@@ -639,7 +639,7 @@ void ResourceHandle::receivedRequestToPerformDefaultHandling(const Authenticatio
     if (!AuthenticationChallengeBase::equalForWebKitLegacyChallengeComparison(challenge, d->m_currentWebChallenge))
         return;
 
-    [[d->m_currentMacChallenge sender] performDefaultHandlingForAuthenticationChallenge:d->m_currentMacChallenge];
+    [d->m_currentMacChallenge.sender performDefaultHandlingForAuthenticationChallenge:d->m_currentMacChallenge];
 
     clearAuthentication();
 }
@@ -652,7 +652,7 @@ void ResourceHandle::receivedChallengeRejection(const AuthenticationChallenge& c
     if (!AuthenticationChallengeBase::equalForWebKitLegacyChallengeComparison(challenge, d->m_currentWebChallenge))
         return;
 
-    [[d->m_currentMacChallenge sender] rejectProtectionSpaceAndContinueWithChallenge:d->m_currentMacChallenge];
+    [d->m_currentMacChallenge.sender rejectProtectionSpaceAndContinueWithChallenge:d->m_currentMacChallenge];
 
     clearAuthentication();
 }

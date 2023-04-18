@@ -39,7 +39,7 @@
 
 - (void)setBounds:(CGRect)bounds
 {
-    [super setBounds:bounds];
+    super.bounds = bounds;
     for (CALayer* layer in self.sublayers)
         layer.frame = bounds;
 }
@@ -50,7 +50,7 @@
         // Pre-apply the transform added in the WebProcess to fix <rdar://problem/18316542> to the position.
         position = CGPointApplyAffineTransform(position, CATransform3DGetAffineTransform(self.transform));
     }
-    [super setPosition:position];
+    super.position = position;
 }
 
 @end

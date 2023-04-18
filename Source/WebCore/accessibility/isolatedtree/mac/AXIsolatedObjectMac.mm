@@ -49,13 +49,13 @@ void AXIsolatedObject::initializePlatformProperties(const Ref<const Accessibilit
 
     // Cache the TextContent only if it is not empty and differs from the AttributedText.
     if (auto text = object->textContent()) {
-        if (!attributedText || (text->length() && *text != String([attributedText string])))
+        if (!attributedText || (text->length() && *text != String(attributedText.string)))
             setProperty(AXPropertyName::TextContent, text->isolatedCopy());
     }
 
     // Cache the StringValue only if it differs from the AttributedText.
     auto value = object->stringValue();
-    if (!attributedText || value != String([attributedText string]))
+    if (!attributedText || value != String(attributedText.string))
         setProperty(AXPropertyName::StringValue, value.isolatedCopy());
 
     if (object->isWebArea()) {
@@ -107,7 +107,7 @@ std::optional<String> AXIsolatedObject::textContent() const
     if (m_propertyMap.contains(AXPropertyName::TextContent))
         return stringAttributeValue(AXPropertyName::TextContent);
     if (auto attributedText = propertyValue<RetainPtr<NSAttributedString>>(AXPropertyName::AttributedText))
-        return String { [attributedText string] };
+        return String { attributedText.string };
     return std::nullopt;
 }
 
@@ -148,7 +148,7 @@ AXTextMarkerRange AXIsolatedObject::textMarkerRangeForNSRange(const NSRange& ran
 std::optional<String> AXIsolatedObject::platformStringValue() const
 {
     if (auto attributedText = propertyValue<RetainPtr<NSAttributedString>>(AXPropertyName::AttributedText))
-        return [attributedText string];
+        return attributedText.string;
     return std::nullopt;
 }
 
@@ -157,7 +157,7 @@ unsigned AXIsolatedObject::textLength() const
     ASSERT(isTextControl());
 
     if (auto attributedText = propertyValue<RetainPtr<NSAttributedString>>(AXPropertyName::AttributedText))
-        return [attributedText length];
+        return attributedText.length;
     return 0;
 }
 
@@ -202,13 +202,13 @@ NSAttributedString *AXIsolatedObject::cachedAttributedStringForTextMarkerRange(c
     }
 
     // For any nsRange different from the full range, remove exissting spell check attribute and spell check the text.
-    auto fullRange = NSMakeRange(0, [attributedText length]);
+    auto fullRange = NSMakeRange(0, attributedText.length);
     if (!NSEqualRanges(*nsRange, fullRange)) {
         [result removeAttribute:NSAccessibilityMisspelledTextAttribute range:resultRange];
         [result removeAttribute:NSAccessibilityMarkedMisspelledTextAttribute range:resultRange];
         // FIXME: pull attributedStringSetSpelling off the main thread.
         performFunctionOnMainThread([result = retainPtr(result), &resultRange] (AccessibilityObject* axObject) {
-            attributedStringSetSpelling(result.get(), axObject->node(), String { [result string] }, resultRange);
+            attributedStringSetSpelling(result.get(), axObject->node(), String { result.string }, resultRange);
         });
     }
 

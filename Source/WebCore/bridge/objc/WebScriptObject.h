@@ -237,7 +237,7 @@ WEBCORE_EXPORT @interface WebScriptObject : NSObject
     @discussion Use this method to bridge between the WebScriptObject and 
     JavaScriptCore APIs.
 */
-- (JSObjectRef)JSObject WEBKIT_AVAILABLE_MAC(10_5);
+@property (nonatomic, readonly) JSObjectRef JSObject WEBKIT_AVAILABLE_MAC(10_5);
 
 /*!
     @method callWebScriptMethod:withArguments:
@@ -273,7 +273,7 @@ WEBCORE_EXPORT @interface WebScriptObject : NSObject
     of non string objects type is dependent on the script environment.
     @result Returns the string representation of the object.
 */
-- (NSString *)stringRepresentation;
+@property (nonatomic, readonly, copy) NSString *stringRepresentation;
 
 /*!
     @method webScriptValueAtIndex:
@@ -308,7 +308,7 @@ WEBCORE_EXPORT @interface WebScriptObject : NSObject
     @discussion Use this method to bridge between the WebScriptObject and 
     JavaScriptCore Objective-C APIs.
 */
-- (JSValue *)JSValue;
+@property (nonatomic, readonly, strong) JSValue *JSValue;
 #endif
 
 @end

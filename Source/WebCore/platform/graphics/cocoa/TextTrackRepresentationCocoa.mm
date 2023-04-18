@@ -43,12 +43,12 @@
 @interface WebCoreTextTrackRepresentationCocoaHelper : NSObject <CALayerDelegate> {
     WebCore::TextTrackRepresentationCocoa* _parent;
 }
-- (id)initWithParent:(WebCore::TextTrackRepresentationCocoa*)parent;
+- (instancetype)initWithParent:(WebCore::TextTrackRepresentationCocoa*)parent NS_DESIGNATED_INITIALIZER;
 @property (assign) WebCore::TextTrackRepresentationCocoa* parent;
 @end
 
 @implementation WebCoreTextTrackRepresentationCocoaHelper
-- (id)initWithParent:(WebCore::TextTrackRepresentationCocoa*)parent
+- (instancetype)initWithParent:(WebCore::TextTrackRepresentationCocoa*)parent
 {
     if (!(self = [super init]))
         return nil;
@@ -125,37 +125,37 @@ TextTrackRepresentationCocoa::TextTrackRepresentationCocoa(TextTrackRepresentati
     , m_layer(adoptNS([[CALayer alloc] init]))
     , m_delegate(adoptNS([[WebCoreTextTrackRepresentationCocoaHelper alloc] initWithParent:this]))
 {
-    [m_layer setDelegate:m_delegate.get()];
-    [m_layer setContentsGravity:kCAGravityBottom];
+    m_layer.delegate = m_delegate.get();
+    m_layer.contentsGravity = kCAGravityBottom;
 
-    [m_layer setName:@"TextTrackRepresentation"];
+    m_layer.name = @"TextTrackRepresentation";
 }
 
 TextTrackRepresentationCocoa::~TextTrackRepresentationCocoa()
 {
     [m_layer setDelegate:nil];
-    [m_delegate setParent:nullptr];
+    m_delegate.parent = nullptr;
 }
 
 void TextTrackRepresentationCocoa::update()
 {
     if (auto representation = m_client.createTextTrackRepresentationImage())
-        [m_layer setContents:(__bridge id)representation->nativeImage()->platformImage().get()];
+        m_layer.contents = (__bridge id)representation->nativeImage()->platformImage().get();
 }
 
 void TextTrackRepresentationCocoa::setContentScale(float scale)
 {
-    [m_layer setContentsScale:scale];
+    m_layer.contentsScale = scale;
 }
 
 void TextTrackRepresentationCocoa::setHidden(bool hidden) const
 {
-    [m_layer setHidden:hidden];
+    m_layer.hidden = hidden;
 }
 
 IntRect TextTrackRepresentationCocoa::bounds() const
 {
-    return enclosingIntRect(FloatRect([m_layer bounds]));
+    return enclosingIntRect(FloatRect(m_layer.bounds));
 }
 
 void TextTrackRepresentationCocoa::boundsChanged()

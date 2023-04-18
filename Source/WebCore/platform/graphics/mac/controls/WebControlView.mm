@@ -122,7 +122,7 @@ static NSRect _clipBounds;
 - (NSRect)_focusRingVisibleRect
 {
     if (NSIsEmptyRect(_clipBounds))
-        return [self visibleRect];
+        return self.visibleRect;
     return _clipBounds;
 }
 

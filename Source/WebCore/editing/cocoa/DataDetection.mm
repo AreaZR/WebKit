@@ -113,8 +113,8 @@ static std::optional<DetectedItem> detectItem(const VisiblePosition& position, c
         return { };
 
     auto actionContext = adoptNS([PAL::allocDDActionContextInstance() init]);
-    [actionContext setAllResults:@[ (__bridge id)mainResult ]];
-    [actionContext setMainResult:mainResult];
+    actionContext.allResults = @[ (__bridge id)mainResult ];
+    actionContext.mainResult = mainResult;
 
     return { {
         WTFMove(actionContext),

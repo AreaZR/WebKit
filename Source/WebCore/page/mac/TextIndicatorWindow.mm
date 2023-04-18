@@ -79,7 +79,7 @@ void TextIndicatorWindow::clearTextIndicator(WebCore::TextIndicatorDismissalAnim
 {
     RefPtr<TextIndicator> textIndicator = WTFMove(m_textIndicator);
 
-    if ([m_textIndicatorLayer isFadingOut])
+    if (m_textIndicatorLayer.fadingOut)
         return;
 
     if (textIndicator && [m_textIndicatorLayer indicatorWantsManualAnimation:*textIndicator] && [m_textIndicatorLayer hasCompletedAnimation] && animation == WebCore::TextIndicatorDismissalAnimation::FadeOut) {
@@ -115,19 +115,19 @@ void TextIndicatorWindow::setTextIndicator(Ref<TextIndicator> textIndicator, CGR
     NSRect integralWindowContentRect = NSIntegralRect(windowContentRect);
     NSPoint fractionalTextOffset = NSMakePoint(windowContentRect.origin.x - integralWindowContentRect.origin.x, windowContentRect.origin.y - integralWindowContentRect.origin.y);
     m_textIndicatorWindow = adoptNS([[NSWindow alloc] initWithContentRect:integralWindowContentRect styleMask:NSWindowStyleMaskBorderless backing:NSBackingStoreBuffered defer:NO]);
-    [m_textIndicatorWindow setBackgroundColor:[NSColor clearColor]];
+    m_textIndicatorWindow.backgroundColor = [NSColor clearColor];
     [m_textIndicatorWindow setOpaque:NO];
     [m_textIndicatorWindow setIgnoresMouseEvents:YES];
 
-    NSRect frame = NSMakeRect(0, 0, [m_textIndicatorWindow frame].size.width, [m_textIndicatorWindow frame].size.height);
+    NSRect frame = NSMakeRect(0, 0, m_textIndicatorWindow.frame.size.width, m_textIndicatorWindow.frame.size.height);
     m_textIndicatorLayer = adoptNS([[WebTextIndicatorLayer alloc] initWithFrame:frame
         textIndicator:*m_textIndicator margin:NSMakeSize(horizontalMargin, verticalMargin) offset:fractionalTextOffset]);
     m_textIndicatorView = adoptNS([[WebTextIndicatorView alloc] initWithFrame:frame]);
-    [m_textIndicatorView setLayer:m_textIndicatorLayer.get()];
+    m_textIndicatorView.layer = m_textIndicatorLayer.get();
     [m_textIndicatorView setWantsLayer:YES];
-    [m_textIndicatorWindow setContentView:m_textIndicatorView.get()];
+    m_textIndicatorWindow.contentView = m_textIndicatorView.get();
 
-    [[m_targetView window] addChildWindow:m_textIndicatorWindow.get() ordered:NSWindowAbove];
+    [m_targetView.window addChildWindow:m_textIndicatorWindow.get() ordered:NSWindowAbove];
     [m_textIndicatorWindow setReleasedWhenClosed:NO];
 
     if (m_textIndicator->presentationTransition() != TextIndicatorPresentationTransition::None)
@@ -142,12 +142,12 @@ void TextIndicatorWindow::closeWindow()
     if (!m_textIndicatorWindow)
         return;
 
-    if ([m_textIndicatorLayer isFadingOut])
+    if (m_textIndicatorLayer.fadingOut)
         return;
 
     m_temporaryTextIndicatorTimer.stop();
 
-    [[m_textIndicatorWindow parentWindow] removeChildWindow:m_textIndicatorWindow.get()];
+    [m_textIndicatorWindow.parentWindow removeChildWindow:m_textIndicatorWindow.get()];
     [m_textIndicatorWindow close];
     m_textIndicatorWindow = nullptr;
 }
@@ -157,7 +157,7 @@ void TextIndicatorWindow::startFadeOut()
     [m_textIndicatorLayer setFadingOut:YES];
     RetainPtr<NSWindow> indicatorWindow = m_textIndicatorWindow;
     [m_textIndicatorLayer hideWithCompletionHandler:[indicatorWindow] {
-        [[indicatorWindow parentWindow] removeChildWindow:indicatorWindow.get()];
+        [indicatorWindow.parentWindow removeChildWindow:indicatorWindow.get()];
         [indicatorWindow close];
     }];
 }

@@ -42,7 +42,7 @@ ColorWellMac::ColorWellMac(ColorWellPart& owningPart, ControlFactoryMac& control
 void ColorWellMac::updateCellStates(const FloatRect& rect, const ControlStyle& style)
 {
     ButtonControlMac::updateCellStates(rect, style);
-    [m_buttonCell setBezelStyle:NSBezelStyleTexturedSquare];
+    m_buttonCell.bezelStyle = NSBezelStyleTexturedSquare;
 }
 
 void ColorWellMac::draw(GraphicsContext& context, const FloatRoundedRect& borderRect, float deviceScaleFactor, const ControlStyle& style)

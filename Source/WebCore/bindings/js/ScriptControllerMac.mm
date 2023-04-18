@@ -45,7 +45,7 @@
 #import <JavaScriptCore/JSLock.h>
 
 @interface NSObject (WebPlugin)
-- (id)objectForWebScript;
+@property (nonatomic, readonly, strong) id objectForWebScript;
 - (RefPtr<JSC::Bindings::Instance>)createPluginBindingsInstance:(Ref<JSC::Bindings::RootObject>&&)rootObject;
 @end
 

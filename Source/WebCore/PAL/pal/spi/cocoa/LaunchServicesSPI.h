@@ -84,7 +84,7 @@ const uint8_t kLSOpenRunningInstanceBehaviorUseRunningProcess = 1;
 #endif
 
 @interface NSURL ()
-- (NSURL *)iTunesStoreURL;
+@property (nonatomic, readonly, copy) NSURL *iTunesStoreURL;
 @end
 
 #if PLATFORM(MAC)

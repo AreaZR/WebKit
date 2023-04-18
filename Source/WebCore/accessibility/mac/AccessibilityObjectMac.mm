@@ -90,7 +90,7 @@ FloatRect AccessibilityObject::convertRectToPlatformSpace(const FloatRect& rect,
         NSRect nsRect = NSRectFromCGRect(cgRect);
         NSView *view = frameView->documentView();
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-        nsRect = [[view window] convertRectToScreen:[view convertRect:nsRect toView:nil]];
+        nsRect = [view.window convertRectToScreen:[view convertRect:nsRect toView:nil]];
 ALLOW_DEPRECATED_DECLARATIONS_END
         return NSRectToCGRect(nsRect);
     }
@@ -712,7 +712,7 @@ RetainPtr<NSAttributedString> attributedStringCreate(Node* node, StringView text
         return nil;
 
     auto result = adoptNS([[NSMutableAttributedString alloc] initWithString:text.createNSStringWithoutCopying().get()]);
-    NSRange range = NSMakeRange(0, [result length]);
+    NSRange range = NSMakeRange(0, result.length);
 
     // Set attributes.
     attributedStringSetStyle(result.get(), renderer.get(), range);

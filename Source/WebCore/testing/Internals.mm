@@ -69,7 +69,7 @@
 #if ENABLE(IMAGE_ANALYSIS_ENHANCEMENTS)
 
 @interface FakeImageAnalysisResult : NSObject
-- (instancetype)initWithString:(NSString *)fullText;
+- (instancetype)initWithString:(NSString *)fullText NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation FakeImageAnalysisResult {
@@ -106,7 +106,7 @@ bool Internals::userPrefersContrast() const
 #if PLATFORM(IOS_FAMILY)
     return PAL::softLink_UIKit_UIAccessibilityDarkerSystemColorsEnabled();
 #else
-    return [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldIncreaseContrast];
+    return [NSWorkspace sharedWorkspace].accessibilityDisplayShouldIncreaseContrast;
 #endif
 }
 
@@ -115,7 +115,7 @@ bool Internals::userPrefersReducedMotion() const
 #if PLATFORM(IOS_FAMILY)
     return PAL::softLink_UIKit_UIAccessibilityIsReduceMotionEnabled();
 #else
-    return [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldReduceMotion];
+    return [NSWorkspace sharedWorkspace].accessibilityDisplayShouldReduceMotion;
 #endif
 }
 
@@ -170,7 +170,7 @@ double Internals::privatePlayerVolume(const HTMLMediaElement& element)
     auto player = corePlayer->objCAVFoundationAVPlayer();
     if (!player)
         return 0;
-    return [player volume];
+    return player.volume;
 }
 
 bool Internals::privatePlayerMuted(const HTMLMediaElement& element)
@@ -181,7 +181,7 @@ bool Internals::privatePlayerMuted(const HTMLMediaElement& element)
     auto player = corePlayer->objCAVFoundationAVPlayer();
     if (!player)
         return false;
-    return [player isMuted];
+    return player.muted;
 }
 #endif
 
@@ -251,7 +251,7 @@ DDScannerResult *Internals::fakeDataDetectorResultForTesting()
         if (!CFArrayGetCount(results.get()))
             return nil;
 
-        return { [[PAL::getDDScannerResultClass() resultsFromCoreResults:results.get()] firstObject] };
+        return { [PAL::getDDScannerResultClass() resultsFromCoreResults:results.get()].firstObject };
     }();
     return result->get();
 }

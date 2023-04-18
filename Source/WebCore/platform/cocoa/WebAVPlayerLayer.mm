@@ -129,7 +129,7 @@ SOFT_LINK_CLASS_OPTIONAL(AVKit, __AVPlayerLayerView)
 
 - (void)layoutSublayers
 {
-    if ([_videoSublayer superlayer] != self)
+    if (_videoSublayer.superlayer != self)
         return;
 
     if (self.videoDimensions.height <= 0 || self.videoDimensions.width <= 0)
@@ -163,9 +163,9 @@ SOFT_LINK_CLASS_OPTIONAL(AVKit, __AVPlayerLayerView)
 
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
-    [_videoSublayer setAnchorPoint:CGPointMake(0.5, 0.5)];
+    _videoSublayer.anchorPoint = CGPointMake(0.5, 0.5);
     [_videoSublayer setAffineTransform:transform];
-    [_videoSublayer setPosition:CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds))];
+    _videoSublayer.position = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds));
     [CATransaction commit];
 
     _targetVideoFrame = targetVideoFrame;
@@ -181,7 +181,7 @@ SOFT_LINK_CLASS_OPTIONAL(AVKit, __AVPlayerLayerView)
 {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(resolveBounds) object:nil];
 
-    if ([_videoSublayer superlayer] != self)
+    if (_videoSublayer.superlayer != self)
         return;
 
     if (CGRectEqualToRect(self.videoSublayer.bounds, _targetVideoFrame) && CGAffineTransformIsIdentity([_videoSublayer affineTransform]))
@@ -198,9 +198,9 @@ SOFT_LINK_CLASS_OPTIONAL(AVKit, __AVPlayerLayerView)
 
     _previousVideoGravity = _videoGravity;
 
-    [_videoSublayer setAnchorPoint:CGPointMake(0.5, 0.5)];
+    _videoSublayer.anchorPoint = CGPointMake(0.5, 0.5);
     [_videoSublayer setAffineTransform:CGAffineTransformIdentity];
-    [_videoSublayer setFrame:_targetVideoFrame];
+    _videoSublayer.frame = _targetVideoFrame;
 
     [CATransaction commit];
 }

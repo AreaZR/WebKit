@@ -101,7 +101,7 @@ void ToggleButtonMac::draw(GraphicsContext& context, const FloatRoundedRect& bor
 
     GraphicsContextStateSaver stateSaver(context);
 
-    auto controlSize = [m_buttonCell controlSize];
+    auto controlSize = m_buttonCell.controlSize;
 
     auto zoomedSize = cellSize(controlSize, style);
     zoomedSize.scale(style.zoomFactor);

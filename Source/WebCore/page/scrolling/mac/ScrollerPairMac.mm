@@ -43,12 +43,12 @@
 @interface WebScrollerImpPairDelegateMac : NSObject <NSScrollerImpPairDelegate> {
     WebCore::ScrollerPairMac* _scrollerPair;
 }
-- (id)initWithScrollerPair:(WebCore::ScrollerPairMac*)scrollerPair;
+- (instancetype)initWithScrollerPair:(WebCore::ScrollerPairMac*)scrollerPair NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation WebScrollerImpPairDelegateMac
 
-- (id)initWithScrollerPair:(WebCore::ScrollerPairMac*)scrollerPair
+- (instancetype)initWithScrollerPair:(WebCore::ScrollerPairMac*)scrollerPair
 {
     self = [super init];
     if (!self)
@@ -95,7 +95,7 @@
         return NSZeroPoint;
 
     WebCore::ScrollerMac* scroller = nullptr;
-    if ([scrollerImp isHorizontal])
+    if (scrollerImp.horizontal)
         scroller = &_scrollerPair->horizontalScroller();
     else
         scroller = &_scrollerPair->verticalScroller();
@@ -134,10 +134,10 @@ void ScrollerPairMac::init()
     m_scrollerImpPairDelegate = adoptNS([[WebScrollerImpPairDelegateMac alloc] initWithScrollerPair:this]);
 
     m_scrollerImpPair = adoptNS([[NSScrollerImpPair alloc] init]);
-    [m_scrollerImpPair setDelegate:m_scrollerImpPairDelegate.get()];
+    m_scrollerImpPair.delegate = m_scrollerImpPairDelegate.get();
     auto style = ScrollerStyle::recommendedScrollerStyle();
     m_scrollbarStyle = WebCore::scrollbarStyle(style);
-    [m_scrollerImpPair setScrollerStyle:style];
+    m_scrollerImpPair.scrollerStyle = style;
 
     m_verticalScroller.attach();
     m_horizontalScroller.attach();
@@ -216,18 +216,18 @@ void ScrollerPairMac::contentsSizeChanged()
 void ScrollerPairMac::setUsePresentationValues(bool inMomentumPhase)
 {
     m_usingPresentationValues = inMomentumPhase;
-    [scrollerImpHorizontal() setUsePresentationValue:m_usingPresentationValues];
-    [scrollerImpVertical() setUsePresentationValue:m_usingPresentationValues];
+    scrollerImpHorizontal().usePresentationValue = m_usingPresentationValues;
+    scrollerImpVertical().usePresentationValue = m_usingPresentationValues;
 }
 
 void ScrollerPairMac::setHorizontalScrollbarPresentationValue(float scrollbValue)
 {
-    [scrollerImpHorizontal() setPresentationValue:scrollbValue];
+    scrollerImpHorizontal().presentationValue = scrollbValue;
 }
 
 void ScrollerPairMac::setVerticalScrollbarPresentationValue(float scrollbValue)
 {
-    [scrollerImpVertical() setPresentationValue:scrollbValue];
+    scrollerImpVertical().presentationValue = scrollbValue;
 }
 
 void ScrollerPairMac::updateValues()
@@ -304,14 +304,14 @@ String ScrollerPairMac::scrollbarStateForOrientation(ScrollbarOrientation orient
 void ScrollerPairMac::setVerticalScrollerImp(NSScrollerImp *scrollerImp)
 {
     ensureOnMainThreadWithProtectedThis([this, scrollerImp = RetainPtr { scrollerImp }] {
-        [m_scrollerImpPair setVerticalScrollerImp:scrollerImp.get()];
+        m_scrollerImpPair.verticalScrollerImp = scrollerImp.get();
     });
 }
 
 void ScrollerPairMac::setHorizontalScrollerImp(NSScrollerImp *scrollerImp)
 {
     ensureOnMainThreadWithProtectedThis([this, scrollerImp = RetainPtr { scrollerImp }] {
-        [m_scrollerImpPair setHorizontalScrollerImp:scrollerImp.get()];
+        m_scrollerImpPair.horizontalScrollerImp = scrollerImp.get();
     });
 }
 
@@ -322,7 +322,7 @@ void ScrollerPairMac::setScrollbarStyle(ScrollbarStyle style)
     ensureOnMainThreadWithProtectedThis([this, scrollerStyle = nsScrollerStyle(style)] {
         m_horizontalScroller.updateScrollbarStyle();
         m_verticalScroller.updateScrollbarStyle();
-        [m_scrollerImpPair setScrollerStyle:scrollerStyle];
+        m_scrollerImpPair.scrollerStyle = scrollerStyle;
     });
 }
 

@@ -247,8 +247,8 @@ int ScrollbarThemeMac::scrollbarThickness(ScrollbarControlSize controlSize, Scro
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
     NSScrollerImp *scrollerImp = [NSScrollerImp scrollerImpWithStyle:ScrollerStyle::recommendedScrollerStyle() controlSize:scrollbarControlSizeToNSControlSize(controlSize) horizontal:NO replacingScrollerImp:nil];
-    [scrollerImp setExpanded:(expansionState == ScrollbarExpansionState::Expanded)];
-    return [scrollerImp trackBoxWidth];
+    scrollerImp.expanded = (expansionState == ScrollbarExpansionState::Expanded);
+    return scrollerImp.trackBoxWidth;
     END_BLOCK_OBJC_EXCEPTIONS
 }
 
@@ -268,13 +268,13 @@ void ScrollbarThemeMac::updateScrollbarOverlayStyle(Scrollbar& scrollbar)
     NSScrollerImp *painter = painterForScrollbar(scrollbar);
     switch (scrollbar.scrollableArea().scrollbarOverlayStyle()) {
     case ScrollbarOverlayStyleDefault:
-        [painter setKnobStyle:NSScrollerKnobStyleDefault];
+        painter.knobStyle = NSScrollerKnobStyleDefault;
         break;
     case ScrollbarOverlayStyleDark:
-        [painter setKnobStyle:NSScrollerKnobStyleDark];
+        painter.knobStyle = NSScrollerKnobStyleDark;
         break;
     case ScrollbarOverlayStyleLight:
-        [painter setKnobStyle:NSScrollerKnobStyleLight];
+        painter.knobStyle = NSScrollerKnobStyleLight;
         break;
     }
     END_BLOCK_OBJC_EXCEPTIONS
@@ -306,8 +306,8 @@ bool ScrollbarThemeMac::hasThumb(Scrollbar& scrollbar)
     int minLengthForThumb;
 
     NSScrollerImp *painter = scrollbarMap().get(&scrollbar).get();
-    minLengthForThumb = [painter knobMinLength] + [painter trackOverlapEndInset] + [painter knobOverlapEndInset]
-        + 2 * ([painter trackEndInset] + [painter knobEndInset]);
+    minLengthForThumb = painter.knobMinLength + painter.trackOverlapEndInset + painter.knobOverlapEndInset
+        + 2 * (painter.trackEndInset + painter.knobEndInset);
 
     return scrollbar.enabled() && (scrollbar.orientation() == ScrollbarOrientation::Horizontal ?
              scrollbar.width() :
@@ -446,7 +446,7 @@ IntRect ScrollbarThemeMac::trackRect(Scrollbar& scrollbar, bool painting)
 int ScrollbarThemeMac::minimumThumbLength(Scrollbar& scrollbar)
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
-    return [scrollbarMap().get(&scrollbar) knobMinLength];
+    return scrollbarMap().get(&scrollbar).knobMinLength;
     END_BLOCK_OBJC_EXCEPTIONS
 }
 
@@ -505,7 +505,7 @@ int ScrollbarThemeMac::scrollbarPartToHIPressedState(ScrollbarPart part)
 void ScrollbarThemeMac::updateEnabledState(Scrollbar& scrollbar)
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
-    [scrollbarMap().get(&scrollbar) setEnabled:scrollbar.enabled()];
+    scrollbarMap().get(&scrollbar).enabled = scrollbar.enabled();
     END_BLOCK_OBJC_EXCEPTIONS
 }
 
@@ -519,13 +519,13 @@ void ScrollbarThemeMac::setPaintCharacteristicsForScrollbar(Scrollbar& scrollbar
     ScrollableArea::computeScrollbarValueAndOverhang(scrollbar.currentPos(), scrollbar.totalSize(), scrollbar.visibleSize(), value, overhang);
     float proportion = scrollbar.totalSize() > 0 ? (static_cast<CGFloat>(scrollbar.visibleSize()) - overhang) / scrollbar.totalSize() : 1;
 
-    [painter setEnabled:scrollbar.enabled()];
-    [painter setBoundsSize:scrollbar.frameRect().size()];
-    [painter setDoubleValue:value];
+    painter.enabled = scrollbar.enabled();
+    painter.boundsSize = scrollbar.frameRect().size();
+    painter.doubleValue = value;
 #if ENABLE(ASYNC_SCROLLING) && PLATFORM(MAC)
-    [painter setPresentationValue:value];
+    painter.presentationValue = value;
 #endif
-    [painter setKnobProportion:proportion];
+    painter.knobProportion = proportion;
     END_BLOCK_OBJC_EXCEPTIONS
 }
 

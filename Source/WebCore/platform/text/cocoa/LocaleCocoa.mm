@@ -53,11 +53,11 @@ std::unique_ptr<Locale> Locale::create(const AtomString& locale)
 static RetainPtr<NSDateFormatter> createDateTimeFormatter(NSLocale* locale, NSCalendar* calendar, NSDateFormatterStyle dateStyle, NSDateFormatterStyle timeStyle)
 {
     auto formatter = adoptNS([[NSDateFormatter alloc] init]);
-    [formatter setLocale:locale];
-    [formatter setDateStyle:dateStyle];
-    [formatter setTimeStyle:timeStyle];
-    [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
-    [formatter setCalendar:calendar];
+    formatter.locale = locale;
+    formatter.dateStyle = dateStyle;
+    formatter.timeStyle = timeStyle;
+    formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    formatter.calendar = calendar;
     return formatter;
 }
 
@@ -71,7 +71,7 @@ LocaleCocoa::LocaleCocoa(const AtomString& locale)
     NSString* language = [m_locale objectForKey:NSLocaleLanguageCode];
     if ([availableLanguages indexOfObject:language] == NSNotFound)
         m_locale = adoptNS([[NSLocale alloc] initWithLocaleIdentifier:defaultLanguage()]);
-    [m_gregorianCalendar setLocale:m_locale.get()];
+    m_gregorianCalendar.locale = m_locale.get();
 }
 
 LocaleCocoa::~LocaleCocoa()
@@ -107,8 +107,8 @@ const Vector<String>& LocaleCocoa::monthLabels()
 {
     if (!m_monthLabels.isEmpty())
         return m_monthLabels;
-    NSArray *array = [shortDateFormatter().get() monthSymbols];
-    if ([array count] == 12) {
+    NSArray *array = shortDateFormatter().get().monthSymbols;
+    if (array.count == 12) {
         m_monthLabels = makeVector<String>(array);
         return m_monthLabels;
     }
@@ -142,7 +142,7 @@ String LocaleCocoa::dateFormat()
 {
     if (!m_dateFormat.isNull())
         return m_dateFormat;
-    m_dateFormat = [shortDateFormatter().get() dateFormat];
+    m_dateFormat = shortDateFormatter().get().dateFormat;
     return m_dateFormat;
 }
 
@@ -168,7 +168,7 @@ String LocaleCocoa::timeFormat()
 {
     if (!m_timeFormatWithSeconds.isNull())
         return m_timeFormatWithSeconds;
-    m_timeFormatWithSeconds = [timeFormatter().get() dateFormat];
+    m_timeFormatWithSeconds = timeFormatter().get().dateFormat;
     return m_timeFormatWithSeconds;
 }
 
@@ -176,7 +176,7 @@ String LocaleCocoa::shortTimeFormat()
 {
     if (!m_timeFormatWithoutSeconds.isNull())
         return m_timeFormatWithoutSeconds;
-    m_timeFormatWithoutSeconds = [shortTimeFormatter().get() dateFormat];
+    m_timeFormatWithoutSeconds = shortTimeFormatter().get().dateFormat;
     return m_timeFormatWithoutSeconds;
 }
 
@@ -184,7 +184,7 @@ String LocaleCocoa::dateTimeFormatWithSeconds()
 {
     if (!m_dateTimeFormatWithSeconds.isNull())
         return m_dateTimeFormatWithSeconds;
-    m_dateTimeFormatWithSeconds = [dateTimeFormatterWithSeconds().get() dateFormat];
+    m_dateTimeFormatWithSeconds = dateTimeFormatterWithSeconds().get().dateFormat;
     return m_dateTimeFormatWithSeconds;
 }
 
@@ -192,7 +192,7 @@ String LocaleCocoa::dateTimeFormatWithoutSeconds()
 {
     if (!m_dateTimeFormatWithoutSeconds.isNull())
         return m_dateTimeFormatWithoutSeconds;
-    m_dateTimeFormatWithoutSeconds = [dateTimeFormatterWithoutSeconds().get() dateFormat];
+    m_dateTimeFormatWithoutSeconds = dateTimeFormatterWithoutSeconds().get().dateFormat;
     return m_dateTimeFormatWithoutSeconds;
 }
 
@@ -200,8 +200,8 @@ const Vector<String>& LocaleCocoa::shortMonthLabels()
 {
     if (!m_shortMonthLabels.isEmpty())
         return m_shortMonthLabels;
-    NSArray *array = [shortDateFormatter().get() shortMonthSymbols];
-    if ([array count] == 12) {
+    NSArray *array = shortDateFormatter().get().shortMonthSymbols;
+    if (array.count == 12) {
         m_shortMonthLabels = makeVector<String>(array);
         return m_shortMonthLabels;
     }
@@ -215,8 +215,8 @@ const Vector<String>& LocaleCocoa::standAloneMonthLabels()
 {
     if (!m_standAloneMonthLabels.isEmpty())
         return m_standAloneMonthLabels;
-    NSArray *array = [shortDateFormatter().get() standaloneMonthSymbols];
-    if ([array count] == 12) {
+    NSArray *array = shortDateFormatter().get().standaloneMonthSymbols;
+    if (array.count == 12) {
         m_standAloneMonthLabels = makeVector<String>(array);
         return m_standAloneMonthLabels;
     }
@@ -229,8 +229,8 @@ const Vector<String>& LocaleCocoa::shortStandAloneMonthLabels()
     if (!m_shortStandAloneMonthLabels.isEmpty())
         return m_shortStandAloneMonthLabels;
 
-    NSArray *array = [shortDateFormatter().get() shortStandaloneMonthSymbols];
-    if ([array count] == 12) {
+    NSArray *array = shortDateFormatter().get().shortStandaloneMonthSymbols;
+    if (array.count == 12) {
         m_shortStandAloneMonthLabels = makeVector<String>(array);
         return m_shortStandAloneMonthLabels;
     }
@@ -244,8 +244,8 @@ const Vector<String>& LocaleCocoa::timeAMPMLabels()
         return m_timeAMPMLabels;
     m_timeAMPMLabels.reserveCapacity(2);
     RetainPtr<NSDateFormatter> formatter = shortTimeFormatter();
-    m_timeAMPMLabels.uncheckedAppend([formatter AMSymbol]);
-    m_timeAMPMLabels.uncheckedAppend([formatter PMSymbol]);
+    m_timeAMPMLabels.uncheckedAppend(formatter.AMSymbol);
+    m_timeAMPMLabels.uncheckedAppend(formatter.PMSymbol);
     return m_timeAMPMLabels;
 }
 
@@ -280,8 +280,8 @@ void LocaleCocoa::initializeLocaleData()
     m_didInitializeNumberData = true;
 
     RetainPtr<NSNumberFormatter> formatter = adoptNS([[NSNumberFormatter alloc] init]);
-    [formatter setLocale:m_locale.get()];
-    [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    formatter.locale = m_locale.get();
+    formatter.numberStyle = NSNumberFormatterDecimalStyle;
     [formatter setUsesGroupingSeparator:NO];
 
     RetainPtr<NSNumber> sampleNumber = adoptNS([[NSNumber alloc] initWithDouble:9876543210]);
@@ -292,15 +292,15 @@ void LocaleCocoa::initializeLocaleData()
     for (unsigned i = 0; i < 10; ++i)
         symbols.append(nineToZero.substring(9 - i, 1));
     ASSERT(symbols.size() == DecimalSeparatorIndex);
-    symbols.append([formatter decimalSeparator]);
+    symbols.append(formatter.decimalSeparator);
     ASSERT(symbols.size() == GroupSeparatorIndex);
-    symbols.append([formatter groupingSeparator]);
+    symbols.append(formatter.groupingSeparator);
     ASSERT(symbols.size() == DecimalSymbolsSize);
 
-    String positivePrefix([formatter positivePrefix]);
-    String positiveSuffix([formatter positiveSuffix]);
-    String negativePrefix([formatter negativePrefix]);
-    String negativeSuffix([formatter negativeSuffix]);
+    String positivePrefix(formatter.positivePrefix);
+    String positiveSuffix(formatter.positiveSuffix);
+    String negativePrefix(formatter.negativePrefix);
+    String negativeSuffix(formatter.negativeSuffix);
     setLocaleData(symbols, positivePrefix, positiveSuffix, negativePrefix, negativeSuffix);
 }
 

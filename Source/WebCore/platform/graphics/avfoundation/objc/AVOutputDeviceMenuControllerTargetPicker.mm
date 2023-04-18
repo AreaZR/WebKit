@@ -50,7 +50,7 @@ static NSString *externalOutputDevicePickedKeyName = @"externalOutputDevicePicke
     WeakPtr<AVOutputDeviceMenuControllerTargetPicker> m_callback;
 }
 
-- (instancetype)initWithCallback:(WeakPtr<AVOutputDeviceMenuControllerTargetPicker>&&)callback;
+- (instancetype)initWithCallback:(WeakPtr<AVOutputDeviceMenuControllerTargetPicker>&&)callback NS_DESIGNATED_INITIALIZER;
 - (void)clearCallback;
 - (void)observeValueForKeyPath:(id)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 @end
@@ -152,7 +152,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
 AVOutputContext * AVOutputDeviceMenuControllerTargetPicker::outputContext()
 {
-    return m_outputDeviceMenuController ? [m_outputDeviceMenuController outputContext] : nullptr;
+    return m_outputDeviceMenuController ? m_outputDeviceMenuController.outputContext : nullptr;
 }
 
 } // namespace WebCore

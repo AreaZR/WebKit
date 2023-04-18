@@ -38,13 +38,13 @@
 
 @implementation WebCoreFullScreenWindow
 
-- (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)aStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)flag
+- (instancetype)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)aStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)flag
 {
     self = [super initWithContentRect:contentRect styleMask:aStyle backing:bufferingType defer:flag];
     if (!self)
         return nil;
     [self setOpaque:NO];
-    [self setBackgroundColor:[NSColor clearColor]];
+    self.backgroundColor = [NSColor clearColor];
     [self setIgnoresMouseEvents:NO];
     [self setAcceptsMouseMovedEvents:YES];
     [self setReleasedWhenClosed:NO];
@@ -71,32 +71,32 @@
 
 - (void)keyDown:(NSEvent *)theEvent
 {
-    if ([[theEvent charactersIgnoringModifiers] isEqual:@"\e"]) // Esacpe key-code
+    if ([theEvent.charactersIgnoringModifiers isEqual:@"\e"]) // Esacpe key-code
         [self cancelOperation:self];
     else [super keyDown:theEvent];
 }
 
 - (void)cancelOperation:(id)sender
 {
-    [[self windowController] cancelOperation:sender];
+    [self.windowController cancelOperation:sender];
 }
 
 - (void)performClose:(id)sender
 {
-    [[self windowController] performClose:sender];
+    [self.windowController performClose:sender];
 }
 
 - (void)setStyleMask:(NSUInteger)styleMask
 {
     // Changing the styleMask of a NSWindow can reset the firstResponder if the frame view changes,
     // so save off the existing one, and restore it if necessary after the call to -setStyleMask:.
-    NSResponder* savedFirstResponder = [self firstResponder];
+    NSResponder* savedFirstResponder = self.firstResponder;
 
-    [super setStyleMask:styleMask];
+    super.styleMask = styleMask;
 
-    if ([self firstResponder] != savedFirstResponder
+    if (self.firstResponder != savedFirstResponder
         && [savedFirstResponder isKindOfClass:[NSView class]]
-        && [(NSView*)savedFirstResponder isDescendantOf:[self contentView]])
+        && [(NSView*)savedFirstResponder isDescendantOf:self.contentView])
         [self makeFirstResponder:savedFirstResponder];
 }
 @end

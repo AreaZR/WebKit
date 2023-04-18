@@ -51,12 +51,12 @@ String MediaPlaybackTargetContext::deviceName() const
 
     ASSERT(m_type == MediaPlaybackTargetContext::Type::AVOutputContext);
     String deviceName;
-    if (![m_outputContext supportsMultipleOutputDevices])
-        deviceName = [m_outputContext deviceName];
+    if (!m_outputContext.supportsMultipleOutputDevices)
+        deviceName = m_outputContext.deviceName;
     else {
         auto outputDeviceNames = adoptNS([[NSMutableArray alloc] init]);
-        for (AVOutputDevice *outputDevice in [m_outputContext outputDevices])
-            [outputDeviceNames addObject:[outputDevice deviceName]];
+        for (AVOutputDevice *outputDevice in m_outputContext.outputDevices)
+            [outputDeviceNames addObject:outputDevice.deviceName];
 
         deviceName = [outputDeviceNames componentsJoinedByString:@" + "];
     }
@@ -75,13 +75,13 @@ bool MediaPlaybackTargetContext::hasActiveRoute() const
 
     ASSERT(m_type == MediaPlaybackTargetContext::Type::AVOutputContext);
     bool hasActiveRoute = false;
-    if ([m_outputContext respondsToSelector:@selector(supportsMultipleOutputDevices)] && [m_outputContext supportsMultipleOutputDevices] && [m_outputContext respondsToSelector:@selector(outputDevices)]) {
-        for (AVOutputDevice *outputDevice in [m_outputContext outputDevices]) {
+    if ([m_outputContext respondsToSelector:@selector(supportsMultipleOutputDevices)] && m_outputContext.supportsMultipleOutputDevices && [m_outputContext respondsToSelector:@selector(outputDevices)]) {
+        for (AVOutputDevice *outputDevice in m_outputContext.outputDevices) {
             if (outputDevice.deviceFeatures & (AVOutputDeviceFeatureVideo | AVOutputDeviceFeatureAudio))
                 hasActiveRoute = true;
         }
     } else if ([m_outputContext respondsToSelector:@selector(outputDevice)]) {
-        if (auto *outputDevice = [m_outputContext outputDevice])
+        if (auto *outputDevice = m_outputContext.outputDevice)
             hasActiveRoute = outputDevice.deviceFeatures & (AVOutputDeviceFeatureVideo | AVOutputDeviceFeatureAudio);
     } else
         hasActiveRoute = m_outputContext.get().deviceName;
@@ -95,13 +95,13 @@ bool MediaPlaybackTargetContext::supportsRemoteVideoPlayback() const
         return !m_mockDeviceName.isEmpty();
 
     bool supportsRemoteVideoPlayback = false;
-    if (![m_outputContext respondsToSelector:@selector(supportsMultipleOutputDevices)] || ![m_outputContext supportsMultipleOutputDevices] || ![m_outputContext respondsToSelector:@selector(outputDevices)]) {
-        if (auto *outputDevice = [m_outputContext outputDevice]) {
+    if (![m_outputContext respondsToSelector:@selector(supportsMultipleOutputDevices)] || !m_outputContext.supportsMultipleOutputDevices || ![m_outputContext respondsToSelector:@selector(outputDevices)]) {
+        if (auto *outputDevice = m_outputContext.outputDevice) {
             if (outputDevice.deviceFeatures & AVOutputDeviceFeatureVideo)
                 supportsRemoteVideoPlayback = true;
         }
     } else {
-        for (AVOutputDevice *outputDevice in [m_outputContext outputDevices]) {
+        for (AVOutputDevice *outputDevice in m_outputContext.outputDevices) {
             if (outputDevice.deviceFeatures & AVOutputDeviceFeatureVideo)
                 supportsRemoteVideoPlayback = true;
         }
@@ -120,7 +120,7 @@ bool MediaPlaybackTargetContext::serializeOutputContext()
     [archiver encodeObject:m_outputContext.get() forKey:NSKeyedArchiveRootObjectKey];
     [archiver finishEncoding];
 
-    m_serializedOutputContext = [archiver encodedData];
+    m_serializedOutputContext = archiver.encodedData;
     m_type = MediaPlaybackTargetContext::Type::SerializedAVOutputContext;
     m_outputContext.clear();
 

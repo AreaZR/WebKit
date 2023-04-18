@@ -81,7 +81,7 @@ static bool scheduledWithCustomRunLoopMode(const std::optional<SchedulePairHashS
         CFRunLoopPerformBlock(pair->runLoop(), pair->mode(), block.get());
 }
 
-- (id)initWithHandle:(WebCore::ResourceHandle*)handle messageQueue:(RefPtr<WebCore::SynchronousLoaderMessageQueue>&&)messageQueue
+- (instancetype)initWithHandle:(WebCore::ResourceHandle*)handle messageQueue:(RefPtr<WebCore::SynchronousLoaderMessageQueue>&&)messageQueue
 {
     self = [self init];
     if (!self)
@@ -120,7 +120,7 @@ static bool scheduledWithCustomRunLoopMode(const std::optional<SchedulePairHashS
     ASSERT(!isMainThread());
     UNUSED_PARAM(connection);
 
-    redirectResponse = synthesizeRedirectResponseIfNecessary([connection currentRequest], newRequest, redirectResponse);
+    redirectResponse = synthesizeRedirectResponseIfNecessary(connection.currentRequest, newRequest, redirectResponse);
 
     // See <rdar://problem/5380697>. This is a workaround for a behavior change in CFNetwork where willSendRequest gets called more often.
     if (!redirectResponse)
@@ -128,7 +128,7 @@ static bool scheduledWithCustomRunLoopMode(const std::optional<SchedulePairHashS
 
 #if !LOG_DISABLED
     if ([redirectResponse isKindOfClass:[NSHTTPURLResponse class]])
-        LOG(Network, "Handle %p delegate connection:%p willSendRequest:%@ redirectResponse:%d, Location:<%@>", m_handle, connection, [newRequest description], static_cast<int>([(id)redirectResponse statusCode]), [[(id)redirectResponse allHeaderFields] objectForKey:@"Location"]);
+        LOG(Network, "Handle %p delegate connection:%p willSendRequest:%@ redirectResponse:%d, Location:<%@>", m_handle, connection, [newRequest description], static_cast<int>([(id)redirectResponse statusCode]), [(id)redirectResponse allHeaderFields][@"Location"]);
     else
         LOG(Network, "Handle %p delegate connection:%p willSendRequest:%@ redirectResponse:non-HTTP", m_handle, connection, [newRequest description]); 
 #endif
@@ -143,7 +143,7 @@ static bool scheduledWithCustomRunLoopMode(const std::optional<SchedulePairHashS
 
         ResourceResponse response(redirectResponse.get());
         ResourceRequest redirectRequest = newRequest.get();
-        if ([newRequest HTTPBodyStream]) {
+        if (newRequest.HTTPBodyStream) {
             ASSERT(m_handle->firstRequest().httpBody());
             redirectRequest.setHTTPBody(m_handle->firstRequest().httpBody());
         }
@@ -190,7 +190,7 @@ ALLOW_DEPRECATED_IMPLEMENTATIONS_END
 
     auto work = [self, protectedSelf = retainPtr(self), challenge = retainPtr(challenge)] () mutable {
         if (!m_handle) {
-            [[challenge sender] cancelAuthenticationChallenge:challenge.get()];
+            [challenge.sender cancelAuthenticationChallenge:challenge.get()];
             return;
         }
         m_handle->didReceiveAuthenticationChallenge(core(challenge.get()));
@@ -335,13 +335,13 @@ ALLOW_DEPRECATED_IMPLEMENTATIONS_END
             return;
 
         if (auto metrics = m_handle->networkLoadMetrics()) {
-            if (double responseEndTime = [[timingData objectForKey:@"_kCFNTimingDataResponseEnd"] doubleValue])
+            if (double responseEndTime = [timingData[@"_kCFNTimingDataResponseEnd"] doubleValue])
                 metrics->responseEnd = WallTime::fromRawSeconds(adoptNS([[NSDate alloc] initWithTimeIntervalSinceReferenceDate:responseEndTime]).get().timeIntervalSince1970).approximateMonotonicTime();
             else
                 metrics->responseEnd = metrics->responseStart;
-            metrics->protocol = (NSString *)[timingData objectForKey:@"_kCFNTimingDataNetworkProtocolName"];
-            metrics->responseBodyBytesReceived = [[timingData objectForKey:@"_kCFNTimingDataResponseBodyBytesReceived"] unsignedLongLongValue];
-            metrics->responseBodyDecodedSize = [[timingData objectForKey:@"_kCFNTimingDataResponseBodyBytesDecoded"] unsignedLongLongValue];
+            metrics->protocol = (NSString *)timingData[@"_kCFNTimingDataNetworkProtocolName"];
+            metrics->responseBodyBytesReceived = [timingData[@"_kCFNTimingDataResponseBodyBytesReceived"] unsignedLongLongValue];
+            metrics->responseBodyDecodedSize = [timingData[@"_kCFNTimingDataResponseBodyBytesDecoded"] unsignedLongLongValue];
             metrics->markComplete();
             m_handle->client()->didFinishLoading(m_handle, *metrics);
         } else {

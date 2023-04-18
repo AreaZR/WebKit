@@ -77,7 +77,7 @@ using WebCore::PlaybackSessionInterfaceMac;
 
 - (NSTimeInterval)contentDuration
 {
-    return [_seekableTimeRanges count] ? _contentDuration : std::numeric_limits<double>::infinity();
+    return _seekableTimeRanges.count ? _contentDuration : std::numeric_limits<double>::infinity();
 }
 
 - (void)setContentDuration:(NSTimeInterval)duration
@@ -270,35 +270,35 @@ static RetainPtr<NSArray> mediaSelectionOptions(const Vector<MediaSelectionOptio
 {
     auto webOptions = mediaSelectionOptions(options);
     [self setAudioTouchBarMediaSelectionOptions:webOptions.get()];
-    if (selectedIndex < [webOptions count])
-        [self setCurrentAudioTouchBarMediaSelectionOption:[webOptions objectAtIndex:selectedIndex]];
+    if (selectedIndex < webOptions.count)
+        [self setCurrentAudioTouchBarMediaSelectionOption:webOptions[selectedIndex]];
 }
 
 - (void)setLegibleMediaSelectionOptions:(const Vector<MediaSelectionOption>&)options withSelectedIndex:(NSUInteger)selectedIndex
 {
     auto webOptions = mediaSelectionOptions(options);
     [self setLegibleTouchBarMediaSelectionOptions:webOptions.get()];
-    if (selectedIndex < [webOptions count])
-        [self setCurrentLegibleTouchBarMediaSelectionOption:[webOptions objectAtIndex:selectedIndex]];
+    if (selectedIndex < webOptions.count)
+        [self setCurrentLegibleTouchBarMediaSelectionOption:webOptions[selectedIndex]];
 }
 
 - (void)setAudioMediaSelectionIndex:(NSUInteger)selectedIndex
 {
-    if (selectedIndex >= [_audioTouchBarMediaSelectionOptions count])
+    if (selectedIndex >= _audioTouchBarMediaSelectionOptions.count)
         return;
 
     [self willChangeValueForKey:@"currentAudioTouchBarMediaSelectionOption"];
-    _currentAudioTouchBarMediaSelectionOption = [_audioTouchBarMediaSelectionOptions objectAtIndex:selectedIndex];
+    _currentAudioTouchBarMediaSelectionOption = _audioTouchBarMediaSelectionOptions[selectedIndex];
     [self didChangeValueForKey:@"currentAudioTouchBarMediaSelectionOption"];
 }
 
 - (void)setLegibleMediaSelectionIndex:(NSUInteger)selectedIndex
 {
-    if (selectedIndex >= [_legibleTouchBarMediaSelectionOptions count])
+    if (selectedIndex >= _legibleTouchBarMediaSelectionOptions.count)
         return;
 
     [self willChangeValueForKey:@"currentLegibleTouchBarMediaSelectionOption"];
-    _currentLegibleTouchBarMediaSelectionOption = [_legibleTouchBarMediaSelectionOptions objectAtIndex:selectedIndex];
+    _currentLegibleTouchBarMediaSelectionOption = _legibleTouchBarMediaSelectionOptions[selectedIndex];
     [self didChangeValueForKey:@"currentLegibleTouchBarMediaSelectionOption"];
 }
 
@@ -372,7 +372,7 @@ static RetainPtr<NSArray> mediaSelectionOptions(const Vector<MediaSelectionOptio
             model->setDefaultPlaybackRate(_defaultPlaybackRate);
     }
 
-    if ([self isPlaying])
+    if (self.playing)
         [self setRate:_defaultPlaybackRate fromJavaScript:fromJavaScript];
 }
 

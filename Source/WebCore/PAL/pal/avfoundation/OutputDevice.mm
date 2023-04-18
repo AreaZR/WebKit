@@ -34,7 +34,7 @@
 
 // FIXME(rdar://70358894): Remove once -allowsHeadTrackedSpatialAudio lands:
 @interface AVOutputDevice (AllowsHeadTrackedSpatialAudio)
-- (BOOL)allowsHeadTrackedSpatialAudio;
+@property (nonatomic, readonly) BOOL allowsHeadTrackedSpatialAudio;
 @end
 
 namespace PAL {
@@ -47,13 +47,13 @@ OutputDevice::OutputDevice(RetainPtr<AVOutputDevice>&& device)
 String OutputDevice::name() const
 {
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    return [m_device name];
+    return m_device.name;
 ALLOW_DEPRECATED_DECLARATIONS_END
 }
 
 uint8_t OutputDevice::deviceFeatures() const
 {
-    auto avDeviceFeatures = [m_device deviceFeatures];
+    auto avDeviceFeatures = m_device.deviceFeatures;
     uint8_t deviceFeatures { 0 };
     if (avDeviceFeatures & AVOutputDeviceFeatureAudio)
         deviceFeatures |= (uint8_t)DeviceFeatures::Audio;
@@ -68,7 +68,7 @@ bool OutputDevice::supportsSpatialAudio() const
 {
 #if HAVE(AVOUTPUTDEVICE_SPATIALAUDIO)
     if (![m_device respondsToSelector:@selector(supportsHeadTrackedSpatialAudio)]
-        || ![m_device supportsHeadTrackedSpatialAudio])
+        || !m_device.supportsHeadTrackedSpatialAudio)
         return false;
 
     return ![m_device respondsToSelector:@selector(allowsHeadTrackedSpatialAudio)]

@@ -69,20 +69,20 @@ void VideoLayerManagerObjC::setVideoLayer(PlatformLayer *videoLayer, IntSize con
     [m_videoLayer web_disableAllActions];
 
     m_videoInlineLayer = adoptNS([[WebVideoContainerLayer alloc] init]);
-    [m_videoInlineLayer setName:@"WebVideoContainerLayer"];
-    [m_videoInlineLayer setFrame:CGRectMake(0, 0, contentSize.width(), contentSize.height())];
-    [m_videoInlineLayer setContentsGravity:kCAGravityResizeAspect];
+    m_videoInlineLayer.name = @"WebVideoContainerLayer";
+    m_videoInlineLayer.frame = CGRectMake(0, 0, contentSize.width(), contentSize.height());
+    m_videoInlineLayer.contentsGravity = kCAGravityResizeAspect;
     if (PAL::isAVFoundationFrameworkAvailable() && [videoLayer isKindOfClass:PAL::getAVPlayerLayerClass()])
-        [m_videoInlineLayer setPlayerLayer:(AVPlayerLayer *)videoLayer];
+        m_videoInlineLayer.playerLayer = (AVPlayerLayer *)videoLayer;
 
 #if ENABLE(VIDEO_PRESENTATION_MODE)
     if (m_videoFullscreenLayer) {
-        [m_videoLayer setFrame:m_videoFullscreenFrame];
+        m_videoLayer.frame = m_videoFullscreenFrame;
         [m_videoFullscreenLayer insertSublayer:m_videoLayer.get() atIndex:0];
     } else
 #endif
     {
-        [m_videoLayer setFrame:m_videoInlineLayer.get().bounds];
+        m_videoLayer.frame = m_videoInlineLayer.get().bounds;
         [m_videoInlineLayer insertSublayer:m_videoLayer.get() atIndex:0];
     }
 }
@@ -125,13 +125,13 @@ void VideoLayerManagerObjC::setVideoFullscreenLayer(PlatformLayer *videoFullscre
         CAContext *oldContext = [m_videoLayer context];
 
         if (m_videoInlineLayer && currentImage)
-            [m_videoInlineLayer setContents:(__bridge id)currentImage.get()];
+            m_videoInlineLayer.contents = (__bridge id)currentImage.get();
 
         if (m_videoFullscreenLayer) {
-            [m_videoLayer setFrame:m_videoFullscreenFrame];
+            m_videoLayer.frame = m_videoFullscreenFrame;
             [m_videoFullscreenLayer insertSublayer:m_videoLayer.get() atIndex:0];
         } else if (m_videoInlineLayer) {
-            [m_videoLayer setFrame:[m_videoInlineLayer bounds]];
+            m_videoLayer.frame = m_videoInlineLayer.bounds;
             [m_videoInlineLayer insertSublayer:m_videoLayer.get() atIndex:0];
         } else
             [m_videoLayer removeFromSuperlayer];
@@ -167,14 +167,14 @@ void VideoLayerManagerObjC::setVideoFullscreenFrame(FloatRect videoFullscreenFra
     if (!m_videoFullscreenLayer)
         return;
 
-    [m_videoLayer setFrame:m_videoFullscreenFrame];
+    m_videoLayer.frame = m_videoFullscreenFrame;
     syncTextTrackBounds();
 }
 
 void VideoLayerManagerObjC::updateVideoFullscreenInlineImage(PlatformImagePtr image)
 {
     if (m_videoInlineLayer)
-        [m_videoInlineLayer setContents:(__bridge id)image.get()];
+        m_videoInlineLayer.contents = (__bridge id)image.get();
 }
 
 #endif
@@ -200,7 +200,7 @@ void VideoLayerManagerObjC::syncTextTrackBounds()
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
 
-    [m_textTrackRepresentationLayer setFrame:m_videoFullscreenFrame];
+    m_textTrackRepresentationLayer.frame = m_videoFullscreenFrame;
 
     [CATransaction commit];
 #endif

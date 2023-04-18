@@ -147,11 +147,11 @@ void VideoFullscreenModelVideoElement::setVideoFullscreenLayer(PlatformLayer* vi
     
     m_videoFullscreenLayer = videoLayer;
 #if PLATFORM(MAC)
-    [m_videoFullscreenLayer setAnchorPoint:CGPointMake(0, 0)];
+    m_videoFullscreenLayer.anchorPoint = CGPointMake(0, 0);
 #else
     [m_videoFullscreenLayer setAnchorPoint:CGPointMake(0.5, 0.5)];
 #endif
-    [m_videoFullscreenLayer setFrame:m_videoFrame];
+    m_videoFullscreenLayer.frame = m_videoFrame;
 
     if (!m_videoElement) {
         completionHandler();
@@ -187,7 +187,7 @@ void VideoFullscreenModelVideoElement::requestFullscreenMode(HTMLMediaElementEnu
 void VideoFullscreenModelVideoElement::setVideoLayerFrame(FloatRect rect)
 {
     m_videoFrame = rect;
-    [m_videoFullscreenLayer setFrame:CGRect(rect)];
+    m_videoFullscreenLayer.frame = CGRect(rect);
     if (m_videoElement)
         m_videoElement->setVideoFullscreenFrame(rect);
 }

@@ -55,11 +55,11 @@ PlaybackSessionInterfaceAVKit::PlaybackSessionInterfaceAVKit(PlaybackSessionMode
 {
     ASSERT(isUIThread());
     model.addClient(*this);
-    [m_playerController setPlaybackSessionInterface:this];
-    [m_playerController setDelegate:&model];
+    m_playerController.playbackSessionInterface = this;
+    m_playerController.delegate = &model;
 
     durationChanged(model.duration());
-    currentTimeChanged(model.currentTime(), [[NSProcessInfo processInfo] systemUptime]);
+    currentTimeChanged(model.currentTime(), [NSProcessInfo processInfo].systemUptime);
     bufferedTimeChanged(model.bufferedTime());
     OptionSet<PlaybackSessionModel::PlaybackState> playbackState;
     if (model.isPlaying())
@@ -78,8 +78,8 @@ PlaybackSessionInterfaceAVKit::PlaybackSessionInterfaceAVKit(PlaybackSessionMode
 PlaybackSessionInterfaceAVKit::~PlaybackSessionInterfaceAVKit()
 {
     ASSERT(isUIThread());
-    [m_playerController setPlaybackSessionInterface:nullptr];
-    [m_playerController setExternalPlaybackActive:false];
+    m_playerController.playbackSessionInterface = nullptr;
+    m_playerController.externalPlaybackActive = false;
 
     invalidate();
 }
@@ -107,14 +107,14 @@ void PlaybackSessionInterfaceAVKit::durationChanged(double duration)
 
 void PlaybackSessionInterfaceAVKit::currentTimeChanged(double currentTime, double anchorTime)
 {
-    if ([m_playerController isScrubbing])
+    if (m_playerController.isScrubbing)
         return;
 
-    NSTimeInterval anchorTimeStamp = ![m_playerController rate] ? NAN : anchorTime;
+    NSTimeInterval anchorTimeStamp = !m_playerController.rate ? NAN : anchorTime;
     AVValueTiming *timing = [getAVValueTimingClass() valueTimingWithAnchorValue:currentTime
         anchorTimeStamp:anchorTimeStamp rate:0];
 
-    [m_playerController setTiming:timing];
+    m_playerController.timing = timing;
 }
 
 void PlaybackSessionInterfaceAVKit::bufferedTimeChanged(double bufferedTime)
@@ -152,14 +152,14 @@ void PlaybackSessionInterfaceAVKit::seekableRangesChanged(const TimeRanges& time
     UNUSED_PARAM(timeRanges);
 #endif
 
-    [m_playerController setSeekableTimeRanges:seekableRanges.get()];
-    [m_playerController setSeekableTimeRangesLastModifiedTime: lastModifiedTime];
-    [m_playerController setLiveUpdateInterval:liveUpdateInterval];
+    m_playerController.seekableTimeRanges = seekableRanges.get();
+    m_playerController.seekableTimeRangesLastModifiedTime = lastModifiedTime;
+    m_playerController.liveUpdateInterval = liveUpdateInterval;
 }
 
 void PlaybackSessionInterfaceAVKit::canPlayFastReverseChanged(bool canPlayFastReverse)
 {
-    [m_playerController setCanScanBackward:canPlayFastReverse];
+    m_playerController.canScanBackward = canPlayFastReverse;
 }
 
 static AVMediaType toAVMediaType(MediaSelectionOption::MediaType type)
@@ -195,17 +195,17 @@ static RetainPtr<NSArray> mediaSelectionOptions(const Vector<MediaSelectionOptio
 void PlaybackSessionInterfaceAVKit::audioMediaSelectionOptionsChanged(const Vector<MediaSelectionOption>& options, uint64_t selectedIndex)
 {
     auto webOptions = mediaSelectionOptions(options);
-    [m_playerController setAudioMediaSelectionOptions:webOptions.get()];
-    if (selectedIndex < [webOptions count])
-        [m_playerController setCurrentAudioMediaSelectionOption:[webOptions objectAtIndex:static_cast<NSUInteger>(selectedIndex)]];
+    m_playerController.audioMediaSelectionOptions = webOptions.get();
+    if (selectedIndex < webOptions.count)
+        m_playerController.currentAudioMediaSelectionOption = webOptions[static_cast<NSUInteger>(selectedIndex)];
 }
 
 void PlaybackSessionInterfaceAVKit::legibleMediaSelectionOptionsChanged(const Vector<MediaSelectionOption>& options, uint64_t selectedIndex)
 {
     auto webOptions = mediaSelectionOptions(options);
-    [m_playerController setLegibleMediaSelectionOptions:webOptions.get()];
-    if (selectedIndex < [webOptions count])
-        [m_playerController setCurrentLegibleMediaSelectionOption:[webOptions objectAtIndex:static_cast<NSUInteger>(selectedIndex)]];
+    m_playerController.legibleMediaSelectionOptions = webOptions.get();
+    if (selectedIndex < webOptions.count)
+        m_playerController.currentLegibleMediaSelectionOption = webOptions[static_cast<NSUInteger>(selectedIndex)];
 }
 
 void PlaybackSessionInterfaceAVKit::externalPlaybackChanged(bool enabled, PlaybackSessionModel::ExternalPlaybackTargetType targetType, const String& localizedDeviceName)
@@ -224,12 +224,12 @@ void PlaybackSessionInterfaceAVKit::externalPlaybackChanged(bool enabled, Playba
 
 void PlaybackSessionInterfaceAVKit::wirelessVideoPlaybackDisabledChanged(bool disabled)
 {
-    [m_playerController setAllowsExternalPlayback:!disabled];
+    m_playerController.allowsExternalPlayback = !disabled;
 }
 
 void PlaybackSessionInterfaceAVKit::mutedChanged(bool muted)
 {
-    [m_playerController setMuted:muted];
+    m_playerController.muted = muted;
 }
 
 void PlaybackSessionInterfaceAVKit::volumeChanged(double volume)
@@ -242,7 +242,7 @@ void PlaybackSessionInterfaceAVKit::invalidate()
     if (!m_playbackSessionModel)
         return;
 
-    [m_playerController setDelegate:nullptr];
+    m_playerController.delegate = nullptr;
     m_playbackSessionModel->removeClient(*this);
     m_playbackSessionModel = nullptr;
 }

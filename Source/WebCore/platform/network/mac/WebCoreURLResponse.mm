@@ -189,16 +189,16 @@ NSURLResponse *synthesizeRedirectResponseIfNecessary(NSURLRequest *currentReques
     if (redirectResponse)
         return redirectResponse;
 
-    if ([[[newRequest URL] scheme] isEqualToString:[[currentRequest URL] scheme]] && ![newRequest _schemeWasUpgradedDueToDynamicHSTS])
+    if ([newRequest.URL.scheme isEqualToString:currentRequest.URL.scheme] && ![newRequest _schemeWasUpgradedDueToDynamicHSTS])
         return nil;
 
-    return retainPtr(ResourceResponse::syntheticRedirectResponse(URL([currentRequest URL]), URL([newRequest URL])).nsURLResponse()).autorelease();
+    return retainPtr(ResourceResponse::syntheticRedirectResponse(URL(currentRequest.URL), URL(newRequest.URL)).nsURLResponse()).autorelease();
 }
 
 RetainPtr<CFStringRef> filePathExtension(CFURLResponseRef response)
 {
     auto responseURL = CFURLResponseGetURL(response);
-    if (![(__bridge NSURL *)responseURL isFileURL])
+    if (!((__bridge NSURL *)responseURL).fileURL)
         return nullptr;
     return adoptCF(CFURLCopyPathExtension(responseURL));
 }

@@ -48,7 +48,7 @@ typedef NS_ENUM(NSInteger, NEFilterSourceDirection) {
 
 @interface NEFilterSource (WKLegacyDetails)
 + (BOOL)filterRequired;
-- (id)initWithURL:(NSURL *)url direction:(NEFilterSourceDirection)direction socketIdentifier:(uint64_t)socketIdentifier;
+- (instancetype)initWithURL:(NSURL *)url direction:(NEFilterSourceDirection)direction socketIdentifier:(uint64_t)socketIdentifier;
 - (void)addData:(NSData *)data withCompletionQueue:(dispatch_queue_t)queue completionHandler:(void (^)(NEFilterSourceStatus, NSData *))completionHandler;
 - (void)dataCompleteWithCompletionQueue:(dispatch_queue_t)queue completionHandler:(void (^)(NEFilterSourceStatus, NSData *))completionHandler;
 @property (readonly) NEFilterSourceStatus status;
@@ -63,7 +63,7 @@ typedef NS_ENUM(NSInteger, NEFilterSourceDirection) {
 typedef void (^NEFilterSourceDecisionHandler)(NEFilterSourceStatus, NSDictionary *);
 
 @interface NEFilterSource (WKModernDetails)
-- (id)initWithDecisionQueue:(dispatch_queue_t)queue;
+- (instancetype)initWithDecisionQueue:(dispatch_queue_t)queue;
 - (void)willSendRequest:(NSURLRequest *)request decisionHandler:(NEFilterSourceDecisionHandler)decisionHandler;
 - (void)receivedResponse:(NSURLResponse *)response decisionHandler:(NEFilterSourceDecisionHandler)decisionHandler;
 - (void)receivedData:(NSData *)data decisionHandler:(NEFilterSourceDecisionHandler)decisionHandler;

@@ -52,7 +52,7 @@ namespace WebCore {
 PlatformDisplayID displayID(NSScreen *screen)
 {
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanCommunicateWithWindowServer));
-    return [[screen.deviceDescription objectForKey:@"NSScreenNumber"] intValue];
+    return [(screen.deviceDescription)[@"NSScreenNumber"] intValue];
 }
 
 static PlatformDisplayID displayID(Widget* widget)
@@ -76,9 +76,9 @@ static NSScreen *firstScreen()
 {
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanCommunicateWithWindowServer));
     NSArray *screens = [NSScreen screens];
-    if (![screens count])
+    if (!screens.count)
         return nil;
-    return [screens objectAtIndex:0];
+    return screens[0];
 }
 
 static NSWindow *window(Widget* widget)
@@ -123,7 +123,7 @@ ScreenProperties collectScreenProperties()
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanCommunicateWithWindowServer));
 
     ScreenProperties screenProperties;
-    bool screenHasInvertedColors = [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldInvertColors];
+    bool screenHasInvertedColors = [NSWorkspace sharedWorkspace].accessibilityDisplayShouldInvertColors;
 
     auto screenSupportsHighDynamicRange = [](PlatformDisplayID displayID, DynamicRangeMode& dynamicRangeMode) {
         bool supportsHighDynamicRange = false;
@@ -273,7 +273,7 @@ bool screenHasInvertedColors()
 
     // This is a system-wide accessibility setting, same on all screens.
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanCommunicateWithWindowServer));
-    return [[NSWorkspace sharedWorkspace] accessibilityDisplayShouldInvertColors];
+    return [NSWorkspace sharedWorkspace].accessibilityDisplayShouldInvertColors;
 }
 
 int screenDepth(Widget* widget)
@@ -320,7 +320,7 @@ FloatRect screenRect(Widget* widget)
         return data->screenRect;
 
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanCommunicateWithWindowServer));
-    return toUserSpace([screen(widget) frame], window(widget));
+    return toUserSpace(screen(widget).frame, window(widget));
 }
 
 FloatRect screenAvailableRect(Widget* widget)
@@ -329,13 +329,13 @@ FloatRect screenAvailableRect(Widget* widget)
         return data->screenAvailableRect;
 
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanCommunicateWithWindowServer));
-    return toUserSpace([screen(widget) visibleFrame], window(widget));
+    return toUserSpace(screen(widget).visibleFrame, window(widget));
 }
 
 NSScreen *screen(NSWindow *window)
 {
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanCommunicateWithWindowServer));
-    return [window screen] ?: firstScreen();
+    return window.screen ?: firstScreen();
 }
 
 NSScreen *screen(PlatformDisplayID displayID)
@@ -400,7 +400,7 @@ DynamicRangeMode preferredDynamicRangeMode(Widget* widget)
 FloatRect toUserSpace(const NSRect& rect, NSWindow *destination)
 {
     FloatRect userRect = rect;
-    userRect.setY(NSMaxY([screen(destination) frame]) - (userRect.y() + userRect.height())); // flip
+    userRect.setY(NSMaxY(screen(destination).frame) - (userRect.y() + userRect.height())); // flip
     return userRect;
 }
 
@@ -414,14 +414,14 @@ FloatRect toUserSpaceForPrimaryScreen(const NSRect& rect)
 NSRect toDeviceSpace(const FloatRect& rect, NSWindow *source)
 {
     FloatRect deviceRect = rect;
-    deviceRect.setY(NSMaxY([screen(source) frame]) - (deviceRect.y() + deviceRect.height())); // flip
+    deviceRect.setY(NSMaxY(screen(source).frame) - (deviceRect.y() + deviceRect.height())); // flip
     return deviceRect;
 }
 
 NSPoint flipScreenPoint(const NSPoint& screenPoint, NSScreen *screen)
 {
     NSPoint flippedPoint = screenPoint;
-    flippedPoint.y = NSMaxY([screen frame]) - flippedPoint.y;
+    flippedPoint.y = NSMaxY(screen.frame) - flippedPoint.y;
     return flippedPoint;
 }
 

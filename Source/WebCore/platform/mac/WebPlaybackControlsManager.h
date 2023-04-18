@@ -76,10 +76,8 @@ WEBCORE_EXPORT
 - (void)togglePictureInPicture;
 @property (nonatomic, readonly) BOOL canSeek;
 
-- (AVTouchBarMediaSelectionOption *)currentAudioTouchBarMediaSelectionOption;
-- (void)setCurrentAudioTouchBarMediaSelectionOption:(AVTouchBarMediaSelectionOption *)option;
-- (AVTouchBarMediaSelectionOption *)currentLegibleTouchBarMediaSelectionOption;
-- (void)setCurrentLegibleTouchBarMediaSelectionOption:(AVTouchBarMediaSelectionOption *)option;
+@property (nonatomic, strong) AVTouchBarMediaSelectionOption *currentAudioTouchBarMediaSelectionOption;
+@property (nonatomic, strong) AVTouchBarMediaSelectionOption *currentLegibleTouchBarMediaSelectionOption;
 - (void)setAudioMediaSelectionOptions:(const Vector<WebCore::MediaSelectionOption>&)options withSelectedIndex:(NSUInteger)selectedIndex;
 - (void)setLegibleMediaSelectionOptions:(const Vector<WebCore::MediaSelectionOption>&)options withSelectedIndex:(NSUInteger)selectedIndex;
 - (void)setAudioMediaSelectionIndex:(NSUInteger)selectedIndex;

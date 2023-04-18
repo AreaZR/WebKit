@@ -32,7 +32,7 @@
 #import <wtf/RetainPtr.h>
 
 @interface NSMenu (WebPrivate)
-- (id)_menuImpl;
+@property (nonatomic, readonly, strong) id _menuImpl;
 @end
 
 @interface NSObject (WebPrivate)
@@ -64,7 +64,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     } mutableCopy]);
 
     if (usesCustomAppearance)
-        [options setObject:@"" forKey:NSPopUpMenuPopupButtonWidget];
+        options[NSPopUpMenuPopupButtonWidget] = @"";
 
     [[menu _menuImpl] popUpMenu:menu atLocation:location width:width forView:view withSelectedItem:selectedItem withFont:font withFlags:(usesCustomAppearance ? 0 : NSPopUpMenuIsPopupButton) withOptions:options.get()];
 }

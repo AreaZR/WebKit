@@ -98,7 +98,7 @@ extern CFStringRef const DDBinderSignatureBlockKey;
 
 @interface DDScannerResult : NSObject <NSCoding, NSSecureCoding>
 + (NSArray *)resultsFromCoreResults:(CFArrayRef)coreResults;
-- (DDResultRef)coreResult;
+@property (nonatomic, readonly) DDResultRef coreResult;
 @end
 
 #define DDResultPropertyPassiveDisplay   (1 << 0)

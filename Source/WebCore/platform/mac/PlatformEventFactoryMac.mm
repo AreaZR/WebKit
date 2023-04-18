@@ -52,7 +52,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
 static NSPoint globalPointForEvent(NSEvent *event)
 {
-    switch ([event type]) {
+    switch (event.type) {
     case NSEventTypePressure:
     case NSEventTypeLeftMouseDown:
     case NSEventTypeLeftMouseDragged:
@@ -67,7 +67,7 @@ static NSPoint globalPointForEvent(NSEvent *event)
     case NSEventTypeRightMouseDragged:
     case NSEventTypeRightMouseUp:
     case NSEventTypeScrollWheel:
-        return globalPoint([event locationInWindow], [event window]);
+        return globalPoint(event.locationInWindow, event.window);
     default:
         return { 0, 0 };
     }
@@ -75,7 +75,7 @@ static NSPoint globalPointForEvent(NSEvent *event)
 
 static IntPoint pointForEvent(NSEvent *event, NSView *windowView)
 {
-    switch ([event type]) {
+    switch (event.type) {
     case NSEventTypePressure:
     case NSEventTypeLeftMouseDown:
     case NSEventTypeLeftMouseDragged:
@@ -92,7 +92,7 @@ static IntPoint pointForEvent(NSEvent *event, NSView *windowView)
     case NSEventTypeScrollWheel: {
         // Note: This will have its origin at the bottom left of the window unless windowView is flipped.
         // In those cases, the Y coordinate gets flipped by Widget::convertFromContainingWindow.
-        NSPoint location = [event locationInWindow];
+        NSPoint location = event.locationInWindow;
         if (windowView)
             location = [windowView convertPoint:location fromView:nil];
         return IntPoint(location);
@@ -104,7 +104,7 @@ static IntPoint pointForEvent(NSEvent *event, NSView *windowView)
 
 static MouseButton mouseButtonForEvent(NSEvent *event)
 {
-    switch ([event type]) {
+    switch (event.type) {
     case NSEventTypePressure:
     case NSEventTypeLeftMouseDown:
     case NSEventTypeLeftMouseUp:
@@ -130,7 +130,7 @@ static unsigned short currentlyPressedMouseButtons()
 
 static PlatformEvent::Type mouseEventTypeForEvent(NSEvent* event)
 {
-    switch ([event type]) {
+    switch (event.type) {
     case NSEventTypeLeftMouseDragged:
     case NSEventTypeMouseEntered:
     case NSEventTypeMouseExited:
@@ -153,7 +153,7 @@ static PlatformEvent::Type mouseEventTypeForEvent(NSEvent* event)
 
 static int clickCountForEvent(NSEvent *event)
 {
-    switch ([event type]) {
+    switch (event.type) {
     case NSEventTypeLeftMouseDown:
     case NSEventTypeLeftMouseUp:
     case NSEventTypeLeftMouseDragged:
@@ -163,7 +163,7 @@ static int clickCountForEvent(NSEvent *event)
     case NSEventTypeOtherMouseDown:
     case NSEventTypeOtherMouseUp:
     case NSEventTypeOtherMouseDragged:
-        return [event clickCount];
+        return event.clickCount;
     default:
         return 0;
     }
@@ -193,31 +193,31 @@ static PlatformWheelEventPhase phaseFromNSEventPhase(NSEventPhase eventPhase)
 
 static PlatformWheelEventPhase momentumPhaseForEvent(NSEvent *event)
 {
-    return phaseFromNSEventPhase([event momentumPhase]);
+    return phaseFromNSEventPhase(event.momentumPhase);
 }
 
 static PlatformWheelEventPhase phaseForEvent(NSEvent *event)
 {
-    return phaseFromNSEventPhase([event phase]);
+    return phaseFromNSEventPhase(event.phase);
 }
 
 static inline String textFromEvent(NSEvent* event)
 {
-    if ([event type] == NSEventTypeFlagsChanged)
+    if (event.type == NSEventTypeFlagsChanged)
         return emptyString();
-    return String([event characters]);
+    return String(event.characters);
 }
 
 static inline String unmodifiedTextFromEvent(NSEvent* event)
 {
-    if ([event type] == NSEventTypeFlagsChanged)
+    if (event.type == NSEventTypeFlagsChanged)
         return emptyString();
-    return String([event charactersIgnoringModifiers]);
+    return String(event.charactersIgnoringModifiers);
 }
 
 String keyForKeyEvent(NSEvent *event)
 {
-    switch ([event keyCode]) {
+    switch (event.keyCode) {
     case kVK_RightCommand:
     case kVK_Command:
         return "Meta"_s;
@@ -237,7 +237,7 @@ String keyForKeyEvent(NSEvent *event)
     // If the event is an NSEventTypeFlagsChanged events and we have not returned yet then this means we could not
     // identify the modifier key. We return now and report the key as "Unidentified".
     // Note that [event characters] below raises an exception if called on an NSEventTypeFlagsChanged event.
-    if ([event type] == NSEventTypeFlagsChanged)
+    if (event.type == NSEventTypeFlagsChanged)
         return "Unidentified"_s;
 
     // If more than one key is being pressed and the key combination includes one or more modifier keys
@@ -245,9 +245,9 @@ String keyForKeyEvent(NSEvent *event)
     // key value should be the printable key value that would have been produced if the key had been
     // typed with the default keyboard layout with no modifier keys except for Shift and AltGr applied.
     // See <https://www.w3.org/TR/2015/WD-uievents-20151215/#keys-guidelines>.
-    bool isControlDown = ([event modifierFlags] & NSEventModifierFlagControl);
-    NSString *s = isControlDown ? [event charactersIgnoringModifiers] : [event characters];
-    auto length = [s length];
+    bool isControlDown = (event.modifierFlags & NSEventModifierFlagControl);
+    NSString *s = isControlDown ? event.charactersIgnoringModifiers : event.characters;
+    auto length = s.length;
     // characters / charactersIgnoringModifiers return an empty string for dead keys.
     // https://developer.apple.com/reference/appkit/nsevent/1534183-characters
     if (!length)
@@ -261,7 +261,7 @@ String keyForKeyEvent(NSEvent *event)
 // https://w3c.github.io/uievents-code/
 String codeForKeyEvent(NSEvent *event)
 {
-    switch ([event keyCode]) {
+    switch (event.keyCode) {
     // Keys in the alphanumeric section.
     case kVK_ANSI_Grave: return "Backquote"_s;
     case kVK_ANSI_Backslash: return "Backslash"_s;
@@ -472,8 +472,8 @@ String codeForKeyEvent(NSEvent *event)
 
 String keyIdentifierForKeyEvent(NSEvent* event)
 {
-    if ([event type] == NSEventTypeFlagsChanged) {
-        switch ([event keyCode]) {
+    if (event.type == NSEventTypeFlagsChanged) {
+        switch (event.keyCode) {
         case 54: // Right Command
         case 55: // Left Command
             return "Meta"_str;
@@ -499,8 +499,8 @@ String keyIdentifierForKeyEvent(NSEvent* event)
         }
     }
     
-    NSString *s = [event charactersIgnoringModifiers];
-    if ([s length] != 1) {
+    NSString *s = event.charactersIgnoringModifiers;
+    if (s.length != 1) {
         LOG(Events, "received an unexpected number of characters in key event: %u", [s length]);
         return "Unidentified"_s;
     }
@@ -510,7 +510,7 @@ String keyIdentifierForKeyEvent(NSEvent* event)
 static bool isKeypadEvent(NSEvent* event)
 {
     // Check that this is the type of event that has a keyCode.
-    switch ([event type]) {
+    switch (event.type) {
     case NSEventTypeKeyDown:
     case NSEventTypeKeyUp:
     case NSEventTypeFlagsChanged:
@@ -519,10 +519,10 @@ static bool isKeypadEvent(NSEvent* event)
         return false;
     }
 
-    if ([event modifierFlags] & NSEventModifierFlagNumericPad)
+    if (event.modifierFlags & NSEventModifierFlagNumericPad)
         return true;
 
-    switch ([event keyCode]) {
+    switch (event.keyCode) {
     case 71: // Clear
     case 81: // =
     case 75: // /
@@ -556,23 +556,23 @@ int windowsKeyCodeForKeyEvent(NSEvent* event)
     // 2. Keys for which there is no known Mac virtual key codes, like PrintScreen.
     // 3. Certain punctuation keys. On Windows, these are also remapped depending on current keyboard layout,
     //    but see comment in windowsKeyCodeForCharCode().
-    if (!isKeypadEvent(event) && ([event type] == NSEventTypeKeyDown || [event type] == NSEventTypeKeyUp)) {
+    if (!isKeypadEvent(event) && (event.type == NSEventTypeKeyDown || event.type == NSEventTypeKeyUp)) {
         // Cmd switches Roman letters for Dvorak-QWERTY layout, so try modified characters first.
-        NSString* s = [event characters];
-        code = [s length] > 0 ? windowsKeyCodeForCharCode([s characterAtIndex:0]) : 0;
+        NSString* s = event.characters;
+        code = s.length > 0 ? windowsKeyCodeForCharCode([s characterAtIndex:0]) : 0;
         if (code)
             return code;
 
         // Ctrl+A on an AZERTY keyboard would get VK_Q keyCode if we relied on -[NSEvent keyCode] below.
-        s = [event charactersIgnoringModifiers];
-        code = [s length] > 0 ? windowsKeyCodeForCharCode([s characterAtIndex:0]) : 0;
+        s = event.charactersIgnoringModifiers;
+        code = s.length > 0 ? windowsKeyCodeForCharCode([s characterAtIndex:0]) : 0;
         if (code)
             return code;
     }
 
     // Map Mac virtual key code directly to Windows one for any keys not handled above.
     // E.g. the key next to Caps Lock has the same Event.keyCode on U.S. keyboard ('A') and on Russian keyboard (CYRILLIC LETTER EF).
-    return windowsKeyCodeForKeyCode([event keyCode]);
+    return windowsKeyCodeForKeyCode(event.keyCode);
 }
 
 static CFAbsoluteTime systemStartupTime;
@@ -592,7 +592,7 @@ static CFTimeInterval cachedStartupTimeIntervalSince1970()
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         void (^updateBlock)(NSNotification *) = Block_copy(^(NSNotification *){ updateSystemStartupTimeIntervalSince1970(); });
-        [[[NSWorkspace sharedWorkspace] notificationCenter] addObserverForName:NSWorkspaceDidWakeNotification
+        [[NSWorkspace sharedWorkspace].notificationCenter addObserverForName:NSWorkspaceDidWakeNotification
                                                                         object:nil
                                                                          queue:nil
                                                                     usingBlock:updateBlock];
@@ -614,32 +614,32 @@ WallTime eventTimeStampSince1970(NSTimeInterval timestamp)
 
 static inline bool isKeyUpEvent(NSEvent *event)
 {
-    if ([event type] != NSEventTypeFlagsChanged)
-        return [event type] == NSEventTypeKeyUp;
+    if (event.type != NSEventTypeFlagsChanged)
+        return event.type == NSEventTypeKeyUp;
     // FIXME: This logic fails if the user presses both Shift keys at once, for example:
     // we treat releasing one of them as keyDown.
-    switch ([event keyCode]) {
+    switch (event.keyCode) {
     case 54: // Right Command
     case 55: // Left Command
-        return !([event modifierFlags] & NSEventModifierFlagCommand);
+        return !(event.modifierFlags & NSEventModifierFlagCommand);
 
     case 57: // Capslock
-        return !([event modifierFlags] & NSEventModifierFlagCapsLock);
+        return !(event.modifierFlags & NSEventModifierFlagCapsLock);
 
     case 56: // Left Shift
     case 60: // Right Shift
-        return !([event modifierFlags] & NSEventModifierFlagShift);
+        return !(event.modifierFlags & NSEventModifierFlagShift);
 
     case 58: // Left Alt
     case 61: // Right Alt
-        return !([event modifierFlags] & NSEventModifierFlagOption);
+        return !(event.modifierFlags & NSEventModifierFlagOption);
 
     case 59: // Left Ctrl
     case 62: // Right Ctrl
-        return !([event modifierFlags] & NSEventModifierFlagControl);
+        return !(event.modifierFlags & NSEventModifierFlagControl);
 
     case 63: // Function
-        return !([event modifierFlags] & NSEventModifierFlagFunction);
+        return !(event.modifierFlags & NSEventModifierFlagFunction);
     }
     return false;
 }
@@ -707,7 +707,7 @@ public:
         // PlatformEvent
         m_type = mouseEventTypeForEvent(event);
 
-        BOOL eventIsPressureEvent = [event type] == NSEventTypePressure;
+        BOOL eventIsPressureEvent = event.type == NSEventTypePressure;
         if (eventIsPressureEvent) {
             // Since AppKit doesn't send mouse events for force down or force up, we have to use the current pressure
             // event and correspondingPressureEvent to detect if this is MouseForceDown, MouseForceUp, or just MouseForceChanged.
@@ -736,8 +736,8 @@ public:
         m_force = pressure + stage;
 
         // Mac specific
-        m_modifierFlags = [event modifierFlags];
-        m_eventNumber = [event eventNumber];
+        m_modifierFlags = event.modifierFlags;
+        m_eventNumber = event.eventNumber;
         m_menuTypeForEvent = typeForEvent(event);
     }
 };
@@ -777,7 +777,7 @@ public:
         m_phase = phaseForEvent(event);
         m_momentumPhase = momentumPhaseForEvent(event);
         m_hasPreciseScrollingDeltas = continuous;
-        m_directionInvertedFromDevice = [event isDirectionInvertedFromDevice];
+        m_directionInvertedFromDevice = event.directionInvertedFromDevice;
     }
 };
 
@@ -803,7 +803,7 @@ public:
         m_key = keyForKeyEvent(event);
         m_code = codeForKeyEvent(event);
         m_windowsVirtualKeyCode = windowsKeyCodeForKeyEvent(event);
-        m_autoRepeat = [event type] != NSEventTypeFlagsChanged && [event isARepeat];
+        m_autoRepeat = event.type != NSEventTypeFlagsChanged && event.ARepeat;
         m_isKeypad = isKeypadEvent(event);
         m_isSystemKey = false; // SystemKey is always false on the Mac.
 

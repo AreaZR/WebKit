@@ -81,9 +81,9 @@ void ScrollingTreeStickyNodeCocoa::applyLayerPositions()
 
 FloatPoint ScrollingTreeStickyNodeCocoa::layerTopLeft() const
 {
-    FloatRect layerBounds = [m_layer bounds];
-    FloatPoint anchorPoint = [m_layer anchorPoint];
-    FloatPoint position = [m_layer position];
+    FloatRect layerBounds = m_layer.bounds;
+    FloatPoint anchorPoint = m_layer.anchorPoint;
+    FloatPoint position = m_layer.position;
     return position - toFloatSize(anchorPoint) * layerBounds.size() + m_constraints.alignmentOffset();
 }
 

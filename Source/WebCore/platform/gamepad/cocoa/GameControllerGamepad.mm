@@ -79,7 +79,7 @@ void GameControllerGamepad::setupElements()
     m_id = makeString(String(m_gcController.get().vendorName), m_gcController.get().extendedGamepad ? " Extended Gamepad"_s : " Gamepad"_s);
 
 #if HAVE(WIDE_GAMECONTROLLER_SUPPORT)
-    if (auto *haptics = [m_gcController haptics]) {
+    if (auto *haptics = m_gcController.haptics) {
         if (canLoad_GameController_GCHapticsLocalityLeftHandle() && canLoad_GameController_GCHapticsLocalityRightHandle()) {
             if ([haptics.supportedLocalities containsObject:get_GameController_GCHapticsLocalityLeftHandle()] && [haptics.supportedLocalities containsObject:get_GameController_GCHapticsLocalityRightHandle()])
                 m_supportedEffectTypes.add(GamepadHapticEffectType::DualRumble);

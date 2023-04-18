@@ -89,9 +89,9 @@ void ScrollingTreeFixedNodeCocoa::dumpProperties(TextStream& ts, OptionSet<Scrol
     ScrollingTreeFixedNode::dumpProperties(ts, behavior);
 
     if (behavior & ScrollingStateTreeAsTextBehavior::IncludeLayerPositions) {
-        FloatRect layerBounds = [m_layer bounds];
-        FloatPoint anchorPoint = [m_layer anchorPoint];
-        FloatPoint position = [m_layer position];
+        FloatRect layerBounds = m_layer.bounds;
+        FloatPoint anchorPoint = m_layer.anchorPoint;
+        FloatPoint position = m_layer.position;
         FloatPoint layerTopLeft = position - toFloatSize(anchorPoint) * layerBounds.size() + m_constraints.alignmentOffset();
         ts.dumpProperty("layer top left", layerTopLeft);
     }

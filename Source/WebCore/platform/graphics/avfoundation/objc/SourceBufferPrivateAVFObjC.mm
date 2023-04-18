@@ -91,7 +91,7 @@ ALLOW_NEW_API_WITHOUT_GUARDS_BEGIN
 ALLOW_NEW_API_WITHOUT_GUARDS_END
 }
 
-- (id)initWithParent:(WeakPtr<WebCore::SourceBufferPrivateAVFObjC>&&)parent;
+- (instancetype)initWithParent:(WeakPtr<WebCore::SourceBufferPrivateAVFObjC>&&)parent NS_DESIGNATED_INITIALIZER;
 - (void)invalidate;
 - (void)beginObservingLayer:(AVSampleBufferDisplayLayer *)layer;
 - (void)stopObservingLayer:(AVSampleBufferDisplayLayer *)layer;
@@ -103,7 +103,7 @@ ALLOW_NEW_API_WITHOUT_GUARDS_END
 
 @implementation WebAVSampleBufferErrorListener
 
-- (id)initWithParent:(WeakPtr<WebCore::SourceBufferPrivateAVFObjC>&&)parent
+- (instancetype)initWithParent:(WeakPtr<WebCore::SourceBufferPrivateAVFObjC>&&)parent
 {
     if (!(self = [super init]))
         return nil;
@@ -234,11 +234,11 @@ ALLOW_NEW_API_WITHOUT_GUARDS_END
 
 - (void)layerFailedToDecode:(NSNotification*)note
 {
-    RetainPtr<AVSampleBufferDisplayLayer> layer = (AVSampleBufferDisplayLayer *)[note object];
+    RetainPtr<AVSampleBufferDisplayLayer> layer = (AVSampleBufferDisplayLayer *)note.object;
     if (!_layers.contains(layer.get()))
         return;
 
-    callOnMainThread([parent = _parent, layer = WTFMove(layer), error = retainPtr([[note userInfo] valueForKey:AVSampleBufferDisplayLayerFailedToDecodeNotificationErrorKey])] {
+    callOnMainThread([parent = _parent, layer = WTFMove(layer), error = retainPtr([note.userInfo valueForKey:AVSampleBufferDisplayLayerFailedToDecodeNotificationErrorKey])] {
         if (auto strongParent = RefPtr { parent.get() })
             strongParent->layerDidReceiveError(layer.get(), error.get());
     });
@@ -246,11 +246,11 @@ ALLOW_NEW_API_WITHOUT_GUARDS_END
 
 - (void)audioRendererWasAutomaticallyFlushed:(NSNotification*)note
 {
-    RetainPtr<AVSampleBufferAudioRenderer> renderer = (AVSampleBufferAudioRenderer *)[note object];
+    RetainPtr<AVSampleBufferAudioRenderer> renderer = (AVSampleBufferAudioRenderer *)note.object;
     if (!_renderers.contains(renderer.get()))
         return;
 
-    callOnMainThread([parent = _parent, renderer = WTFMove(renderer), flushTime = [[[note userInfo] valueForKey:AVSampleBufferAudioRendererFlushTimeKey] CMTimeValue]] {
+    callOnMainThread([parent = _parent, renderer = WTFMove(renderer), flushTime = [[note.userInfo valueForKey:AVSampleBufferAudioRendererFlushTimeKey] CMTimeValue]] {
         if (auto strongParent = RefPtr { parent.get() })
             strongParent->rendererWasAutomaticallyFlushed(renderer.get(), flushTime);
     });
@@ -1041,7 +1041,7 @@ void SourceBufferPrivateAVFObjC::layerDidReceiveError(AVSampleBufferDisplayLayer
     if (anyIgnored)
         return;
 
-    int errorCode = [[[error userInfo] valueForKey:@"OSStatus"] intValue];
+    int errorCode = [[error.userInfo valueForKey:@"OSStatus"] intValue];
 
     if (m_client)
         m_client->sourceBufferPrivateDidReceiveRenderingError(errorCode);
@@ -1088,7 +1088,7 @@ ALLOW_NEW_API_WITHOUT_GUARDS_END
 {
     ERROR_LOG(LOGIDENTIFIER, [[error description] UTF8String]);
 
-    if ([error code] == 'HDCP')
+    if (error.code == 'HDCP')
         m_hdcpError = error;
 
     // FIXME(142246): Remove the following once <rdar://problem/20027434> is resolved.
@@ -1340,11 +1340,11 @@ bool SourceBufferPrivateAVFObjC::isReadyForMoreSamples(const AtomString& trackID
         if (m_decompressionSession)
             return m_decompressionSession->isReadyForMoreMediaData();
 
-        return [m_displayLayer isReadyForMoreMediaData];
+        return m_displayLayer.readyForMoreMediaData;
     }
 
     if (m_audioRenderers.contains(trackID))
-        return [m_audioRenderers.get(trackID) isReadyForMoreMediaData];
+        return m_audioRenderers.get(trackID).readyForMoreMediaData;
 
     return false;
 }

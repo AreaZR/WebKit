@@ -52,12 +52,12 @@ enum class FeatureToAnimate {
     CGFloat _startValue;
     CGFloat _endValue;
 }
-- (id)initWithScroller:(WebCore::ScrollerMac*)scroller featureToAnimate:(FeatureToAnimate)featureToAnimate animateFrom:(CGFloat)startValue animateTo:(CGFloat)endValue duration:(NSTimeInterval)duration;
+- (instancetype)initWithScroller:(WebCore::ScrollerMac*)scroller featureToAnimate:(FeatureToAnimate)featureToAnimate animateFrom:(CGFloat)startValue animateTo:(CGFloat)endValue duration:(NSTimeInterval)duration NS_DESIGNATED_INITIALIZER;
 @end
 
 @implementation WebScrollbarPartAnimationMac
 
-- (id)initWithScroller:(WebCore::ScrollerMac*)scroller featureToAnimate:(FeatureToAnimate)featureToAnimate animateFrom:(CGFloat)startValue animateTo:(CGFloat)endValue duration:(NSTimeInterval)duration
+- (instancetype)initWithScroller:(WebCore::ScrollerMac*)scroller featureToAnimate:(FeatureToAnimate)featureToAnimate animateFrom:(CGFloat)startValue animateTo:(CGFloat)endValue duration:(NSTimeInterval)duration
 {
     self = [super initWithDuration:duration animationCurve:NSAnimationEaseInOut];
     if (!self)
@@ -68,7 +68,7 @@ enum class FeatureToAnimate {
     _startValue = startValue;
     _endValue = endValue;
 
-    [self setAnimationBlockingMode:NSAnimationNonblocking];
+    self.animationBlockingMode = NSAnimationNonblocking;
 
     return self;
 }
@@ -92,7 +92,7 @@ enum class FeatureToAnimate {
 
 - (void)setCurrentProgress:(NSAnimationProgress)progress
 {
-    [super setCurrentProgress:progress];
+    super.currentProgress = progress;
 
     CGFloat currentValue;
     if (_startValue > _endValue)
@@ -102,16 +102,16 @@ enum class FeatureToAnimate {
 
     switch (_featureToAnimate) {
     case FeatureToAnimate::KnobAlpha:
-        [_scroller->scrollerImp() setKnobAlpha:currentValue];
+        _scroller->scrollerImp().knobAlpha = currentValue;
         break;
     case FeatureToAnimate::TrackAlpha:
-        [_scroller->scrollerImp() setTrackAlpha:currentValue];
+        _scroller->scrollerImp().trackAlpha = currentValue;
         break;
     case FeatureToAnimate::UIStateTransition:
-        [_scroller->scrollerImp() setUiStateTransitionProgress:currentValue];
+        _scroller->scrollerImp().uiStateTransitionProgress = currentValue;
         break;
     case FeatureToAnimate::ExpansionTransition:
-        [_scroller->scrollerImp() setExpansionTransitionProgress:currentValue];
+        _scroller->scrollerImp().expansionTransitionProgress = currentValue;
         break;
     }
 }
@@ -134,13 +134,13 @@ enum class FeatureToAnimate {
     RetainPtr<WebScrollbarPartAnimationMac> _uiStateTransitionAnimation;
     RetainPtr<WebScrollbarPartAnimationMac> _expansionTransitionAnimation;
 }
-- (id)initWithScroller:(WebCore::ScrollerMac*)scroller;
+- (instancetype)initWithScroller:(WebCore::ScrollerMac*)scroller NS_DESIGNATED_INITIALIZER;
 - (void)cancelAnimations;
 @end
 
 @implementation WebScrollerImpDelegateMac
 
-- (id)initWithScroller:(WebCore::ScrollerMac*)scroller
+- (instancetype)initWithScroller:(WebCore::ScrollerMac*)scroller
 {
     self = [super init];
     if (!self)
@@ -221,7 +221,7 @@ enum class FeatureToAnimate {
 
     scrollbarPartAnimation = adoptNS([[WebScrollbarPartAnimationMac alloc] initWithScroller:_scroller
         featureToAnimate:featureToAnimate
-        animateFrom:featureToAnimate == FeatureToAnimate::KnobAlpha ? [_scroller->scrollerImp() knobAlpha] : [_scroller->scrollerImp() trackAlpha]
+        animateFrom:featureToAnimate == FeatureToAnimate::KnobAlpha ? _scroller->scrollerImp().knobAlpha : _scroller->scrollerImp().trackAlpha
         animateTo:newAlpha
         duration:duration]);
     [scrollbarPartAnimation startAnimation];
@@ -254,19 +254,19 @@ enum class FeatureToAnimate {
     ASSERT(scrollerImp == _scroller->scrollerImp());
 
     // UIStateTransition always animates to 1. In case an animation is in progress this avoids a hard transition.
-    [scrollerImp setUiStateTransitionProgress:1 - [scrollerImp uiStateTransitionProgress]];
+    scrollerImp.uiStateTransitionProgress = 1 - scrollerImp.uiStateTransitionProgress;
 
     if (!_uiStateTransitionAnimation) {
         _uiStateTransitionAnimation = adoptNS([[WebScrollbarPartAnimationMac alloc] initWithScroller:_scroller
             featureToAnimate:FeatureToAnimate::UIStateTransition
-            animateFrom:[scrollerImp uiStateTransitionProgress]
+            animateFrom:scrollerImp.uiStateTransitionProgress
             animateTo:1.0
             duration:duration]);
     } else {
         // If we don't need to initialize the animation, just reset the values in case they have changed.
-        [_uiStateTransitionAnimation setStartValue:[scrollerImp uiStateTransitionProgress]];
+        [_uiStateTransitionAnimation setStartValue:scrollerImp.uiStateTransitionProgress];
         [_uiStateTransitionAnimation setEndValue:1.0];
-        [_uiStateTransitionAnimation setDuration:duration];
+        _uiStateTransitionAnimation.duration = duration;
     }
     [_uiStateTransitionAnimation startAnimation];
 }
@@ -279,19 +279,19 @@ enum class FeatureToAnimate {
     ASSERT(scrollerImp == _scroller->scrollerImp());
 
     // ExpansionTransition always animates to 1. In case an animation is in progress this avoids a hard transition.
-    [scrollerImp setExpansionTransitionProgress:1 - [scrollerImp expansionTransitionProgress]];
+    scrollerImp.expansionTransitionProgress = 1 - scrollerImp.expansionTransitionProgress;
 
     if (!_expansionTransitionAnimation) {
         _expansionTransitionAnimation = adoptNS([[WebScrollbarPartAnimationMac alloc] initWithScroller:_scroller
             featureToAnimate:FeatureToAnimate::ExpansionTransition
-            animateFrom:[scrollerImp expansionTransitionProgress]
+            animateFrom:scrollerImp.expansionTransitionProgress
             animateTo:1.0
             duration:duration]);
     } else {
         // If we don't need to initialize the animation, just reset the values in case they have changed.
-        [_expansionTransitionAnimation setStartValue:[scrollerImp uiStateTransitionProgress]];
+        [_expansionTransitionAnimation setStartValue:scrollerImp.uiStateTransitionProgress];
         [_expansionTransitionAnimation setEndValue:1.0];
-        [_expansionTransitionAnimation setDuration:duration];
+        _expansionTransitionAnimation.duration = duration;
     }
     [_expansionTransitionAnimation startAnimation];
 }
@@ -333,7 +333,7 @@ void ScrollerMac::attach()
 {
     m_scrollerImpDelegate = adoptNS([[WebScrollerImpDelegateMac alloc] initWithScroller:this]);
     m_scrollerImp = [NSScrollerImp scrollerImpWithStyle:nsScrollerStyle(m_pair.scrollbarStyle()) controlSize:NSControlSizeRegular horizontal:m_orientation == ScrollbarOrientation::Horizontal replacingScrollerImp:nil];
-    [m_scrollerImp setDelegate:m_scrollerImpDelegate.get()];
+    m_scrollerImp.delegate = m_scrollerImpDelegate.get();
 }
 
 void ScrollerMac::setHostLayer(CALayer *layer)
@@ -343,7 +343,7 @@ void ScrollerMac::setHostLayer(CALayer *layer)
 
     m_hostLayer = layer;
 
-    [m_scrollerImp setLayer:layer];
+    m_scrollerImp.layer = layer;
 
     updatePairScrollerImps();
 }
@@ -354,11 +354,11 @@ void ScrollerMac::updateValues()
 
     BEGIN_BLOCK_OBJC_EXCEPTIONS
 
-    [m_scrollerImp setEnabled:!!m_hostLayer];
-    [m_scrollerImp setBoundsSize:NSSizeFromCGSize([m_hostLayer bounds].size)];
-    [m_scrollerImp setDoubleValue:values.value];
-    [m_scrollerImp setPresentationValue:values.value];
-    [m_scrollerImp setKnobProportion:values.proportion];
+    m_scrollerImp.enabled = !!m_hostLayer;
+    m_scrollerImp.boundsSize = NSSizeFromCGSize(m_hostLayer.bounds.size);
+    m_scrollerImp.doubleValue = values.value;
+    m_scrollerImp.presentationValue = values.value;
+    m_scrollerImp.knobProportion = values.proportion;
 
     END_BLOCK_OBJC_EXCEPTIONS
 }
@@ -429,18 +429,18 @@ String ScrollerMac::scrollbarState() const
         return "none"_s;
 
     StringBuilder result;
-    result.append([m_scrollerImp isEnabled] ? "enabled"_s: "disabled"_s);
+    result.append(m_scrollerImp.enabled ? "enabled"_s: "disabled"_s);
 
     if (m_pair.scrollbarStyle() != WebCore::ScrollbarStyle::Overlay)
         return result.toString();
 
-    if ([m_scrollerImp isExpanded])
+    if (m_scrollerImp.expanded)
         result.append(",expanded"_s);
 
-    if ([m_scrollerImp trackAlpha] > 0)
+    if (m_scrollerImp.trackAlpha > 0)
         result.append(",visible_track"_s);
 
-    if ([m_scrollerImp knobAlpha] > 0)
+    if (m_scrollerImp.knobAlpha > 0)
         result.append(",visible_thumb"_s);
 
     return result.toString();

@@ -31,7 +31,7 @@ WEBCORE_EXPORT @interface WebCoreFullScreenWarningView : NSBox {
 @private
     RetainPtr<NSTextField> _textField;
 }
-- (id)initWithTitle:(NSString*)title;
+- (instancetype)initWithTitle:(NSString*)title NS_DESIGNATED_INITIALIZER;
 @end
 
 #endif

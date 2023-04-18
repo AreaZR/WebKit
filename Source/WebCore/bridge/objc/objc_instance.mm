@@ -53,7 +53,7 @@
 #endif
 
 @interface NSObject (WebDescriptionCategory)
-- (NSString *)_web_description;
+@property (nonatomic, readonly, copy) NSString *_web_description;
 @end
 
 namespace JSC {
@@ -238,11 +238,11 @@ JSC::JSValue ObjcInstance::invokeObjcMethod(JSGlobalObject* lexicalGlobalObject,
 @try {
     NSMethodSignature* signature = method->getMethodSignature();
     NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
-    [invocation setSelector:method->selector()];
-    [invocation setTarget:_instance.get()];
+    invocation.selector = method->selector();
+    invocation.target = _instance.get();
 
     if (method->isFallbackMethod()) {
-        if (objcValueTypeForType([signature methodReturnType]) != ObjcObjectType) {
+        if (objcValueTypeForType(signature.methodReturnType) != ObjcObjectType) {
             NSLog(@"Incorrect signature for invokeUndefinedMethodFromWebScript:withArguments: -- return type must be object.");
             return result;
         }
@@ -260,7 +260,7 @@ JSC::JSValue ObjcInstance::invokeObjcMethod(JSGlobalObject* lexicalGlobalObject,
         }
         [invocation setArgument:&objcArgs atIndex:3];
     } else {
-        unsigned count = [signature numberOfArguments];
+        unsigned count = signature.numberOfArguments;
         for (unsigned i = 2; i < count; ++i) {
             const char* type = [signature getArgumentTypeAtIndex:i];
             ObjcValueType objcValueType = objcValueTypeForType(type);
@@ -318,7 +318,7 @@ JSC::JSValue ObjcInstance::invokeObjcMethod(JSGlobalObject* lexicalGlobalObject,
     [invocation invoke];
 
     // Get the return value type.
-    const char* type = [signature methodReturnType];
+    const char* type = signature.methodReturnType;
     ObjcValueType objcValueType = objcValueTypeForType(type);
 
     // Must have a valid return type.  This method signature should have
@@ -356,10 +356,10 @@ JSC::JSValue ObjcInstance::invokeDefaultMethod(JSGlobalObject* lexicalGlobalObje
 
     NSMethodSignature* signature = [_instance methodSignatureForSelector:@selector(invokeDefaultMethodWithArguments:)];
     NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:signature];
-    [invocation setSelector:@selector(invokeDefaultMethodWithArguments:)];
-    [invocation setTarget:_instance.get()];
+    invocation.selector = @selector(invokeDefaultMethodWithArguments:);
+    invocation.target = _instance.get();
 
-    if (objcValueTypeForType([signature methodReturnType]) != ObjcObjectType) {
+    if (objcValueTypeForType(signature.methodReturnType) != ObjcObjectType) {
         NSLog(@"Incorrect signature for invokeDefaultMethodWithArguments: -- return type must be object.");
         return result;
     }
@@ -376,7 +376,7 @@ JSC::JSValue ObjcInstance::invokeDefaultMethod(JSGlobalObject* lexicalGlobalObje
 
     // Get the return value type, should always be "@" because of
     // check above.
-    const char* type = [signature methodReturnType];
+    const char* type = signature.methodReturnType;
     ObjcValueType objcValueType = objcValueTypeForType(type);
 
     // Get the return value and convert it to a JavaScript value. Length
@@ -413,7 +413,7 @@ bool ObjcInstance::setValueOfUndefinedField(JSGlobalObject* lexicalGlobalObject,
         ObjcValue objcValue = convertValueToObjcValue(lexicalGlobalObject, aValue, ObjcObjectType);
 
         @try {
-            [targetObject setValue:(__bridge id)objcValue.objectValue forUndefinedKey:[NSString stringWithCString:name.ascii().data() encoding:NSASCIIStringEncoding]];
+            [targetObject setValue:(__bridge id)objcValue.objectValue forUndefinedKey:@(name.ascii().data())];
         } @catch(NSException* localException) {
             // Do nothing.  Class did not override valueForUndefinedKey:.
         }
@@ -443,7 +443,7 @@ JSC::JSValue ObjcInstance::getValueOfUndefinedField(JSGlobalObject* lexicalGloba
         setGlobalException(nil);
     
         @try {
-            id objcValue = [targetObject valueForUndefinedKey:[NSString stringWithCString:name.ascii().data() encoding:NSASCIIStringEncoding]];
+            id objcValue = [targetObject valueForUndefinedKey:@(name.ascii().data())];
             result = convertObjcValueToValue(lexicalGlobalObject, &objcValue, ObjcObjectType, m_rootObject.get());
         } @catch(NSException* localException) {
             // Do nothing.  Class did not override valueForUndefinedKey:.

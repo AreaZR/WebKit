@@ -58,11 +58,11 @@ static NSDate *toNSDateFromSystemClock(WallTime time)
 
 static NSMutableArray *typeCheckedRecentSearchesArray(NSMutableDictionary *itemsDictionary, NSString *name)
 {
-    NSMutableDictionary *nameDictionary = [itemsDictionary objectForKey:name];
+    NSMutableDictionary *nameDictionary = itemsDictionary[name];
     if (![nameDictionary isKindOfClass:[NSDictionary class]])
         return nil;
 
-    NSMutableArray *recentSearches = [nameDictionary objectForKey:searchesKey];
+    NSMutableArray *recentSearches = nameDictionary[searchesKey];
     if (![recentSearches isKindOfClass:[NSArray class]])
         return nil;
 
@@ -74,7 +74,7 @@ static NSDate *typeCheckedDateInRecentSearch(NSDictionary *recentSearch)
     if (![recentSearch isKindOfClass:[NSDictionary class]])
         return nil;
 
-    NSDate *date = [recentSearch objectForKey:dateKey];
+    NSDate *date = recentSearch[dateKey];
     if (![date isKindOfClass:[NSDate class]])
         return nil;
 
@@ -87,7 +87,7 @@ static RetainPtr<NSDictionary> typeCheckedRecentSearchesRemovingRecentSearchesAd
         return nil;
 
     RetainPtr<NSMutableDictionary> recentSearchesPlist = readSearchFieldRecentSearchesPlist(directory);
-    NSMutableDictionary *itemsDictionary = [recentSearchesPlist objectForKey:itemsKey];
+    NSMutableDictionary *itemsDictionary = recentSearchesPlist[itemsKey];
     if (![itemsDictionary isKindOfClass:[NSDictionary class]])
         return nil;
 
@@ -128,7 +128,7 @@ void saveRecentSearchesToFile(const String& name, const Vector<RecentSearch>& se
         return;
 
     RetainPtr<NSDictionary> recentSearchesPlist = readSearchFieldRecentSearchesPlist(directory);
-    RetainPtr<NSMutableDictionary> itemsDictionary = [recentSearchesPlist objectForKey:itemsKey];
+    RetainPtr<NSMutableDictionary> itemsDictionary = recentSearchesPlist[itemsKey];
 
     // The NSMutableDictionary method we use to read the property list guarantees we get only
     // mutable containers, but it does not guarantee the file has a dictionary as expected.
@@ -143,7 +143,7 @@ void saveRecentSearchesToFile(const String& name, const Vector<RecentSearch>& se
         auto items = createNSArray(searchItems, [] (auto& item) {
             return adoptNS([[NSDictionary alloc] initWithObjectsAndKeys:item.string, searchStringKey, toNSDateFromSystemClock(item.time), dateKey, nil]);
         });
-        [itemsDictionary setObject:adoptNS([[NSDictionary alloc] initWithObjectsAndKeys:items.get(), searchesKey, nil]).get() forKey:name];
+        itemsDictionary[name] = adoptNS([[NSDictionary alloc] initWithObjectsAndKeys:items.get(), searchesKey, nil]).get();
     }
 
     [recentSearchesPlist writeToFile:searchFieldRecentSearchesPlistPath(directory) atomically:YES];
@@ -159,7 +159,7 @@ Vector<RecentSearch> loadRecentSearchesFromFile(const String& name, const String
     if (!recentSearchesPlist)
         return searchItems;
 
-    NSMutableDictionary *items = [recentSearchesPlist objectForKey:itemsKey];
+    NSMutableDictionary *items = recentSearchesPlist[itemsKey];
     if (![items isKindOfClass:[NSDictionary class]])
         return searchItems;
 
@@ -172,7 +172,7 @@ Vector<RecentSearch> loadRecentSearchesFromFile(const String& name, const String
         if (!date)
             continue;
 
-        NSString *searchString = [item objectForKey:searchStringKey];
+        NSString *searchString = item[searchStringKey];
         if (![searchString isKindOfClass:[NSString class]])
             continue;
         

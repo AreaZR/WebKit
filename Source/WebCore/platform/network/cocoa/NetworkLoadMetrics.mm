@@ -92,7 +92,7 @@ Box<NetworkLoadMetrics> copyTimingData(NSURLConnection *connection, const Resour
     NSDictionary *timingData = [connection _timingData];
 
     auto timingValue = [&](NSString *key) -> RetainPtr<NSDate> {
-        if (NSNumber *number = [timingData objectForKey:key]) {
+        if (NSNumber *number = timingData[key]) {
             if (double doubleValue = number.doubleValue)
                 return adoptNS([[NSDate alloc] initWithTimeIntervalSinceReferenceDate:doubleValue]);
         }

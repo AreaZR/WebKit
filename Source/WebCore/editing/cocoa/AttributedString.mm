@@ -105,7 +105,7 @@ static RetainPtr<NSDictionary> toNSDictionary(const HashMap<String, AttributedSt
     auto result = adoptNS([[NSMutableDictionary alloc] initWithCapacity:map.size()]);
     for (auto& pair : map) {
         if (auto nsObject = toNSObject(pair.value))
-            [result setObject:nsObject.get() forKey:(NSString *)pair.key];
+            result[(NSString *)pair.key] = nsObject.get();
     }
     return result;
 }
@@ -152,7 +152,7 @@ static std::optional<AttributedString::AttributeValue> extractArray(NSArray *arr
         result.reserveInitialCapacity(arrayLength);
         for (id element in array) {
             if ([element isKindOfClass:NSNumber.class])
-                result.uncheckedAppend([(NSNumber *)element doubleValue]);
+                result.uncheckedAppend(((NSNumber *)element).doubleValue);
             else
                 RELEASE_LOG_ERROR(Editing, "NSAttributedString extraction failed with array containing <%@>", NSStringFromClass([element class]));
         }
@@ -182,7 +182,7 @@ static std::optional<AttributedString::AttributeValue> extractValue(id value)
     if ([value isKindOfClass:PlatformNSTextAttachment])
         return { { { RetainPtr { (NSTextAttachment *)value } } } };
     if ([value isKindOfClass:PlatformFontClass])
-        return { { { Font::create(FontPlatformData((__bridge CTFontRef)value, [(PlatformFont *)value pointSize])) } } };
+        return { { { Font::create(FontPlatformData((__bridge CTFontRef)value, ((PlatformFont *)value).pointSize)) } } };
     if ([value isKindOfClass:PlatformColorClass])
         return { { { RetainPtr { (PlatformColor *)value } } } };
     if (value) {
@@ -219,8 +219,8 @@ AttributedString AttributedString::fromNSAttributedString(RetainPtr<NSAttributed
 AttributedString AttributedString::fromNSAttributedStringAndDocumentAttributes(RetainPtr<NSAttributedString>&& string, RetainPtr<NSDictionary>&& dictionary)
 {
     __block AttributedString result;
-    result.string = [string string];
-    [string enumerateAttributesInRange:NSMakeRange(0, [string length]) options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock: ^(NSDictionary<NSAttributedStringKey, id> *attributes, NSRange range, BOOL *) {
+    result.string = string.string;
+    [string enumerateAttributesInRange:NSMakeRange(0, string.length) options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock: ^(NSDictionary<NSAttributedStringKey, id> *attributes, NSRange range, BOOL *) {
         result.attributes.append({ Range { range.location, range.length }, extractDictionary(attributes) });
     }];
     if (dictionary)

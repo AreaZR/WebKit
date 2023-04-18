@@ -54,7 +54,7 @@ using namespace WebCore;
     WeakPtr<LocalSampleBufferDisplayLayer> _parent;
 }
 
-- (id)initWithParent:(LocalSampleBufferDisplayLayer*)callback;
+- (instancetype)initWithParent:(LocalSampleBufferDisplayLayer*)callback NS_DESIGNATED_INITIALIZER;
 - (void)invalidate;
 - (void)begin;
 - (void)stop;
@@ -62,7 +62,7 @@ using namespace WebCore;
 
 @implementation WebAVSampleBufferStatusChangeListener
 
-- (id)initWithParent:(LocalSampleBufferDisplayLayer*)parent
+- (instancetype)initWithParent:(LocalSampleBufferDisplayLayer*)parent
 {
     if (!(self = [super init]))
         return nil;
@@ -187,8 +187,8 @@ void LocalSampleBufferDisplayLayer::initialize(bool hideRootLayer, IntSize size,
     [m_rootLayer addSublayer:m_sampleBufferDisplayLayer.get()];
 
 #ifndef NDEBUG
-    [m_sampleBufferDisplayLayer setName:@"LocalSampleBufferDisplayLayer AVSampleBufferDisplayLayer"];
-    [m_rootLayer setName:@"LocalSampleBufferDisplayLayer AVSampleBufferDisplayLayer parent"];
+    m_sampleBufferDisplayLayer.name = @"LocalSampleBufferDisplayLayer AVSampleBufferDisplayLayer";
+    m_rootLayer.name = @"LocalSampleBufferDisplayLayer AVSampleBufferDisplayLayer parent";
 #endif
     callback(true);
 }
@@ -246,7 +246,7 @@ PlatformLayer* LocalSampleBufferDisplayLayer::rootLayer()
 
 bool LocalSampleBufferDisplayLayer::didFail() const
 {
-    return m_didFail || [m_sampleBufferDisplayLayer status] == AVQueuedSampleBufferRenderingStatusFailed;
+    return m_didFail || m_sampleBufferDisplayLayer.status == AVQueuedSampleBufferRenderingStatusFailed;
 }
 
 void LocalSampleBufferDisplayLayer::updateDisplayMode(bool hideDisplayLayer, bool hideRootLayer)
@@ -345,7 +345,7 @@ void LocalSampleBufferDisplayLayer::enqueueVideoFrame(VideoFrame& videoFrame)
     }
 
     m_processingQueue->dispatch([this, videoFrame = Ref { videoFrame }]() mutable {
-        if (![m_sampleBufferDisplayLayer isReadyForMoreMediaData]) {
+        if (!m_sampleBufferDisplayLayer.readyForMoreMediaData) {
             RELEASE_LOG(WebRTC, "LocalSampleBufferDisplayLayer::enqueueSample (%{public}s) not ready for more media data", m_logIdentifier.utf8().data());
             addVideoFrameToPendingQueue(WTFMove(videoFrame));
             requestNotificationWhenReadyForVideoData();
@@ -443,7 +443,7 @@ void LocalSampleBufferDisplayLayer::requestNotificationWhenReadyForVideoData()
             [m_sampleBufferDisplayLayer stopRequestingMediaData];
 
             while (!m_pendingVideoFrameQueue.isEmpty()) {
-                if (![m_sampleBufferDisplayLayer isReadyForMoreMediaData]) {
+                if (!m_sampleBufferDisplayLayer.readyForMoreMediaData) {
                     requestNotificationWhenReadyForVideoData();
                     return;
                 }

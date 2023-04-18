@@ -56,7 +56,7 @@ static NSDate * __nullable networkLoadMetricsDate(MonotonicTime time)
 }
 
 @interface WebCoreNSURLSessionTaskTransactionMetrics : NSObject
-- (instancetype)_initWithMetrics:(WebCore::NetworkLoadMetrics&&)metrics;
+- (instancetype)_initWithMetrics:(WebCore::NetworkLoadMetrics&&)metrics NS_DESIGNATED_INITIALIZER;
 @property (nullable, copy, readonly) NSDate *fetchStartDate;
 @property (nullable, copy, readonly) NSDate *domainLookupStartDate;
 @property (nullable, copy, readonly) NSDate *domainLookupEndDate;
@@ -223,7 +223,7 @@ static NSDate * __nullable networkLoadMetricsDate(MonotonicTime time)
 @end
 
 @interface WebCoreNSURLSessionTaskMetrics : NSObject
-- (instancetype)_initWithMetrics:(WebCore::NetworkLoadMetrics&&)metrics;
+- (instancetype)_initWithMetrics:(WebCore::NetworkLoadMetrics&&)metrics NS_DESIGNATED_INITIALIZER;
 @property (copy, readonly) NSArray<NSURLSessionTaskTransactionMetrics *> *transactionMetrics;
 @end
 
@@ -264,11 +264,11 @@ static NSDate * __nullable networkLoadMetricsDate(MonotonicTime time)
 - (void)addDelegateOperation:(Function<void()>&&)operation;
 - (void)task:(WebCoreNSURLSessionDataTask *)task didReceiveCORSAccessCheckResult:(BOOL)result;
 - (void)task:(WebCoreNSURLSessionDataTask *)task addSecurityOrigin:(Ref<WebCore::SecurityOrigin>&&)origin;
-- (WebCore::RangeResponseGenerator&)rangeResponseGenerator;
+@property (nonatomic, readonly) WebCore::RangeResponseGenerator & rangeResponseGenerator;
 @end
 
 @interface WebCoreNSURLSessionDataTask ()
-- (id)initWithSession:(WebCoreNSURLSession *)session identifier:(NSUInteger)identifier request:(NSURLRequest *)request;
+- (instancetype)initWithSession:(WebCoreNSURLSession *)session identifier:(NSUInteger)identifier request:(NSURLRequest *)request;
 - (void)_restart;
 - (void)_cancel;
 @property (assign) WebCoreNSURLSession * _Nullable session;
@@ -280,7 +280,7 @@ NS_ASSUME_NONNULL_END
 #pragma mark - WebCoreNSURLSession
 
 @implementation WebCoreNSURLSession
-- (id)initWithResourceLoader:(PlatformMediaResourceLoader&)loader delegate:(id<NSURLSessionTaskDelegate>)inDelegate delegateQueue:(NSOperationQueue*)inQueue
+- (instancetype)initWithResourceLoader:(PlatformMediaResourceLoader&)loader delegate:(id<NSURLSessionTaskDelegate>)inDelegate delegateQueue:(NSOperationQueue*)inQueue
 {
     self = [super init];
     if (!self)
@@ -712,7 +712,7 @@ void WebCoreNSURLSessionDataTaskClient::loadFinished(PlatformMediaResource& reso
 #pragma mark - WebCoreNSURLSessionDataTask
 
 @implementation WebCoreNSURLSessionDataTask
-- (id)initWithSession:(WebCoreNSURLSession *)session identifier:(NSUInteger)identifier request:(NSURLRequest *)request
+- (instancetype)initWithSession:(WebCoreNSURLSession *)session identifier:(NSUInteger)identifier request:(NSURLRequest *)request
 {
     self.taskIdentifier = identifier;
     self.session = session;
@@ -753,7 +753,7 @@ void WebCoreNSURLSessionDataTaskClient::loadFinished(PlatformMediaResource& reso
     if ([retainedSession rangeResponseGenerator].willHandleRequest(self, self.originalRequest))
         return;
 
-    _resource = [retainedSession loader].requestResource(self.originalRequest, PlatformMediaResourceLoader::LoadOption::DisallowCaching);
+    _resource = retainedSession.loader.requestResource(self.originalRequest, PlatformMediaResourceLoader::LoadOption::DisallowCaching);
     if (_resource) {
         _resource->setClient(adoptRef(*new WebCoreNSURLSessionDataTaskClient(self)));
         return;
@@ -944,7 +944,7 @@ void WebCoreNSURLSessionDataTaskClient::loadFinished(PlatformMediaResource& reso
     ASSERT_UNUSED(resource, !resource || resource == _resource);
     RetainPtr<WebCoreNSURLSession> strongSession { self.session };
     [strongSession addDelegateOperation:[strongSelf = RetainPtr { self }, data = WTFMove(data)] {
-        strongSelf.get().countOfBytesReceived += [data length];
+        strongSelf.get().countOfBytesReceived += data.length;
         id<NSURLSessionDataDelegate> dataDelegate = (id<NSURLSessionDataDelegate>)strongSelf.get().session.delegate;
         if ([dataDelegate respondsToSelector:@selector(URLSession:dataTask:didReceiveData:)])
             [dataDelegate URLSession:(NSURLSession *)strongSelf.get().session dataTask:(NSURLSessionDataTask *)strongSelf.get() didReceiveData:data.get()];

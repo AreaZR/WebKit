@@ -79,7 +79,7 @@ void TextFieldMac::draw(GraphicsContext& context, const FloatRoundedRect& border
             paintRect.move(0, -1 / transform.yScale());
         }
         
-        [m_textFieldCell.get() setEnabled:enabled];
+        m_textFieldCell.get().enabled = enabled;
 
         auto styleForDrawing = style;
         styleForDrawing.states.remove(ControlStyle::State::Focused);

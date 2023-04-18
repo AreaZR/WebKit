@@ -140,7 +140,7 @@ DragData::DragData(DragDataRef data, const IntPoint& clientPosition, const IntPo
     , m_dragDestinationActionMask(destinationActionMask)
     , m_pageID(pageID)
 #if PLATFORM(MAC)
-    , m_pasteboardName([[m_platformDragData draggingPasteboard] name])
+    , m_pasteboardName(m_platformDragData.draggingPasteboard.name)
 #else
     , m_pasteboardName(Pasteboard::nameOfDragPasteboard())
 #endif
@@ -252,7 +252,7 @@ String DragData::asPlainText() const
         return WTF::userVisibleString([NSURL URLWithString:string]);
 
     // FIXME: WTF should offer a non-Mac-specific way to convert string to precomposed form so we can do it for all platforms.
-    return [(NSString *)string precomposedStringWithCanonicalMapping];
+    return ((NSString *)string).precomposedStringWithCanonicalMapping;
 }
 
 Color DragData::asColor() const
@@ -343,7 +343,7 @@ String DragData::asURL(FilenameConversionPolicy, String* title) const
     Vector<String> types;
     platformStrategies()->pasteboardStrategy()->getTypes(types, m_pasteboardName, context.get());
     if (types.contains(String(legacyFilesPromisePasteboardType())) && fileNames().size() == 1)
-        return [URLByCanonicalizingURL([NSURL fileURLWithPath:fileNames()[0]]) absoluteString];
+        return URLByCanonicalizingURL([NSURL fileURLWithPath:fileNames()[0]]).absoluteString;
 #endif
 
     return { };

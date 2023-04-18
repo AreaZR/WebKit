@@ -64,15 +64,15 @@
 
 - (void)_web_setLayerBoundsOrigin:(CGPoint)origin
 {
-    CGRect bounds = [self bounds];
+    CGRect bounds = self.bounds;
     bounds.origin = origin;
-    [self setBounds:bounds];
+    self.bounds = bounds;
 }
 
 - (void)_web_setLayerTopLeftPosition:(CGPoint)position
 {
-    CGSize layerSize = [self bounds].size;
-    CGPoint anchorPoint = [self anchorPoint];
+    CGSize layerSize = self.bounds.size;
+    CGPoint anchorPoint = self.anchorPoint;
     CGPoint newPosition = CGPointMake(position.x + anchorPoint.x * layerSize.width, position.y + anchorPoint.y * layerSize.height);
     if (isnan(newPosition.x) || isnan(newPosition.y)) {
         WTFLogAlways("Attempt to call [CALayer setPosition] with NaN: newPosition=(%f, %f) position=(%f, %f) anchorPoint=(%f, %f)",
@@ -81,14 +81,14 @@
         return;
     }
     
-    [self setPosition:newPosition];
+    self.position = newPosition;
 }
 
 + (CALayer *)_web_renderLayerWithContextID:(uint32_t)contextID shouldPreserveFlip:(BOOL)preservesFlip
 {
     CALayerHost *layerHost = [CALayerHost layer];
 #ifndef NDEBUG
-    [layerHost setName:@"Hosting layer"];
+    layerHost.name = @"Hosting layer";
 #endif
     layerHost.contextId = contextID;
     layerHost.preservesFlip = preservesFlip;
@@ -152,20 +152,20 @@ void collectDescendantLayersAtPoint(Vector<LayerAndPoint, 16>& layersAtPoint, CA
     if (parent.mask && ![parent _web_maskContainsPoint:point])
         return;
 
-    for (CALayer *layer in [parent sublayers]) {
+    for (CALayer *layer in parent.sublayers) {
         CALayer *layerWithResolvedAnimations = layer;
 
-        if ([[layer animationKeys] count])
+        if ([layer animationKeys].count)
             layerWithResolvedAnimations = [layer presentationLayer];
 
-        auto transform = TransformationMatrix { [layerWithResolvedAnimations transform] };
+        auto transform = TransformationMatrix { layerWithResolvedAnimations.transform };
         if (!transform.isInvertible())
             continue;
 
         CGPoint subviewPoint = [layerWithResolvedAnimations convertPoint:point fromLayer:parent];
 
         auto handlesEvent = [&] {
-            if (CGRectIsEmpty([layerWithResolvedAnimations frame]))
+            if (CGRectIsEmpty(layerWithResolvedAnimations.frame))
                 return false;
 
             if (![layerWithResolvedAnimations containsPoint:subviewPoint])
@@ -177,7 +177,7 @@ void collectDescendantLayersAtPoint(Vector<LayerAndPoint, 16>& layersAtPoint, CA
         if (handlesEvent)
             layersAtPoint.append(std::make_pair(layer, subviewPoint));
 
-        if ([layer sublayers])
+        if (layer.sublayers)
             collectDescendantLayersAtPoint(layersAtPoint, layer, subviewPoint, pointInLayerFunction);
     };
 }

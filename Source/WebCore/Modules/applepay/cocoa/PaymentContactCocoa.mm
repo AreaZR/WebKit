@@ -62,22 +62,22 @@ static RetainPtr<PKContact> convert(unsigned version, const ApplePayPaymentConta
 
     if (familyName || givenName) {
         auto name = adoptNS([[NSPersonNameComponents alloc] init]);
-        [name setFamilyName:familyName];
-        [name setGivenName:givenName];
+        name.familyName = familyName;
+        name.givenName = givenName;
         if (phoneticFamilyName || phoneticGivenName) {
             auto phoneticName = adoptNS([[NSPersonNameComponents alloc] init]);
-            [phoneticName setFamilyName:phoneticFamilyName];
-            [phoneticName setGivenName:phoneticGivenName];
-            [name setPhoneticRepresentation:phoneticName.get()];
+            phoneticName.familyName = phoneticFamilyName;
+            phoneticName.givenName = phoneticGivenName;
+            name.phoneticRepresentation = phoneticName.get();
         }
-        [result setName:name.get()];
+        result.name = name.get();
     }
 
     if (!contact.emailAddress.isEmpty())
-        [result setEmailAddress:contact.emailAddress];
+        result.emailAddress = contact.emailAddress;
 
     if (!contact.phoneNumber.isEmpty())
-        [result setPhoneNumber:adoptNS([allocCNPhoneNumberInstance() initWithStringValue:contact.phoneNumber]).get()];
+        result.phoneNumber = adoptNS([allocCNPhoneNumberInstance() initWithStringValue:contact.phoneNumber]).get();
 
     if (contact.addressLines && !contact.addressLines->isEmpty()) {
         auto address = adoptNS([allocCNMutablePostalAddressInstance() init]);
@@ -90,24 +90,24 @@ static RetainPtr<PKContact> convert(unsigned version, const ApplePayPaymentConta
         }
 
         // FIXME: StringBuilder should hava a toNSString() function to avoid the extra String allocation.
-        [address setStreet:builder.toString()];
+        address.street = builder.toString();
 
         if (!contact.subLocality.isEmpty())
-            [address setSubLocality:contact.subLocality];
+            address.subLocality = contact.subLocality;
         if (!contact.locality.isEmpty())
-            [address setCity:contact.locality];
+            address.city = contact.locality;
         if (!contact.postalCode.isEmpty())
-            [address setPostalCode:contact.postalCode];
+            address.postalCode = contact.postalCode;
         if (!contact.subAdministrativeArea.isEmpty())
-            [address setSubAdministrativeArea:contact.subAdministrativeArea];
+            address.subAdministrativeArea = contact.subAdministrativeArea;
         if (!contact.administrativeArea.isEmpty())
-            [address setState:contact.administrativeArea];
+            address.state = contact.administrativeArea;
         if (!contact.country.isEmpty())
-            [address setCountry:contact.country];
+            address.country = contact.country;
         if (!contact.countryCode.isEmpty())
-            [address setISOCountryCode:contact.countryCode];
+            address.ISOCountryCode = contact.countryCode;
 
-        [result setPostalAddress:address.get()];
+        result.postalAddress = address.get();
     }
 
     return result;

@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, NSViewSemanticContext) {
 
 @interface NSView ()
 
-- (NSView *)_findLastViewInKeyViewLoop;
+@property (nonatomic, readonly, strong) NSView *_findLastViewInKeyViewLoop;
 
 #if USE(NSVIEW_SEMANTICCONTEXT)
 @property (nonatomic, setter=_setSemanticContext:) NSViewSemanticContext _semanticContext;

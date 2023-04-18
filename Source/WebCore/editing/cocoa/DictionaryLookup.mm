@@ -76,7 +76,7 @@ SOFT_LINK(UIKitMacHelper, UINSSharedRevealController, id<UINSRevealController>, 
 @property (nonatomic, readonly) BOOL useDefaultHighlight;
 @property (nonatomic, readonly) RetainPtr<NSAttributedString> attributedString;
 
-- (instancetype)initWithHighlightRect:(NSRect)highlightRect useDefaultHighlight:(BOOL)useDefaultHighlight attributedString:(NSAttributedString *)attributedString clearTextIndicatorCallback:(Function<void()>&&)clearTextIndicatorCallback;
+- (instancetype)initWithHighlightRect:(NSRect)highlightRect useDefaultHighlight:(BOOL)useDefaultHighlight attributedString:(NSAttributedString *)attributedString clearTextIndicatorCallback:(Function<void()>&&)clearTextIndicatorCallback NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -112,12 +112,12 @@ SOFT_LINK(UIKitMacHelper, UINSSharedRevealController, id<UINSRevealController>, 
         NSRect rect = rectVal.rectValue;
 
         // Get current font attributes from the attributed string above, and add paragraph style attribute in order to center text.
-        auto attributes = adoptNS([[NSMutableDictionary alloc] initWithDictionary:[self.attributedString fontAttributesInRange:NSMakeRange(0, [self.attributedString length])]]);
+        auto attributes = adoptNS([[NSMutableDictionary alloc] initWithDictionary:[self.attributedString fontAttributesInRange:NSMakeRange(0, self.attributedString.length)]]);
         auto paragraph = adoptNS([[NSMutableParagraphStyle alloc] init]);
-        [paragraph setAlignment:NSTextAlignmentCenter];
-        [attributes setObject:paragraph.get() forKey:NSParagraphStyleAttributeName];
+        paragraph.alignment = NSTextAlignmentCenter;
+        attributes[NSParagraphStyleAttributeName] = paragraph.get();
     
-        auto string = adoptNS([[NSAttributedString alloc] initWithString:[self.attributedString string] attributes:attributes.get()]);
+        auto string = adoptNS([[NSAttributedString alloc] initWithString:self.attributedString.string attributes:attributes.get()]);
         [string drawInRect:rect];
     }
 }
@@ -389,12 +389,12 @@ std::tuple<NSString *, NSDictionary *> DictionaryLookup::stringForPDFSelection(P
     RetainPtr<PDFSelection> selectionForLookup = adoptNS([selection copy]);
 
     // As context, we are going to use 250 characters of text before and after the point.
-    auto originalLength = [selectionForLookup string].length;
+    auto originalLength = selectionForLookup.string.length;
     NSInteger charactersAddedBeforeStart = 0;
     NSInteger charactersAddedAfterEnd = 0;
     expandSelectionByCharacters(selectionForLookup.get(), 250, charactersAddedBeforeStart, charactersAddedAfterEnd);
 
-    auto fullPlainTextString = [selectionForLookup string];
+    auto fullPlainTextString = selectionForLookup.string;
     auto rangeToPass = NSMakeRange(charactersAddedBeforeStart, 0);
 
     auto item = adoptNS([PAL::allocRVItemInstance() initWithText:fullPlainTextString selectedRange:rangeToPass]);

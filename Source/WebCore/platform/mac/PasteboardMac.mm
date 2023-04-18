@@ -204,9 +204,9 @@ static long writeURLForTypes(const Vector<String>& types, const String& pasteboa
     NSURL *cocoaURL = pasteboardURL.url;
     NSString *userVisibleString = pasteboardURL.userVisibleForm;
     NSString *title = (NSString *)pasteboardURL.title;
-    if (![title length]) {
-        title = [[cocoaURL path] lastPathComponent];
-        if (![title length])
+    if (!title.length) {
+        title = cocoaURL.path.lastPathComponent;
+        if (!title.length)
             title = userVisibleString;
     }
 
@@ -215,7 +215,7 @@ static long writeURLForTypes(const Vector<String>& types, const String& pasteboa
         newChangeCount = platformStrategies()->pasteboardStrategy()->setURL(url, pasteboardName, context);
     }
     if (types.contains(String(legacyURLPasteboardType())))
-        newChangeCount = platformStrategies()->pasteboardStrategy()->setStringForType([cocoaURL absoluteString], legacyURLPasteboardType(), pasteboardName, context);
+        newChangeCount = platformStrategies()->pasteboardStrategy()->setStringForType(cocoaURL.absoluteString, legacyURLPasteboardType(), pasteboardName, context);
     if (types.contains(WebURLPboardType))
         newChangeCount = platformStrategies()->pasteboardStrategy()->setStringForType(userVisibleString, WebURLPboardType, pasteboardName, context);
     if (types.contains(WebURLNamePboardType))
@@ -247,7 +247,7 @@ void Pasteboard::write(const Color& color)
 static NSFileWrapper* fileWrapper(const PasteboardImage& pasteboardImage)
 {
     auto wrapper = adoptNS([[NSFileWrapper alloc] initRegularFileWithContents:pasteboardImage.resourceData->makeContiguous()->createNSData().get()]);
-    [wrapper setPreferredFilename:suggestedFilenameWithMIMEType(pasteboardImage.url.url, pasteboardImage.resourceMIMEType)];
+    wrapper.preferredFilename = suggestedFilenameWithMIMEType(pasteboardImage.url.url, pasteboardImage.resourceMIMEType);
     return wrapper.autorelease();
 }
 
@@ -255,7 +255,7 @@ static void writeFileWrapperAsRTFDAttachment(NSFileWrapper *wrapper, const Strin
 {
     NSAttributedString *string = [NSAttributedString attributedStringWithAttachment:adoptNS([[NSTextAttachment alloc] initWithFileWrapper:wrapper]).get()];
 
-    NSData *RTFDData = [string RTFDFromRange:NSMakeRange(0, [string length]) documentAttributes:@{ }];
+    NSData *RTFDData = [string RTFDFromRange:NSMakeRange(0, string.length) documentAttributes:@{ }];
     if (!RTFDData)
         return;
 
@@ -373,7 +373,7 @@ void Pasteboard::read(PasteboardPlainText& text, PlainTextURLReadingPolicy allow
     if (types.contains(String(legacyRTFDPasteboardType()))) {
         if (auto data = readBufferAtPreferredItemIndex(legacyRTFDPasteboardType(), itemIndex, strategy, m_pasteboardName, context())) {
             if (auto attributedString = adoptNS([[NSAttributedString alloc] initWithRTFD:data->makeContiguous()->createNSData().get() documentAttributes:nil])) {
-                text.text = [attributedString string];
+                text.text = attributedString.string;
                 text.isURL = false;
                 return;
             }
@@ -383,7 +383,7 @@ void Pasteboard::read(PasteboardPlainText& text, PlainTextURLReadingPolicy allow
     if (types.contains(String(NSPasteboardTypeRTFD))) {
         if (auto data = readBufferAtPreferredItemIndex(NSPasteboardTypeRTFD, itemIndex, strategy, m_pasteboardName, context())) {
             if (auto attributedString = adoptNS([[NSAttributedString alloc] initWithRTFD:data->createNSData().get() documentAttributes:nil])) {
-                text.text = [attributedString string];
+                text.text = attributedString.string;
                 text.isURL = false;
                 return;
             }
@@ -393,7 +393,7 @@ void Pasteboard::read(PasteboardPlainText& text, PlainTextURLReadingPolicy allow
     if (types.contains(String(legacyRTFPasteboardType()))) {
         if (auto data = readBufferAtPreferredItemIndex(legacyRTFPasteboardType(), itemIndex, strategy, m_pasteboardName, context())) {
             if (auto attributedString = adoptNS([[NSAttributedString alloc] initWithRTF:data->createNSData().get() documentAttributes:nil])) {
-                text.text = [attributedString string];
+                text.text = attributedString.string;
                 text.isURL = false;
                 return;
             }
@@ -403,7 +403,7 @@ void Pasteboard::read(PasteboardPlainText& text, PlainTextURLReadingPolicy allow
     if (types.contains(String(NSPasteboardTypeRTF))) {
         if (auto data = readBufferAtPreferredItemIndex(NSPasteboardTypeRTF, itemIndex, strategy, m_pasteboardName, context())) {
             if (auto attributedString = adoptNS([[NSAttributedString alloc] initWithRTF:data->createNSData().get() documentAttributes:nil])) {
-                text.text = [attributedString string];
+                text.text = attributedString.string;
                 text.isURL = false;
                 return;
             }
@@ -640,7 +640,7 @@ Vector<String> Pasteboard::readPlatformValuesAsStrings(const String& domType, in
     auto values = strategy.allStringsForType(cocoaType, pasteboardName, context());
     if (cocoaType == String(legacyStringPasteboardType())) {
         values = values.map([&] (auto& value) -> String {
-            return [value precomposedStringWithCanonicalMapping];
+            return value.precomposedStringWithCanonicalMapping;
         });
     }
 
@@ -696,7 +696,7 @@ void Pasteboard::writeString(const String& type, const String& data)
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
     if (cocoaType == String(legacyURLPasteboardType()) || cocoaType == String(kUTTypeFileURL)) {
         NSURL *url = [NSURL URLWithString:cocoaData];
-        if ([url isFileURL])
+        if (url.fileURL)
             return;
         platformStrategies()->pasteboardStrategy()->setTypes({ cocoaType }, m_pasteboardName, context());
         m_changeCount = platformStrategies()->pasteboardStrategy()->setStringForType(cocoaData, cocoaType, m_pasteboardName, context());
@@ -777,14 +777,14 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
     CoreDragImageSpec imageSpec;
     imageSpec.version = kCoreDragImageSpecVersionOne;
-    imageSpec.pixelsWide = [bitmapImage pixelsWide];
-    imageSpec.pixelsHigh = [bitmapImage pixelsHigh];
-    imageSpec.bitsPerSample = [bitmapImage bitsPerSample];
-    imageSpec.samplesPerPixel = [bitmapImage samplesPerPixel];
-    imageSpec.bitsPerPixel = [bitmapImage bitsPerPixel];
-    imageSpec.bytesPerRow = [bitmapImage bytesPerRow];
-    imageSpec.isPlanar = [bitmapImage isPlanar];
-    imageSpec.hasAlpha = [bitmapImage hasAlpha];
+    imageSpec.pixelsWide = bitmapImage.pixelsWide;
+    imageSpec.pixelsHigh = bitmapImage.pixelsHigh;
+    imageSpec.bitsPerSample = bitmapImage.bitsPerSample;
+    imageSpec.samplesPerPixel = bitmapImage.samplesPerPixel;
+    imageSpec.bitsPerPixel = bitmapImage.bitsPerPixel;
+    imageSpec.bytesPerRow = bitmapImage.bytesPerRow;
+    imageSpec.isPlanar = bitmapImage.planar;
+    imageSpec.hasAlpha = bitmapImage.alpha;
     [bitmapImage getBitmapDataPlanes:const_cast<unsigned char**>(imageSpec.data)];
 
     // if image was flipped, we have an upside down bitmap since the cache is rendered flipped
@@ -824,7 +824,7 @@ void Pasteboard::setDragImage(DragImage image, const IntPoint& location)
     // This is the most innocuous event to use, per Kristin Forster.
     // This is only relevant in WK1. Do not execute in the WebContent process, since it is now using
     // NSRunLoop, and not the NSApplication run loop.
-    if ([NSApp isRunning]) {
+    if (NSApp.running) {
         ASSERT(hasProcessPrivilege(ProcessPrivilege::CanCommunicateWithWindowServer));
         NSEvent* event = [NSEvent mouseEventWithType:NSEventTypeMouseMoved location:NSZeroPoint
             modifierFlags:0 timestamp:0 windowNumber:0 context:nil eventNumber:0 clickCount:0 pressure:0];

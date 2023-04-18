@@ -79,7 +79,7 @@ SOFT_LINK_CONSTANT(CoreLocation, kCLLocationAccuracyHundredMeters, double)
         _locationManager = adoptNS([allocCLLocationManagerInstance() init]);
     _client = &client;
     _websiteIdentifier = websiteIdentifier;
-    [_locationManager setDelegate:self];
+    _locationManager.delegate = self;
     return self;
 }
 
@@ -96,12 +96,12 @@ SOFT_LINK_CONSTANT(CoreLocation, kCLLocationAccuracyHundredMeters, double)
 
 - (void)setEnableHighAccuracy:(BOOL)highAccuracyEnabled
 {
-    [_locationManager setDesiredAccuracy:highAccuracyEnabled ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters];
+    _locationManager.desiredAccuracy = highAccuracyEnabled ? kCLLocationAccuracyBest : kCLLocationAccuracyHundredMeters;
 }
 
 - (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager
 {
-    auto status = [_locationManager authorizationStatus];
+    auto status = _locationManager.authorizationStatus;
     if (_isWaitingForAuthorization) {
         switch (status) {
         case kCLAuthorizationStatusNotDetermined:
@@ -142,12 +142,12 @@ SOFT_LINK_CONSTANT(CoreLocation, kCLLocationAccuracyHundredMeters, double)
     ASSERT(error);
     UNUSED_PARAM(manager);
 
-    if ([error code] == kCLErrorDenied) {
+    if (error.code == kCLErrorDenied) {
         // Ignore the error here and let locationManager:didChangeAuthorizationStatus: handle the permission.
         return;
     }
 
-    NSString *errorMessage = [error localizedDescription];
+    NSString *errorMessage = error.localizedDescription;
     _client->errorOccurred(_websiteIdentifier, errorMessage);
 }
 

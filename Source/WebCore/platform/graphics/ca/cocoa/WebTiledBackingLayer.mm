@@ -32,14 +32,14 @@
 
 @implementation WebTiledBackingLayer
 
-- (id)init
+- (instancetype)init
 {
     self = [super init];
     if (!self)
         return nil;
 
 #ifndef NDEBUG
-    [self setName:@"WebTiledBackingLayer"];
+    self.name = @"WebTiledBackingLayer";
 #endif
     return self;
 }
@@ -68,7 +68,7 @@
 
 - (void)setBounds:(CGRect)bounds
 {
-    [super setBounds:bounds];
+    super.bounds = bounds;
 
     _tileController->tileCacheLayerBoundsChanged();
 }

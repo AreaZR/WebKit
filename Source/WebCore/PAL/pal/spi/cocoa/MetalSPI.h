@@ -35,9 +35,9 @@
 typedef struct __IOSurface *IOSurfaceRef;
 
 @protocol MTLDeviceSPI <MTLDevice>
-- (NSString*)vendorName;
-- (NSString*)familyName;
-- (NSString*)productName;
+@property (nonatomic, readonly, copy) NSString *vendorName;
+@property (nonatomic, readonly, copy) NSString *familyName;
+@property (nonatomic, readonly, copy) NSString *productName;
 - (id <MTLSharedEvent>)newSharedEventWithMachPort:(mach_port_t)machPort;
 @end
 
@@ -46,7 +46,7 @@ typedef struct __IOSurface *IOSurfaceRef;
 @end
 
 @interface MTLSharedEventHandle(Private)
-- (mach_port_t)eventPort;
+@property (nonatomic, readonly) mach_port_t eventPort;
 @end
 
 #if !PLATFORM(IOS_FAMILY_SIMULATOR)

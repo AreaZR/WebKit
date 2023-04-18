@@ -39,14 +39,14 @@
 @interface WebQueuedVideoOutputDelegate : NSObject<AVPlayerItemOutputPullDelegate> {
     WeakPtr<WebCore::QueuedVideoOutput> _parent;
 }
-- (id)initWithParent:(WebCore::QueuedVideoOutput*)parent;
+- (instancetype)initWithParent:(WebCore::QueuedVideoOutput*)parent NS_DESIGNATED_INITIALIZER;
 - (void)outputMediaDataWillChange:(AVPlayerItemOutput *)output;
 - (void)outputSequenceWasFlushed:(AVPlayerItemOutput *)output;
 - (void)observeValueForKeyPath:keyPath ofObject:(id)object change:(NSDictionary *)change context:(void*)context;
 @end
 
 @implementation WebQueuedVideoOutputDelegate
-- (id)initWithParent:(WebCore::QueuedVideoOutput*)parent
+- (instancetype)initWithParent:(WebCore::QueuedVideoOutput*)parent
 {
     self = [super init];
     if (!self)
@@ -63,7 +63,7 @@
 
     Vector<WebCore::QueuedVideoOutput::VideoFrameEntry> videoFrameEntries;
     do {
-        CMTime earliestTime = [videoOutput earliestAvailablePixelBufferItemTime];
+        CMTime earliestTime = videoOutput.earliestAvailablePixelBufferItemTime;
         if (CMTIME_IS_INVALID(earliestTime))
             break;
 

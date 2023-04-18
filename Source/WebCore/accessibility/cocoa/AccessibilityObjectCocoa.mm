@@ -131,7 +131,7 @@ String AccessibilityObject::descriptionAttributeValue() const
         case AccessibilityTextSource::Action: {
             if (!text.text.length())
                 break;
-            if ([returnText length])
+            if (returnText.length)
                 [returnText appendString:@", "];
             [returnText appendString:text.text];
             break;

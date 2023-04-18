@@ -39,8 +39,8 @@
 + (void)registerRemoteUIProcessIdentifier:(pid_t)pid;
 + (void)unregisterRemoteUIProcessIdentifier:(pid_t)pid;
 
-- (id)initWithRemoteToken:(NSData *)remoteToken;
-- (pid_t)processIdentifier;
+- (instancetype)initWithRemoteToken:(NSData *)remoteToken;
+@property (nonatomic, readonly) pid_t processIdentifier;
 - (void)accessibilitySetPresenterProcessIdentifier:(pid_t)presenterPID;
 
 @property (retain) id windowUIElement;

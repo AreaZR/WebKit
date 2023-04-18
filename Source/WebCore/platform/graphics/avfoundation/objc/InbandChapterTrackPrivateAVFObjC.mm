@@ -56,19 +56,19 @@ void InbandChapterTrackPrivateAVFObjC::processChapters(RetainPtr<NSArray<AVTimed
     auto createChapterCue = ([this, identifier] (AVMetadataItem *item, int chapterNumber) mutable {
         if (!client())
             return;
-        ChapterData chapterData = { PAL::toMediaTime([item time]), PAL::toMediaTime([item duration]), [item stringValue] };
+        ChapterData chapterData = { PAL::toMediaTime(item.time), PAL::toMediaTime(item.duration), item.stringValue };
         if (m_processedChapters.contains(chapterData))
             return;
         m_processedChapters.append(chapterData);
 
-        ISOWebVTTCue cueData = ISOWebVTTCue(PAL::toMediaTime([item time]), PAL::toMediaTime([item duration]), AtomString::number(chapterNumber), [item stringValue]);
+        ISOWebVTTCue cueData = ISOWebVTTCue(PAL::toMediaTime(item.time), PAL::toMediaTime(item.duration), AtomString::number(chapterNumber), item.stringValue);
         INFO_LOG(identifier, "created cue ", cueData);
         client()->parseWebVTTCueData(WTFMove(cueData));
     });
 
     int chapterNumber = 0;
     for (AVTimedMetadataGroup *chapter in chapters.get()) {
-        for (AVMetadataItem *item in [chapter items]) {
+        for (AVMetadataItem *item in chapter.items) {
             ++chapterNumber;
             if ([item statusOfValueForKey:@"value" error:nil] == AVKeyValueStatusLoaded)
                 createChapterCue(item, chapterNumber);
@@ -96,7 +96,7 @@ AtomString InbandChapterTrackPrivateAVFObjC::language() const
     if (!m_language.isEmpty())
         return m_language;
 
-    m_language = [m_locale localeIdentifier];
+    m_language = m_locale.localeIdentifier;
     return m_language;
 }
 

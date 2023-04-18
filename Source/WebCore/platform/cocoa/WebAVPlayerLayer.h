@@ -55,7 +55,7 @@ WEBCORE_EXPORT @interface WebAVPlayerLayer : CALayer
 @property (nonatomic, retain, nonnull) CALayer *videoSublayer;
 @property (nonatomic, copy, nullable) NSDictionary *pixelBufferAttributes;
 @property CGSize videoDimensions;
-- (WebCore::FloatRect)calculateTargetVideoFrame;
+@property (nonatomic, readonly) WebCore::FloatRect calculateTargetVideoFrame;
 @end
 
 #endif // HAVE(AVKIT)

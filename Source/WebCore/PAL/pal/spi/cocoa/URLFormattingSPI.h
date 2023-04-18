@@ -34,7 +34,7 @@
 #else
 
 @interface NSURL ()
-- (NSString *)_lp_simplifiedDisplayString;
+@property (nonatomic, readonly, copy) NSString *_lp_simplifiedDisplayString;
 @end
 
 #endif

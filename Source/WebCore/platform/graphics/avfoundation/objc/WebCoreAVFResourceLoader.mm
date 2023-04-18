@@ -281,12 +281,12 @@ void WebCoreAVFResourceLoader::startLoading()
     if (m_dataURLMediaLoader || m_resourceMediaLoader || m_platformMediaLoader || !m_parent)
         return;
 
-    NSURLRequest *nsRequest = [m_avRequest request];
+    NSURLRequest *nsRequest = m_avRequest.request;
 
     ResourceRequest request(nsRequest);
     request.setPriority(ResourceLoadPriority::Low);
 
-    if (AVAssetResourceLoadingDataRequest *dataRequest = [m_avRequest dataRequest]; dataRequest.requestedLength
+    if (AVAssetResourceLoadingDataRequest *dataRequest = m_avRequest.dataRequest; dataRequest.requestedLength
         && !request.hasHTTPHeaderField(HTTPHeaderName::Range)) {
         String rangeEnd = dataRequest.requestsAllDataToEndOfResource ? emptyString() : makeString(dataRequest.requestedOffset + dataRequest.requestedLength - 1);
         request.addHTTPHeaderField(HTTPHeaderName::Range, makeString("bytes=", dataRequest.requestedOffset, '-', rangeEnd));
@@ -350,12 +350,12 @@ void WebCoreAVFResourceLoader::responseReceived(const ResourceResponse& response
     if (contentRange.isValid())
         m_responseOffset = static_cast<NSUInteger>(contentRange.firstBytePosition());
 
-    if (AVAssetResourceLoadingContentInformationRequest* contentInfo = [m_avRequest contentInformationRequest]) {
+    if (AVAssetResourceLoadingContentInformationRequest* contentInfo = m_avRequest.contentInformationRequest) {
         String uti = UTIFromMIMEType(response.mimeType());
 
-        [contentInfo setContentType:uti];
+        contentInfo.contentType = uti;
 
-        [contentInfo setContentLength:contentRange.isValid() ? contentRange.instanceLength() : response.expectedContentLength()];
+        contentInfo.contentLength = contentRange.isValid() ? contentRange.instanceLength() : response.expectedContentLength();
         [contentInfo setByteRangeAccessSupported:YES];
 
         // Do not set "EntireLengthAvailableOnDemand" to YES when the loader is DataURLResourceMediaLoader.
@@ -365,7 +365,7 @@ void WebCoreAVFResourceLoader::responseReceived(const ResourceResponse& response
         if (!m_dataURLMediaLoader && [contentInfo respondsToSelector:@selector(setEntireLengthAvailableOnDemand:)])
             [contentInfo setEntireLengthAvailableOnDemand:YES];
 
-        if (![m_avRequest dataRequest]) {
+        if (!m_avRequest.dataRequest) {
             [m_avRequest finishLoading];
             stopLoading();
         }
@@ -376,8 +376,8 @@ void WebCoreAVFResourceLoader::loadFailed(const ResourceError& error)
 {
     // <rdar://problem/13987417> Set the contentType of the contentInformationRequest to an empty
     // string to trigger AVAsset's playable value to complete loading.
-    if ([m_avRequest contentInformationRequest] && ![[m_avRequest contentInformationRequest] contentType])
-        [[m_avRequest contentInformationRequest] setContentType:@""];
+    if (m_avRequest.contentInformationRequest && !m_avRequest.contentInformationRequest.contentType)
+        m_avRequest.contentInformationRequest.contentType = @"";
 
     [m_avRequest finishLoadingWithError:error.nsError()];
     stopLoading();
@@ -391,7 +391,7 @@ void WebCoreAVFResourceLoader::loadFinished()
 
 void WebCoreAVFResourceLoader::newDataStoredInSharedBuffer(const FragmentedSharedBuffer& data)
 {
-    AVAssetResourceLoadingDataRequest* dataRequest = [m_avRequest dataRequest];
+    AVAssetResourceLoadingDataRequest* dataRequest = m_avRequest.dataRequest;
     if (!dataRequest)
         return;
 

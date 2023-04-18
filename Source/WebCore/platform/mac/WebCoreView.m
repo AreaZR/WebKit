@@ -30,11 +30,11 @@
 #import "WebCoreView.h"
 
 @interface NSClipView (WebCoreView)
-- (NSView *)_webcore_effectiveFirstResponder;
+@property (nonatomic, readonly, strong) NSView *_webcore_effectiveFirstResponder;
 @end
 
 @interface NSScrollView (WebCoreView)
-- (NSView *)_webcore_effectiveFirstResponder;
+@property (nonatomic, readonly, strong) NSView *_webcore_effectiveFirstResponder;
 @end
 
 @implementation NSView (WebCoreView)
@@ -50,7 +50,7 @@
 
 - (NSView *)_webcore_effectiveFirstResponder
 {
-    NSView *view = [self documentView];
+    NSView *view = self.documentView;
     return view ? [view _webcore_effectiveFirstResponder] : [super _webcore_effectiveFirstResponder];
 }
 
@@ -60,7 +60,7 @@
 
 - (NSView *)_webcore_effectiveFirstResponder
 {
-    NSView *view = [self contentView];
+    NSView *view = self.contentView;
     return view ? [view _webcore_effectiveFirstResponder] : [super _webcore_effectiveFirstResponder];
 }
 

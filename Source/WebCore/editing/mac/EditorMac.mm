@@ -90,7 +90,7 @@ void Editor::platformCopyFont()
     Pasteboard pasteboard(PagePasteboardContext::create(m_document.pageID()), NSPasteboardNameFont);
 
     auto fontSampleString = adoptNS([[NSAttributedString alloc] initWithString:@"x" attributes:fontAttributesAtSelectionStart().createDictionary().get()]);
-    auto fontData = RetainPtr([fontSampleString RTFFromRange:NSMakeRange(0, [fontSampleString length]) documentAttributes:@{ }]);
+    auto fontData = RetainPtr([fontSampleString RTFFromRange:NSMakeRange(0, fontSampleString.length) documentAttributes:@{ }]);
 
     PasteboardBuffer pasteboardBuffer;
     pasteboardBuffer.contentOrigin = m_document.originIdentifierForPasteboard();
@@ -114,17 +114,17 @@ void Editor::platformPasteFont()
     auto style = MutableStyleProperties::create();
 
     Color backgroundColor;
-    if (NSColor *nsBackgroundColor = dynamic_objc_cast<NSColor>([fontAttributes objectForKey:NSBackgroundColorAttributeName]))
+    if (NSColor *nsBackgroundColor = dynamic_objc_cast<NSColor>(fontAttributes[NSBackgroundColorAttributeName]))
         backgroundColor = colorFromCocoaColor(nsBackgroundColor);
     if (!backgroundColor.isValid())
         backgroundColor = Color::transparentBlack;
     style->setProperty(CSSPropertyBackgroundColor, CSSValuePool::singleton().createColorValue(backgroundColor));
 
-    if (NSFont *font = dynamic_objc_cast<NSFont>([fontAttributes objectForKey:NSFontAttributeName])) {
+    if (NSFont *font = dynamic_objc_cast<NSFont>(fontAttributes[NSFontAttributeName])) {
         // FIXME: Need more sophisticated escaping code if we want to handle family names
         // with characters like single quote or backslash in their names.
-        style->setProperty(CSSPropertyFontFamily, [NSString stringWithFormat:@"'%@'", [font familyName]]);
-        style->setProperty(CSSPropertyFontSize, CSSPrimitiveValue::create([font pointSize], CSSUnitType::CSS_PX));
+        style->setProperty(CSSPropertyFontFamily, [NSString stringWithFormat:@"'%@'", font.familyName]);
+        style->setProperty(CSSPropertyFontSize, CSSPrimitiveValue::create(font.pointSize, CSSUnitType::CSS_PX));
         // FIXME: Map to the entire range of CSS weight values.
         style->setProperty(CSSPropertyFontWeight, ([NSFontManager.sharedFontManager weightOfFont:font] >= 7) ? CSSValueBold : CSSValueNormal);
         style->setProperty(CSSPropertyFontStyle, ([NSFontManager.sharedFontManager traitsOfFont:font] & NSItalicFontMask) ? CSSValueItalic : CSSValueNormal);
@@ -136,7 +136,7 @@ void Editor::platformPasteFont()
     }
 
     Color foregroundColor;
-    if (NSColor *nsForegroundColor = dynamic_objc_cast<NSColor>([fontAttributes objectForKey:NSForegroundColorAttributeName])) {
+    if (NSColor *nsForegroundColor = dynamic_objc_cast<NSColor>(fontAttributes[NSForegroundColorAttributeName])) {
         foregroundColor = colorFromCocoaColor(nsForegroundColor);
         if (!foregroundColor.isValid())
             foregroundColor = Color::transparentBlack;
@@ -145,16 +145,16 @@ void Editor::platformPasteFont()
     style->setProperty(CSSPropertyColor, CSSValuePool::singleton().createColorValue(foregroundColor));
 
     FontShadow fontShadow;
-    if (NSShadow *nsFontShadow = dynamic_objc_cast<NSShadow>([fontAttributes objectForKey:NSShadowAttributeName]))
+    if (NSShadow *nsFontShadow = dynamic_objc_cast<NSShadow>(fontAttributes[NSShadowAttributeName]))
         fontShadow = fontShadowFromNSShadow(nsFontShadow);
     style->setProperty(CSSPropertyTextShadow, serializationForCSS(fontShadow));
 
-    auto superscriptStyle = [[fontAttributes objectForKey:NSSuperscriptAttributeName] intValue];
+    auto superscriptStyle = [fontAttributes[NSSuperscriptAttributeName] intValue];
     style->setProperty(CSSPropertyVerticalAlign, (superscriptStyle > 0) ? CSSValueSuper : ((superscriptStyle < 0) ? CSSValueSub : CSSValueBaseline));
 
     // FIXME: Underline wins here if we have both (see bug 3790443).
-    auto underlineStyle = [[fontAttributes objectForKey:NSUnderlineStyleAttributeName] intValue];
-    auto strikethroughStyle = [[fontAttributes objectForKey:NSStrikethroughStyleAttributeName] intValue];
+    auto underlineStyle = [fontAttributes[NSUnderlineStyleAttributeName] intValue];
+    auto strikethroughStyle = [fontAttributes[NSStrikethroughStyleAttributeName] intValue];
     style->setProperty(CSSPropertyWebkitTextDecorationsInEffect, (underlineStyle != NSUnderlineStyleNone) ? CSSValueUnderline : ((strikethroughStyle != NSUnderlineStyleNone) ? CSSValueLineThrough : CSSValueNone));
 
     applyStyleToSelection(style.ptr(), EditAction::PasteFont);
@@ -189,7 +189,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     if (pasteboardType == String(legacyRTFPasteboardType())) {
         auto string = attributedString(*adjustedSelectionRange()).nsAttributedString();
         // FIXME: Why is this stripping needed here, but not in writeSelectionToPasteboard?
-        if ([string containsAttachments])
+        if (string.containsAttachments)
             string = attributedStringByStrippingAttachmentCharacters(string.get());
         return dataInRTFFormat(string.get());
     }
@@ -233,7 +233,7 @@ String Editor::plainTextFromPasteboard(const PasteboardPlainText& text)
         string = WTF::userVisibleString([NSURL URLWithString:string]);
 
     // FIXME: WTF should offer a non-Mac-specific way to convert string to precomposed form so we can do it for all platforms.
-    return [(NSString *)string precomposedStringWithCanonicalMapping];
+    return ((NSString *)string).precomposedStringWithCanonicalMapping;
 }
 
 void Editor::writeImageToPasteboard(Pasteboard& pasteboard, Element& imageElement, const URL& url, const String& title)

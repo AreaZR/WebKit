@@ -144,7 +144,7 @@ static FragmentAndResources createFragment(LocalFrame& frame, NSAttributedString
 #endif
 
     NSArray *subresources = nil;
-    NSString *fragmentString = [string _htmlDocumentFragmentString:NSMakeRange(0, [string length]) documentAttributes:attributesForAttributedStringConversion() subresources:&subresources];
+    NSString *fragmentString = [string _htmlDocumentFragmentString:NSMakeRange(0, string.length) documentAttributes:attributesForAttributedStringConversion() subresources:&subresources];
     auto fragment = DocumentFragment::create(document);
     auto dummyBodyToForceInBodyInsertionMode = HTMLBodyElement::create(document);
     fragment->parseHTML(fragmentString, dummyBodyToForceInBodyInsertionMode, { });
@@ -673,7 +673,7 @@ bool WebContentReader::readPlainText(const String& text)
     if (!allowPlainText)
         return false;
 
-    String precomposedString = [text precomposedStringWithCanonicalMapping];
+    String precomposedString = text.precomposedStringWithCanonicalMapping;
     if (auto* page = frame.page())
         precomposedString = page->sanitizeLookalikeCharacters(precomposedString, LookalikeCharacterSanitizationTrigger::Paste);
 
@@ -839,7 +839,7 @@ bool WebContentReader::readURL(const URL& url, const String& title)
     anchor->setAttributeWithoutSynchronization(HTMLNames::hrefAttr, AtomString { sanitizedURLString });
 
     NSString *linkText = title.isEmpty() ? sanitizedURLString : title;
-    anchor->appendChild(document->createTextNode([linkText precomposedStringWithCanonicalMapping]));
+    anchor->appendChild(document->createTextNode(linkText.precomposedStringWithCanonicalMapping));
 
     auto newFragment = document->createDocumentFragment();
     if (fragment)
