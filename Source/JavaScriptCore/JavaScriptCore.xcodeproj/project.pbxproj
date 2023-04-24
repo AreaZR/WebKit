@@ -1054,7 +1054,7 @@
 		536B318F1F71C5990037FC33 /* UnifiedSource114.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 536B310A1F71C5380037FC33 /* UnifiedSource114.cpp */; };
 		536B31901F71C5990037FC33 /* UnifiedSource100.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 536B310B1F71C5380037FC33 /* UnifiedSource100.cpp */; };
 		536B319A1F735E780037FC33 /* UnifiedSource1-mm.mm in Sources */ = {isa = PBXBuildFile; fileRef = 536B31981F735E5C0037FC33 /* UnifiedSource1-mm.mm */; };
-		536B319B1F735E780037FC33 /* UnifiedSource2-mm.mm in Sources */ = {isa = PBXBuildFile; fileRef = 536B31961F735E5B0037FC33 /* UnifiedSource2-mm.mm */; };
+		536B319B1F735E780037FC33 /* UnifiedSource2-mm.mm in Sources */ = {isa = PBXBuildFile; fileRef = 536B31961F735E5B0037FC33 /* UnifiedSource2-mm.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		536B319C1F735E7D0037FC33 /* UnifiedSource134.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 536B31971F735E5B0037FC33 /* UnifiedSource134.cpp */; };
 		536B319D1F735E7D0037FC33 /* UnifiedSource135.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 536B31991F735E5D0037FC33 /* UnifiedSource135.cpp */; };
 		5370806B1FE232DF00299E44 /* JSArrayBufferView.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F2B66BB17B6B5AB00A7AE3F /* JSArrayBufferView.h */; };
@@ -4900,6 +4900,7 @@
 		A7FF647A18C52E8500B55307 /* SpillRegistersMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SpillRegistersMode.h; sourceTree = "<group>"; };
 		A8E894310CD0602400367179 /* JSCallbackObjectFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCallbackObjectFunctions.h; sourceTree = "<group>"; };
 		A8E894330CD0603F00367179 /* JSGlobalObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSGlobalObject.h; sourceTree = "<group>"; };
+		AA75808F29F6E17E00D36B0B /* SourcesCocoaNoARC.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = SourcesCocoaNoARC.txt; sourceTree = "<group>"; };
 		AD00659D1ECAC7FE000CA926 /* WasmLimits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WasmLimits.h; sourceTree = "<group>"; };
 		AD1CF06816DCAB2D00B97123 /* PropertyTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PropertyTable.cpp; sourceTree = "<group>"; };
 		AD2FCB8C1DB5844000B3E736 /* JSWebAssemblyModule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = JSWebAssemblyModule.cpp; path = js/JSWebAssemblyModule.cpp; sourceTree = "<group>"; };
@@ -5904,6 +5905,7 @@
 			children = (
 				530A63411FA3E31D0026A545 /* Sources.txt */,
 				530A63401FA3E31C0026A545 /* SourcesCocoa.txt */,
+				AA75808F29F6E17E00D36B0B /* SourcesCocoaNoARC.txt */,
 				F68EBB8C0255D4C601FF60F7 /* config.h */,
 				F692A8540255597D01FF60F7 /* create_hash_table */,
 				532631B3218777A5007B8191 /* JavaScriptCore.modulemap */,
@@ -11827,6 +11829,7 @@
 				"$(SRCROOT)/Scripts/generate-unified-sources.sh",
 				"$(SRCROOT)/Sources.txt",
 				"$(SRCROOT)/SourcesCocoa.txt",
+				"$(SRCROOT)/SourcesCocoaNoARC.txt",
 				"$(SRCROOT)/inspector/remote/SourcesCocoa.txt",
 			);
 			name = "Generate Unified Sources";
@@ -12641,6 +12644,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C9051430BA9E8A70081E9D0 /* JavaScriptCore.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 			};
 			name = Debug;
 		};
@@ -12648,6 +12652,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C9051430BA9E8A70081E9D0 /* JavaScriptCore.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 			};
 			name = Release;
 		};
@@ -12656,6 +12661,7 @@
 			baseConfigurationReference = 1C9051430BA9E8A70081E9D0 /* JavaScriptCore.xcconfig */;
 			buildSettings = {
 				BUILD_VARIANTS = normal;
+				CLANG_ENABLE_OBJC_ARC = YES;
 			};
 			name = Production;
 		};
@@ -12663,6 +12669,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5DAFD6CB146B686300FBEFB4 /* JSC.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 			};
 			name = Debug;
 		};
@@ -12670,6 +12677,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5DAFD6CB146B686300FBEFB4 /* JSC.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 			};
 			name = Release;
 		};
@@ -12677,6 +12685,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5DAFD6CB146B686300FBEFB4 /* JSC.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 			};
 			name = Production;
 		};
@@ -13036,6 +13045,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1C9051430BA9E8A70081E9D0 /* JavaScriptCore.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 			};
 			name = Profiling;
 		};
@@ -13065,6 +13075,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5DAFD6CB146B686300FBEFB4 /* JSC.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 			};
 			name = Profiling;
 		};

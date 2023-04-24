@@ -119,7 +119,6 @@ static JSManagedValueHandleOwner& managedValueHandleOwner()
     }
 
     [self disconnectValue];
-    [super dealloc];
 }
 
 - (void)didAddOwner:(id)owner

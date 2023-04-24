@@ -7,7 +7,7 @@ list(APPEND JavaScriptCore_LIBRARIES
 
 list(APPEND JavaScriptCore_UNIFIED_SOURCE_LIST_FILES
     "SourcesCocoa.txt"
-
+    "SourcesCocoaNoARC.txt"
     "inspector/remote/SourcesCocoa.txt"
 )
 
