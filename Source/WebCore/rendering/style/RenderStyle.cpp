@@ -2356,10 +2356,13 @@ Color RenderStyle::colorResolvingCurrentColor(CSSPropertyID colorProperty, bool 
             }
         }();
 
-        if (!visitedLink && (borderStyle == BorderStyle::Inset || borderStyle == BorderStyle::Outset || borderStyle == BorderStyle::Ridge || borderStyle == BorderStyle::Groove))
+        if (visitedLink)
+            return visitedLinkColor();
+
+        if (borderStyle == BorderStyle::Inset || borderStyle == BorderStyle::Outset || borderStyle == BorderStyle::Ridge || borderStyle == BorderStyle::Groove)
             return { SRGBA<uint8_t> { 238, 238, 238 } };
 
-        return visitedLink ? visitedLinkColor() : color();
+        return color();
     }
 
     return colorResolvingCurrentColor(result);
