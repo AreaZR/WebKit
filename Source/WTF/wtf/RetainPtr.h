@@ -90,7 +90,7 @@ public:
     template<typename U> RetainPtr(const RetainPtr<U>&);
 
     constexpr RetainPtr(RetainPtr&& o) : m_ptr(toStorageType(o.leakRef())) { }
-    template<typename U> constexpr RetainPtr(RetainPtr<U>&& o) : m_ptr(toStorageType(checkType(o.leakRef()))) { }
+    template<typename U> constexpr RetainPtr(RetainPtr<U>&& o) : m_ptr(toStorageType(o.leakRef())) { }
 
     // Hash table deleted values, which are only constructed and never copied or destroyed.
     constexpr RetainPtr(HashTableDeletedValueType) : m_ptr(hashTableDeletedValue()) { }
@@ -140,7 +140,11 @@ private:
     enum AdoptTag { Adopt };
     constexpr RetainPtr(PtrType ptr, AdoptTag) : m_ptr(toStorageType(ptr)) { }
 
-    static constexpr PtrType checkType(PtrType ptr) { return ptr; }
+    // FIXME: ARC throws errors when compiling and passing values through this function.
+    // Uncomment when either the Xcode bug responsible is fixed or a proper workaround can be made.
+    // Because checkType currently has no use, we can do this for now.
+
+    // static constexpr PtrType checkType(PtrType ptr) { return ptr; }
 
     static constexpr PtrType hashTableDeletedValue() { return reinterpret_cast<PtrType>(-1); }
 

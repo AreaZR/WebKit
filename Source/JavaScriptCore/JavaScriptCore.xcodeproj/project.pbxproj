@@ -1569,6 +1569,9 @@
 		A7F9935F0FD7325100A0B2D0 /* JSONObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F9935D0FD7325100A0B2D0 /* JSONObject.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		A7FB61001040C38B0017A286 /* PropertyDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = A7FB604B103F5EAB0017A286 /* PropertyDescriptor.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		A7FCC26D17A0B6AA00786D1A /* FTLSwitchCase.h in Headers */ = {isa = PBXBuildFile; fileRef = A7FCC26C17A0B6AA00786D1A /* FTLSwitchCase.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		AA04CEFD29FCA1DB009A0375 /* JSValue.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86E3C60D167BAB87006D760A /* JSValue.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		AA04CEFE29FCA1E5009A0375 /* JSContext.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86E3C608167BAB87006D760A /* JSContext.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		AA04CEFF29FCA202009A0375 /* ObjCCallbackFunction.mm in Sources */ = {isa = PBXBuildFile; fileRef = 86F3EEBA168CCF750077B92A /* ObjCCallbackFunction.mm */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		AD00659E1ECAC812000CA926 /* WasmLimits.h in Headers */ = {isa = PBXBuildFile; fileRef = AD00659D1ECAC7FE000CA926 /* WasmLimits.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		AD2FCBE31DB58DAD00B3E736 /* JSWebAssemblyCompileError.h in Headers */ = {isa = PBXBuildFile; fileRef = AD2FCBA71DB58DA400B3E736 /* JSWebAssemblyCompileError.h */; };
 		AD2FCBE51DB58DAD00B3E736 /* JSWebAssemblyInstance.h in Headers */ = {isa = PBXBuildFile; fileRef = AD2FCBA91DB58DA400B3E736 /* JSWebAssemblyInstance.h */; };
@@ -12151,11 +12154,14 @@
 				A3EE8543262514B000FC9B8D /* IntlWorkaround.cpp in Sources */,
 				DD28467C291AF1B20009A61D /* JSCBuiltins.cpp in Sources */,
 				DD284679291A29900009A61D /* JSCBytecodeCacheVersion.cpp.in in Sources */,
+				AA04CEFE29FCA1E5009A0375 /* JSContext.mm in Sources */,
 				E38E8790254B978400F6F9E4 /* JSDateMath.cpp in Sources */,
+				AA04CEFD29FCA1DB009A0375 /* JSValue.mm in Sources */,
 				4BE92D442898522400FA48E1 /* LowLevelInterpreter.asm in Sources */,
 				4BE92D452898522400FA48E1 /* LowLevelInterpreter.cpp in Sources */,
 				4B46940328984FA800512FDF /* MacroAssemblerARM64.cpp in Sources */,
 				4B46940428984FEE00512FDF /* MacroAssemblerX86Common.cpp in Sources */,
+				AA04CEFF29FCA202009A0375 /* ObjCCallbackFunction.mm in Sources */,
 				FE770390298CD40F009634C7 /* Parser.cpp in Sources */,
 				DFBC2CA625E6D5B90081BDD1 /* SymbolStubsForSafariCompatibility.mm in Sources */,
 				E32F713F281B3C6600AFD21D /* UnifiedSource1-c.c in Sources */,

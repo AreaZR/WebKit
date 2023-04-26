@@ -58,6 +58,10 @@
 
 #if JSC_OBJC_API_ENABLED
 
+#if __has_feature(objc_arc)
+#error This file cannot be compiled under ARC
+#endif
+
 using JSC::Integrity::audit;
 
 NSString * const JSPropertyDescriptorWritableKey = @"writable";

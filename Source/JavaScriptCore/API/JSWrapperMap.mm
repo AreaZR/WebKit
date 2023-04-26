@@ -123,7 +123,7 @@ static JSC::JSObject* makeWrapper(JSContextRef ctx, JSClassRef jsClass, id wrapp
 
     ASSERT(jsClass);
     JSC::JSCallbackObject<JSC::JSAPIWrapperObject>* object = JSC::JSCallbackObject<JSC::JSAPIWrapperObject>::create(globalObject, globalObject->objcWrapperObjectStructure(), jsClass, 0);
-    object->setWrappedObject((__bridge void*)wrappedObject);
+    object->setWrappedObject(wrappedObject);
     if (JSC::JSObject* prototype = jsClass->prototype(globalObject))
         object->setPrototypeDirect(vm, prototype);
 
@@ -346,7 +346,7 @@ static void copyPrototypeProperties(JSContext *context, Class objcClass, Protoco
         Property property { name, nullptr, nullptr };
         bool readonly = parsePropertyAttributes(objcProperty, property);
 
-        // Add the names of the getter & setter methods to
+        // Add the names of the getter & setter methods.
         if (!property.getterName)
             property.getterName = @(name);
         accessorMethods[property.getterName.get()] = undefined;
@@ -393,9 +393,9 @@ static void copyPrototypeProperties(JSContext *context, Class objcClass, Protoco
 }
 
 - (instancetype)initForClass:(Class)cls;
-- (JSC::JSObject *)wrapperForObject:(id)object inContext:(JSContext *)context;
-- (JSC::JSObject *)constructorInContext:(JSContext *)context;
-- (JSC::JSObject *)prototypeInContext:(JSContext *)context;
+- (JSC::JSObject *)wrapperForObject:(id)object inContext:(JSContext *)context NS_RETURNS_INNER_POINTER;
+- (JSC::JSObject *)constructorInContext:(JSContext *)context NS_RETURNS_INNER_POINTER;
+- (JSC::JSObject *)prototypeInContext:(JSContext *)context NS_RETURNS_INNER_POINTER;
 
 @end
 
@@ -421,7 +421,6 @@ static void copyPrototypeProperties(JSContext *context, Class objcClass, Protoco
 - (void)dealloc
 {
     JSClassRelease(m_classRef.get());
-    [super dealloc];
 }
 
 static JSC::JSObject* allocateConstructorForCustomClass(JSContext *context, const char* className, Class cls)
@@ -512,9 +511,9 @@ typedef std::pair<JSC::JSObject*, JSC::JSObject*> ConstructorPrototypePair;
         putNonEnumerable(context, constructor, @"prototype", prototype);
 
         Protocol *exportProtocol = getJSExportProtocol();
-        forEachProtocolImplementingProtocol(m_class, exportProtocol, ^(Protocol *protocol, bool&){
-            copyPrototypeProperties(context, m_class, protocol, prototype);
-            copyMethodsToObject(context, m_class, protocol, NO, constructor);
+        forEachProtocolImplementingProtocol(self->m_class, exportProtocol, ^(Protocol *protocol, bool&) {
+            copyPrototypeProperties(context, self->m_class, protocol, prototype);
+            copyMethodsToObject(context, self->m_class, protocol, NO, constructor);
         });
 
         // Set [Prototype].
@@ -548,7 +547,7 @@ typedef std::pair<JSC::JSObject*, JSC::JSObject*> ConstructorPrototypePair;
     JSC::JSLockHolder locker(vm);
 
     auto wrapper = JSC::JSCallbackObject<JSC::JSAPIWrapperObject>::create(globalObject, structure, m_classRef, 0);
-    wrapper->setWrappedObject((__bridge void*)object);
+    wrapper->setWrappedObject(object);
     return wrapper;
 }
 
@@ -659,12 +658,15 @@ typedef std::pair<JSC::JSObject*, JSC::JSObject*> ConstructorPrototypePair;
 - (JSValue *)objcWrapperForJSValueRef:(JSValueRef)value inContext:context
 {
     ASSERT(toJSGlobalObject([context JSGlobalContextRef])->wrapperMap() == self);
-    auto wrapper = retainPtr((__bridge JSValue *)NSMapGet(m_cachedObjCWrappers.get(), value));
-    if (!wrapper) {
-        wrapper = adoptNS([[JSValue alloc] initWithValue:value inContext:context]);
-        NSMapInsert(m_cachedObjCWrappers.get(), value, (__bridge void*)wrapper.get());
+
+    void *pointer = NSMapGet(m_cachedObjCWrappers.get(), value);
+    if (!pointer) {
+        JSValue *valueP = [[JSValue alloc] initWithValue:value inContext:context];
+        NSMapInsert(m_cachedObjCWrappers.get(), value, (__bridge void*)valueP);
+        return valueP;
     }
-    return wrapper.autorelease();
+
+    return (JSValue *)CFBridgingRelease(pointer);
 }
 
 @end
@@ -678,7 +680,7 @@ id tryUnwrapObjcObject(JSGlobalContextRef context, JSValueRef value)
     ASSERT(!exception);
     JSC::JSLockHolder locker(toJS(context));
     if (toJS(object)->inherits<JSC::JSCallbackObject<JSC::JSAPIWrapperObject>>())
-        return (__bridge id)JSC::jsCast<JSC::JSAPIWrapperObject*>(toJS(object))->wrappedObject();
+        return JSC::jsCast<JSC::JSAPIWrapperObject*>(toJS(object))->wrappedObject();
     if (id target = tryUnwrapConstructor(object))
         return target;
     return nil;
