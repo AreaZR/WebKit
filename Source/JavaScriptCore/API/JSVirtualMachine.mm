@@ -186,8 +186,8 @@ static id getInternalObjcObject(id object)
             [m_externalObjectGraph setObject:ownedObjects forKey:owner];
         }
 
-        size_t count = reinterpret_cast<size_t>(NSMapGet(ownedObjects.get(), (__bridge void*)object));
-        NSMapInsert(ownedObjects.get(), (__bridge void*)object, reinterpret_cast<void*>(count + 1));
+        size_t count = reinterpret_cast<size_t>(NSMapGet(ownedObjects, (__bridge void*)object));
+        NSMapInsert(ownedObjects, (__bridge void*)object, reinterpret_cast<void*>(count + 1));
     }
 }
 
