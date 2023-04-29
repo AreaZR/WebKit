@@ -467,7 +467,7 @@ RetainPtr<NSDictionary> RemoteInspector::listingForInspectionTarget(const Remote
     if (!target.allowsInspectionByPolicy())
         return nil;
 
-    RetainPtr<NSMutableDictionary> listing = adoptNS([[NSMutableDictionary alloc] init]);
+    NSMutableDictionary *listing = [[NSMutableDictionary alloc] init];
     [listing setObject:@(target.targetIdentifier()) forKey:WIRTargetIdentifierKey];
 
     switch (target.type()) {
@@ -508,7 +508,7 @@ RetainPtr<NSDictionary> RemoteInspector::listingForInspectionTarget(const Remote
     if (target.hasLocalDebugger())
         [listing setObject:@YES forKey:WIRHasLocalDebuggerKey];
 
-    return listing;
+    return adoptNS(listing);
 }
 
 RetainPtr<NSDictionary> RemoteInspector::listingForAutomationTarget(const RemoteAutomationTarget& target) const
@@ -520,7 +520,7 @@ RetainPtr<NSDictionary> RemoteInspector::listingForAutomationTarget(const Remote
     if (target.isPendingTermination())
         return nullptr;
 
-    RetainPtr<NSMutableDictionary> listing = adoptNS([[NSMutableDictionary alloc] init]);
+    NSMutableDictionary *listing = [[NSMutableDictionary alloc] init];
     [listing setObject:@(target.targetIdentifier()) forKey:WIRTargetIdentifierKey];
     [listing setObject:target.name() forKey:WIRSessionIdentifierKey];
     [listing setObject:WIRTypeAutomation forKey:WIRTypeKey];
@@ -533,7 +533,7 @@ RetainPtr<NSDictionary> RemoteInspector::listingForAutomationTarget(const Remote
     if (auto connectionToTarget = m_targetConnectionMap.get(target.targetIdentifier()))
         [listing setObject:connectionToTarget->connectionIdentifier() forKey:WIRConnectionIdentifierKey];
 
-    return listing;
+    return adoptNS(listing);
 }
 
 void RemoteInspector::pushListingsNow()
@@ -544,14 +544,14 @@ void RemoteInspector::pushListingsNow()
 
     m_pushScheduled = false;
 
-    RetainPtr<NSMutableDictionary> listings = adoptNS([[NSMutableDictionary alloc] init]);
+    NSMutableDictionary *listings = [[NSMutableDictionary alloc] init];
     for (const auto& listing : m_targetListingMap.values()) {
-        NSString *targetIdentifierString = [[listing.get() objectForKey:WIRTargetIdentifierKey] stringValue];
+        NSString *targetIdentifierString = [[listing objectForKey:WIRTargetIdentifierKey] stringValue];
         [listings setObject:listing.get() forKey:targetIdentifierString];
     }
 
-    RetainPtr<NSMutableDictionary> message = adoptNS([[NSMutableDictionary alloc] init]);
-    [message setObject:listings.get() forKey:WIRListingKey];
+    NSMutableDictionary *message = [[NSMutableDictionary alloc] init];
+    [message setObject:listings forKey:WIRListingKey];
 
     if (!m_clientCapabilities)
         [message setObject:WIRAutomationAvailabilityUnknown forKey:WIRAutomationAvailabilityKey];
@@ -564,7 +564,7 @@ void RemoteInspector::pushListingsNow()
     BOOL isAllowed = m_clientCapabilities && m_clientCapabilities->remoteAutomationAllowed;
     [message setObject:@(isAllowed) forKey:WIRRemoteAutomationEnabledKey];
 
-    m_relayConnection->sendMessage(WIRListingMessage, message.get());
+    m_relayConnection->sendMessage(WIRListingMessage, message);
 }
 
 void RemoteInspector::pushListingsSoon()
@@ -656,8 +656,8 @@ void RemoteInspector::receivedDataMessage(NSDictionary *userInfo)
     if (!connectionToTarget)
         return;
 
-    RetainPtr<NSString> message = adoptNS([[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-    connectionToTarget->sendMessageToTarget(message.get());
+    NSString *message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    connectionToTarget->sendMessageToTarget(message);
 }
 
 void RemoteInspector::receivedDidCloseMessage(NSDictionary *userInfo)

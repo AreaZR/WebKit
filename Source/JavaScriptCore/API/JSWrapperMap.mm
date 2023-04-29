@@ -160,7 +160,7 @@ static JSC::JSObject *constructorWithCustomBrand(JSContext *context, NSString *b
 // name mapping, separated by a __JS_EXPORT_AS__ delimiter.
 static RetainPtr<NSMutableDictionary> createRenameMap(Protocol *protocol, BOOL isInstanceMethod)
 {
-    auto renameMap = adoptNS([[NSMutableDictionary alloc] init]);
+    NSMutableDictionary *renameMap = [[NSMutableDictionary alloc] init];
 
     forEachMethodInProtocol(protocol, NO, isInstanceMethod, ^(SEL sel, const char*){
         NSString *rename = @(sel_getName(sel));
@@ -171,10 +171,10 @@ static RetainPtr<NSMutableDictionary> createRenameMap(Protocol *protocol, BOOL i
         NSUInteger begin = range.location + range.length;
         NSUInteger length = [rename length] - begin - 1;
         NSString *name = [rename substringWithRange:(NSRange){ begin, length }];
-        renameMap.get()[selector] = name;
+        renameMap[selector] = name;
     });
 
-    return renameMap;
+    return adoptNS(renameMap);
 }
 
 inline void putNonEnumerable(JSContext *context, JSValue *base, NSString *propertyName, JSValue *value)
@@ -629,7 +629,7 @@ typedef std::pair<JSC::JSObject*, JSC::JSObject*> ConstructorPrototypePair;
             return m_classMap.get()[(id)cls] = [self classInfoForClass:class_getSuperclass(cls)];
     }
 
-    return m_classMap.get()[(id)cls] = adoptNS([[JSObjCClassInfo alloc] initForClass:cls]).get();
+    return m_classMap.get()[(id)cls] = [[JSObjCClassInfo alloc] initForClass:cls];
 }
 
 - (JSValue *)jsWrapperForObject:(id)object inContext:(JSContext *)context

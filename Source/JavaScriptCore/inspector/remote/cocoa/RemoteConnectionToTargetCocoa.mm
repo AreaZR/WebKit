@@ -127,12 +127,12 @@ std::optional<TargetID> RemoteConnectionToTarget::targetIdentifier() const
 
 NSString *RemoteConnectionToTarget::connectionIdentifier() const
 {
-    return adoptNS([m_connectionIdentifier copy]).autorelease();
+    return [m_connectionIdentifier copy];
 }
 
 NSString *RemoteConnectionToTarget::destination() const
 {
-    return adoptNS([m_destination copy]).autorelease();
+    return [m_destination copy];
 }
 
 void RemoteConnectionToTarget::dispatchAsyncOnTarget(Function<void ()>&& callback)

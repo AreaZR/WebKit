@@ -177,13 +177,13 @@ static id getInternalObjcObject(id object)
             [self addExternalRememberedObject:owner];
 
         Locker externalDataMutexLocker { m_externalDataMutex };
-        RetainPtr<NSMapTable> ownedObjects = [m_externalObjectGraph objectForKey:owner];
+        NSMapTable *ownedObjects = [m_externalObjectGraph objectForKey:owner];
         if (!ownedObjects) {
             NSPointerFunctionsOptions weakIDOptions = NSPointerFunctionsWeakMemory | NSPointerFunctionsObjectPersonality;
             NSPointerFunctionsOptions integerOptions = NSPointerFunctionsOpaqueMemory | NSPointerFunctionsIntegerPersonality;
-            ownedObjects = adoptNS([[NSMapTable alloc] initWithKeyOptions:weakIDOptions valueOptions:integerOptions capacity:1]);
+            ownedObjects = [[NSMapTable alloc] initWithKeyOptions:weakIDOptions valueOptions:integerOptions capacity:1];
 
-            [m_externalObjectGraph setObject:ownedObjects.get() forKey:owner];
+            [m_externalObjectGraph setObject:ownedObjects forKey:owner];
         }
 
         size_t count = reinterpret_cast<size_t>(NSMapGet(ownedObjects.get(), (__bridge void*)object));
