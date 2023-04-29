@@ -66,7 +66,7 @@ static JSManagedValueHandleOwner& managedValueHandleOwner()
 
 + (JSManagedValue *)managedValueWithValue:(JSValue *)value andOwner:(id)owner
 {
-    JSManagedValue managedValue = [[self alloc] initWithValue:value];
+    JSManagedValue *managedValue = [[self alloc] initWithValue:value];
     [value.context.virtualMachine addManagedReference:managedValue withOwner:owner];
     return managedValue;
 }
@@ -110,9 +110,9 @@ static JSManagedValueHandleOwner& managedValueHandleOwner()
 {
     JSVirtualMachine *virtualMachine = [[[self value] context] virtualMachine];
     if (virtualMachine) {
-        NSMapTable copy = [m_owners copy];
+        NSMapTable *copy = [m_owners copy];
         for (id owner in [copy keyEnumerator]) {
-            size_t count = reinterpret_cast<size_t>(NSMapGet(m_owners, (__bridge void*)owner));
+            size_t count = reinterpret_cast<size_t>(NSMapGet(m_owners.get(), (__bridge void*)owner));
             while (count--)
                 [virtualMachine removeManagedReference:self withOwner:owner];
         }
