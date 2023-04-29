@@ -141,7 +141,7 @@ static bool validateBytecodeCachePath(NSURL* cachePath, NSError** error)
     if (!charactersAreAllASCII(reinterpret_cast<const LChar*>(fileData.data()), fileData.size()))
         return createError([NSString stringWithFormat:@"Not all characters in file at %@ are ASCII.", static_cast<NSString *>(systemPath)], error);
 
-    JSScript result = [[JSScript alloc] init];
+    JSScript *result = [[JSScript alloc] init];
     result->m_virtualMachine = vm;
     result->m_type = type;
     result->m_source = String(StringImpl::createWithoutCopying(bitwise_cast<const LChar*>(fileData.data()), fileData.size()));
