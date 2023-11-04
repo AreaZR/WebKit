@@ -144,7 +144,7 @@ template<typename T> struct DefaultHash<WebCore::ProcessQualified<T>> {
         return a == b;
     }
 
-    static const bool safeToCompareToEmptyOrDeleted = DefaultHash<T>::safeToCompareToEmptyOrDeleted;
+    static constexpr bool safeToCompareToEmptyOrDeleted = DefaultHash<T>::safeToCompareToEmptyOrDeleted;
 };
 
 template<typename T> struct HashTraits<WebCore::ProcessQualified<T>> : SimpleClassHashTraits<WebCore::ProcessQualified<T>> {

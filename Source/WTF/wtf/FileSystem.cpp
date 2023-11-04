@@ -83,7 +83,7 @@ static String fromStdFileSystemPath(const std::filesystem::path& path)
 //     - Pipe              (7C)
 //     - Delete            (7F)
 
-static const bool needsEscaping[128] = {
+static constexpr bool needsEscaping[128] = {
     true,  true,  true,  true,  true,  true,  true,  true,  /* 00-07 */
     true,  true,  true,  true,  true,  true,  true,  true,  /* 08-0F */
 

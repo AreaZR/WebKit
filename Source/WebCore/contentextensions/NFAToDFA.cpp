@@ -197,11 +197,11 @@ struct UniqueNodeIdSetHash {
         return a == b;
     }
     // It would be fine to compare empty or deleted here, but not for the HashTranslator.
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 struct UniqueNodeIdSetHashHashTraits : public WTF::CustomHashTraits<UniqueNodeIdSet> {
-    static const bool emptyValueIsZero = true;
+    static constexpr bool emptyValueIsZero = true;
 
     // FIXME: Get a good size.
     static const int minimumTableSize = 128;

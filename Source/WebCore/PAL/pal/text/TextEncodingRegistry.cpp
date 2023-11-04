@@ -86,7 +86,7 @@ struct TextEncodingNameHash {
         }
     }
 
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 using TextEncodingNameMap = HashMap<const char*, const char*, TextEncodingNameHash>;

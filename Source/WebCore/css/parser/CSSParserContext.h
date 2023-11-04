@@ -116,7 +116,7 @@ WEBCORE_EXPORT const CSSParserContext& strictCSSParserContext();
 struct CSSParserContextHash {
     static unsigned hash(const CSSParserContext& context) { return computeHash(context); }
     static bool equal(const CSSParserContext& a, const CSSParserContext& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 } // namespace WebCore

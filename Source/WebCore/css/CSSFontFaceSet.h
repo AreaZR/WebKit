@@ -113,10 +113,10 @@ private:
     struct FontSelectionKeyHash {
         static unsigned hash(const FontSelectionKey& key) { return computeHash(key); }
         static bool equal(const FontSelectionKey& a, const FontSelectionKey& b) { return a == b; }
-        static const bool safeToCompareToEmptyOrDeleted = true;
+        static constexpr bool safeToCompareToEmptyOrDeleted = true;
     };
     struct FontSelectionKeyHashTraits : SimpleClassHashTraits<FontSelectionKey> {
-        static const bool emptyValueIsZero = false;
+        static constexpr bool emptyValueIsZero = false;
         static FontSelectionKey emptyValue() { return FontSelectionRequest { }; }
         static void constructDeletedValue(FontSelectionKey& slot) { slot = std::nullopt; }
         static bool isDeletedValue(const FontSelectionKey& value) { return !value; }

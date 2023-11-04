@@ -118,16 +118,16 @@ struct NetworkCacheKeyHash {
         return a == b;
     }
 
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 template<typename T> struct DefaultHash;
 template<> struct DefaultHash<WebKit::NetworkCache::Key> : NetworkCacheKeyHash { };
 
 template<> struct HashTraits<WebKit::NetworkCache::Key> : SimpleClassHashTraits<WebKit::NetworkCache::Key> {
-    static const bool emptyValueIsZero = false;
+    static constexpr bool emptyValueIsZero = false;
 
-    static const bool hasIsEmptyValueFunction = true;
+    static constexpr bool hasIsEmptyValueFunction = true;
     static bool isEmptyValue(const WebKit::NetworkCache::Key& key) { return key.isNull(); }
 };
 

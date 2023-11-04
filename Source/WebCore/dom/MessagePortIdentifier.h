@@ -64,7 +64,7 @@ namespace WTF {
 struct MessagePortIdentifierHash {
     static unsigned hash(const WebCore::MessagePortIdentifier& key) { return computeHash(key); }
     static bool equal(const WebCore::MessagePortIdentifier& a, const WebCore::MessagePortIdentifier& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 template<> struct HashTraits<WebCore::MessagePortIdentifier> : GenericHashTraits<WebCore::MessagePortIdentifier> {

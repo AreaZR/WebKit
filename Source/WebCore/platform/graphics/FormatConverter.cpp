@@ -1297,7 +1297,7 @@ void pack<GraphicsContextGL::DataFormat::RG32F, GraphicsContextGL::AlphaOp::DoUn
 
 template <GraphicsContextGL::DataFormat Format>
 struct IsInt8Format {
-    static const bool Value =
+    static constexpr bool Value =
         Format == GraphicsContextGL::DataFormat::RGBA8_S
         || Format == GraphicsContextGL::DataFormat::RGB8_S
         || Format == GraphicsContextGL::DataFormat::RG8_S
@@ -1306,7 +1306,7 @@ struct IsInt8Format {
 
 template <GraphicsContextGL::DataFormat Format>
 struct IsInt16Format {
-    static const bool Value =
+    static constexpr bool Value =
         Format == GraphicsContextGL::DataFormat::RGBA16_S
         || Format == GraphicsContextGL::DataFormat::RGB16_S
         || Format == GraphicsContextGL::DataFormat::RG16_S
@@ -1315,7 +1315,7 @@ struct IsInt16Format {
 
 template <GraphicsContextGL::DataFormat Format>
 struct IsInt32Format {
-    static const bool Value =
+    static constexpr bool Value =
         Format == GraphicsContextGL::DataFormat::RGBA32_S
         || Format == GraphicsContextGL::DataFormat::RGB32_S
         || Format == GraphicsContextGL::DataFormat::RG32_S
@@ -1324,7 +1324,7 @@ struct IsInt32Format {
 
 template <GraphicsContextGL::DataFormat Format>
 struct IsUInt8Format {
-    static const bool Value =
+    static constexpr bool Value =
         Format == GraphicsContextGL::DataFormat::RGBA8
         || Format == GraphicsContextGL::DataFormat::RGB8
         || Format == GraphicsContextGL::DataFormat::RG8
@@ -1340,7 +1340,7 @@ struct IsUInt8Format {
 
 template <GraphicsContextGL::DataFormat Format>
 struct IsUInt16Format {
-    static const bool Value = Format == GraphicsContextGL::DataFormat::RGBA16
+    static constexpr bool Value = Format == GraphicsContextGL::DataFormat::RGBA16
         || Format == GraphicsContextGL::DataFormat::RGB16
         || Format == GraphicsContextGL::DataFormat::RG16
         || Format == GraphicsContextGL::DataFormat::R16;
@@ -1348,7 +1348,7 @@ struct IsUInt16Format {
 
 template <GraphicsContextGL::DataFormat Format>
 struct IsUInt32Format {
-    static const bool Value =
+    static constexpr bool Value =
         Format == GraphicsContextGL::DataFormat::RGBA32
         || Format == GraphicsContextGL::DataFormat::RGB32
         || Format == GraphicsContextGL::DataFormat::RG32
@@ -1357,7 +1357,7 @@ struct IsUInt32Format {
 
 template<GraphicsContextGL::DataFormat Format>
 struct IsFloatFormat {
-    static const bool Value =
+    static constexpr bool Value =
         Format == GraphicsContextGL::DataFormat::RGBA32F
         || Format == GraphicsContextGL::DataFormat::RGB32F
         || Format == GraphicsContextGL::DataFormat::RA32F
@@ -1368,7 +1368,7 @@ struct IsFloatFormat {
 
 template<GraphicsContextGL::DataFormat Format>
 struct IsHalfFloatFormat {
-    static const bool Value =
+    static constexpr bool Value =
         Format == GraphicsContextGL::DataFormat::RGBA16F
         || Format == GraphicsContextGL::DataFormat::RGB16F
         || Format == GraphicsContextGL::DataFormat::RA16F
@@ -1379,7 +1379,7 @@ struct IsHalfFloatFormat {
 
 template<GraphicsContextGL::DataFormat Format>
 struct Is32bppFormat {
-    static const bool Value =
+    static constexpr bool Value =
         Format == GraphicsContextGL::DataFormat::RGBA2_10_10_10
         || Format == GraphicsContextGL::DataFormat::RGB5999
         || Format == GraphicsContextGL::DataFormat::RGB10F11F11F;
@@ -1387,7 +1387,7 @@ struct Is32bppFormat {
 
 template<GraphicsContextGL::DataFormat Format>
 struct Is16bppFormat {
-    static const bool Value =
+    static constexpr bool Value =
         Format == GraphicsContextGL::DataFormat::RGBA5551
         || Format == GraphicsContextGL::DataFormat::RGBA4444
         || Format == GraphicsContextGL::DataFormat::RGB565;
@@ -1560,7 +1560,7 @@ struct DataTypeForFormat<Format,
 
 template <GraphicsContextGL::DataFormat Format>
 struct UsesFloatIntermediateFormat {
-    static const bool Value =
+    static constexpr bool Value =
         IsFloatFormat<Format>::Value || IsHalfFloatFormat<Format>::Value
         || Format == GraphicsContextGL::DataFormat::RGBA2_10_10_10
         || Format == GraphicsContextGL::DataFormat::RGB10F11F11F
@@ -1682,7 +1682,7 @@ ALWAYS_INLINE void FormatConverter::convert(GraphicsContextGL::AlphaOp alphaOp)
 
 template <GraphicsContextGL::DataFormat Format>
 struct SupportsConversionFromDomElements {
-    static const bool Value = (Format == GraphicsContextGL::DataFormat::RGBA8
+    static constexpr bool Value = (Format == GraphicsContextGL::DataFormat::RGBA8
         || Format == GraphicsContextGL::DataFormat::RGB8
         || Format == GraphicsContextGL::DataFormat::RG8
         || Format == GraphicsContextGL::DataFormat::RA8

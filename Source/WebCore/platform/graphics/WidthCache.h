@@ -87,11 +87,11 @@ private:
     struct SmallStringKeyHash {
         static unsigned hash(const SmallStringKey& key) { return key.hash(); }
         static bool equal(const SmallStringKey& a, const SmallStringKey& b) { return a == b; }
-        static const bool safeToCompareToEmptyOrDeleted = true; // Empty and deleted values have lengths that are not equal to any valid length.
+        static constexpr bool safeToCompareToEmptyOrDeleted = true; // Empty and deleted values have lengths that are not equal to any valid length.
     };
 
     struct SmallStringKeyHashTraits : SimpleClassHashTraits<SmallStringKey> {
-        static const bool hasIsEmptyValueFunction = true;
+        static constexpr bool hasIsEmptyValueFunction = true;
         static bool isEmptyValue(const SmallStringKey& key) { return key.isHashTableEmptyValue(); }
         static const int minimumTableSize = 16;
     };

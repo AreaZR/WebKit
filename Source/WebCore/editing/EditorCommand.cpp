@@ -85,8 +85,8 @@ public:
 
 typedef HashMap<String, const EditorInternalCommand*, ASCIICaseInsensitiveHash> CommandMap;
 
-static const bool notTextInsertion = false;
-static const bool isTextInsertion = true;
+static constexpr bool notTextInsertion = false;
+static constexpr bool isTextInsertion = true;
 
 // Related to Editor::selectionForCommand.
 // Certain operations continue to use the target control's selection even if the event handler

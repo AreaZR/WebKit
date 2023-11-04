@@ -110,7 +110,7 @@ private:
 namespace WTF {
 
 template<typename P> struct HashTraits<WebCore::GCReachableRef<P>> : SimpleClassHashTraits<WebCore::GCReachableRef<P>> {
-    static const bool emptyValueIsZero = true;
+    static constexpr bool emptyValueIsZero = true;
     static WebCore::GCReachableRef<P> emptyValue() { return HashTableEmptyValue; }
 
     template <typename>
@@ -119,7 +119,7 @@ template<typename P> struct HashTraits<WebCore::GCReachableRef<P>> : SimpleClass
         new (NotNull, std::addressof(slot)) WebCore::GCReachableRef<P>(HashTableEmptyValue);
     }
 
-    static const bool hasIsEmptyValueFunction = true;
+    static constexpr bool hasIsEmptyValueFunction = true;
     static bool isEmptyValue(const WebCore::GCReachableRef<P>& value) { return value.isHashTableEmptyValue(); }
 
     static void assignToEmpty(WebCore::GCReachableRef<P>& emptyValue, WebCore::GCReachableRef<P>&& newValue)
@@ -144,11 +144,11 @@ struct GetPtrHelper<WebCore::GCReachableRef<T, U>> {
 
 template <typename T, typename U>
 struct IsSmartPtr<WebCore::GCReachableRef<T, U>> {
-    static const bool value = true;
+    static constexpr bool value = true;
 };
 
 template<typename P> struct PtrHash<WebCore::GCReachableRef<P>> : PtrHashBase<WebCore::GCReachableRef<P>, IsSmartPtr<WebCore::GCReachableRef<P>>::value> {
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 template<typename P> struct DefaultHash<WebCore::GCReachableRef<P>> : PtrHash<WebCore::GCReachableRef<P>> { };

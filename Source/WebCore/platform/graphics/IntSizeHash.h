@@ -28,12 +28,12 @@ namespace WTF {
     template<> struct IntHash<WebCore::IntSize> {
         static unsigned hash(const WebCore::IntSize& key) { return pairIntHash(key.width(), key.height()); }
         static bool equal(const WebCore::IntSize& a, const WebCore::IntSize& b) { return a == b; }
-        static const bool safeToCompareToEmptyOrDeleted = true;
+        static constexpr bool safeToCompareToEmptyOrDeleted = true;
     };
     template<> struct DefaultHash<WebCore::IntSize> : IntHash<WebCore::IntSize> { };
     
     template<> struct HashTraits<WebCore::IntSize> : GenericHashTraits<WebCore::IntSize> {
-        static const bool emptyValueIsZero = true;
+        static constexpr bool emptyValueIsZero = true;
         static void constructDeletedValue(WebCore::IntSize& slot) { new (NotNull, &slot) WebCore::IntSize(-1, -1); }
         static bool isDeletedValue(const WebCore::IntSize& value) { return value.width() == -1 && value.height() == -1; }
     };

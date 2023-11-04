@@ -93,12 +93,12 @@ inline void add(Hasher& hasher, const IDBDatabaseIdentifier& identifier)
 struct IDBDatabaseIdentifierHash {
     static unsigned hash(const IDBDatabaseIdentifier& a) { return computeHash(a); }
     static bool equal(const IDBDatabaseIdentifier& a, const IDBDatabaseIdentifier& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 struct IDBDatabaseIdentifierHashTraits : SimpleClassHashTraits<IDBDatabaseIdentifier> {
-    static const bool hasIsEmptyValueFunction = true;
-    static const bool emptyValueIsZero = false;
+    static constexpr bool hasIsEmptyValueFunction = true;
+    static constexpr bool emptyValueIsZero = false;
     static bool isEmptyValue(const IDBDatabaseIdentifier& info) { return info.isEmpty(); }
 };
 

@@ -36,7 +36,7 @@ namespace WebCore {
 // UScriptCode uses -1 and 0 for UScriptInvalidCode and UScriptCommon.
 // We need to use -2 and -3 for empty value and deleted value.
 struct UScriptCodeHashTraits : HashTraits<int> {
-    static const bool emptyValueIsZero = false;
+    static constexpr bool emptyValueIsZero = false;
     static int emptyValue() { return -2; }
     static void constructDeletedValue(int& slot) { slot = -3; }
     static bool isDeletedValue(int value) { return value == -3; }

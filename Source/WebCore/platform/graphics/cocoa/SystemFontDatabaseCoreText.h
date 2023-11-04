@@ -66,7 +66,7 @@ public:
         struct Hash {
             static unsigned hash(const CascadeListParameters&);
             static bool equal(const CascadeListParameters& a, const CascadeListParameters& b) { return a == b; }
-            static const bool safeToCompareToEmptyOrDeleted = true;
+            static constexpr bool safeToCompareToEmptyOrDeleted = true;
         };
 
         AtomString fontName;

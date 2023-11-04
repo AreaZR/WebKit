@@ -439,11 +439,11 @@ struct ActionKeyHash {
         }
         return true;
     }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 struct ActionKeyHashTraits : public WTF::CustomHashTraits<ActionKey> {
-    static const bool emptyValueIsZero = true;
+    static constexpr bool emptyValueIsZero = true;
 };
 
 } // anonymous namespace.

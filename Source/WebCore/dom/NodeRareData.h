@@ -97,7 +97,7 @@ public:
             return DefaultHash<AtomString>::hash(entry.second) + entry.first;
         }
         static bool equal(const std::pair<unsigned char, AtomString>& a, const std::pair<unsigned char, AtomString>& b) { return a.first == b.first && DefaultHash<AtomString>::equal(a.second, b.second); }
-        static const bool safeToCompareToEmptyOrDeleted = DefaultHash<AtomString>::safeToCompareToEmptyOrDeleted;
+        static constexpr bool safeToCompareToEmptyOrDeleted = DefaultHash<AtomString>::safeToCompareToEmptyOrDeleted;
     };
 
     using NodeListCacheMap = HashMap<std::pair<unsigned char, AtomString>, LiveNodeList*, NodeListCacheMapEntryHash>;

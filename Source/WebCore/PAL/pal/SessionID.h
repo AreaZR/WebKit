@@ -89,7 +89,7 @@ namespace WTF {
 struct SessionIDHash {
     static unsigned hash(const PAL::SessionID& p) { return intHash(p.toUInt64()); }
     static bool equal(const PAL::SessionID& a, const PAL::SessionID& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 template<> struct HashTraits<PAL::SessionID> : GenericHashTraits<PAL::SessionID> {

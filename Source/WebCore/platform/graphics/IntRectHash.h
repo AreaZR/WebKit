@@ -40,12 +40,12 @@ template<> struct IntHash<WebCore::IntRect> {
     {
         return DefaultHash<WebCore::IntPoint>::equal(a.location(), b.location()) && DefaultHash<WebCore::IntSize>::equal(a.size(), b.size());
     }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 template<> struct DefaultHash<WebCore::IntRect> : IntHash<WebCore::IntRect> { };
 
 template<> struct HashTraits<WebCore::IntRect> : GenericHashTraits<WebCore::IntRect> {
-    static const bool emptyValueIsZero = true;
+    static constexpr bool emptyValueIsZero = true;
     static void constructDeletedValue(WebCore::IntRect& slot) { new (NotNull, &slot) WebCore::IntRect(-1, -1, -1, -1); }
     static bool isDeletedValue(const WebCore::IntRect& value) { return value.x() == -1 && value.y() == -1 && value.width() == -1 && value.height() == -1; }
 };

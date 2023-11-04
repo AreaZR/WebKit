@@ -63,7 +63,7 @@ inline void add(Hasher& hasher, const FontFamilySpecificationKey& key)
 struct FontFamilySpecificationKeyHash {
     static unsigned hash(const FontFamilySpecificationKey& key) { return computeHash(key); }
     static bool equal(const FontFamilySpecificationKey& a, const FontFamilySpecificationKey& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 class FontFamilySpecificationCoreTextCache {

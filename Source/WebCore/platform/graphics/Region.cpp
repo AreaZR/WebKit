@@ -537,10 +537,10 @@ struct Region::Shape::UnionOperation {
 
     static const int opCode = 0;
 
-    static const bool shouldAddRemainingSegmentsFromSpan1 = true;
-    static const bool shouldAddRemainingSegmentsFromSpan2 = true;
-    static const bool shouldAddRemainingSpansFromShape1 = true;
-    static const bool shouldAddRemainingSpansFromShape2 = true;
+    static constexpr bool shouldAddRemainingSegmentsFromSpan1 = true;
+    static constexpr bool shouldAddRemainingSegmentsFromSpan2 = true;
+    static constexpr bool shouldAddRemainingSpansFromShape1 = true;
+    static constexpr bool shouldAddRemainingSpansFromShape2 = true;
 };
 
 Region::Shape Region::Shape::unionShapes(const Shape& shape1, const Shape& shape2)
@@ -556,10 +556,10 @@ struct Region::Shape::IntersectOperation {
     
     static const int opCode = 3;
     
-    static const bool shouldAddRemainingSegmentsFromSpan1 = false;
-    static const bool shouldAddRemainingSegmentsFromSpan2 = false;
-    static const bool shouldAddRemainingSpansFromShape1 = false;
-    static const bool shouldAddRemainingSpansFromShape2 = false;
+    static constexpr bool shouldAddRemainingSegmentsFromSpan1 = false;
+    static constexpr bool shouldAddRemainingSegmentsFromSpan2 = false;
+    static constexpr bool shouldAddRemainingSpansFromShape1 = false;
+    static constexpr bool shouldAddRemainingSpansFromShape2 = false;
 };
 
 Region::Shape Region::Shape::intersectShapes(const Shape& shape1, const Shape& shape2)
@@ -575,10 +575,10 @@ struct Region::Shape::SubtractOperation {
     
     static const int opCode = 1;
     
-    static const bool shouldAddRemainingSegmentsFromSpan1 = true;
-    static const bool shouldAddRemainingSegmentsFromSpan2 = false;
-    static const bool shouldAddRemainingSpansFromShape1 = true;
-    static const bool shouldAddRemainingSpansFromShape2 = false;
+    static constexpr bool shouldAddRemainingSegmentsFromSpan1 = true;
+    static constexpr bool shouldAddRemainingSegmentsFromSpan2 = false;
+    static constexpr bool shouldAddRemainingSpansFromShape1 = true;
+    static constexpr bool shouldAddRemainingSpansFromShape2 = false;
 };
 
 Region::Shape Region::Shape::subtractShapes(const Shape& shape1, const Shape& shape2)

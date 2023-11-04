@@ -244,7 +244,7 @@ inline unsigned refCount(IUnknown* ptr)
 namespace WTF {
 
 template<typename P> struct IsSmartPtr<COMPtr<P>> {
-    static const bool value = true;
+    static constexpr bool value = true;
 };
 
 template<typename P> struct HashTraits<COMPtr<P> > : SimpleClassHashTraits<COMPtr<P>> {

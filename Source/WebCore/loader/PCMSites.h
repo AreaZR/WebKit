@@ -65,7 +65,7 @@ struct SourceSiteHash {
         return a == b;
     }
 
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 struct AttributionDestinationSite {
@@ -104,7 +104,7 @@ struct AttributionDestinationSiteHash {
         return a == b;
     }
 
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 } // namespace WebCore::PCM

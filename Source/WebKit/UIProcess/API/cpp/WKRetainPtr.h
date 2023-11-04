@@ -250,7 +250,7 @@ template<typename> struct IsSmartPtr;
 template<typename> struct DefaultHash;
 
 template<typename T> struct IsSmartPtr<WKRetainPtr<T>> {
-    WTF_INTERNAL static const bool value = true;
+    WTF_INTERNAL static constexpr bool value = true;
 };
 
 template<typename P> struct DefaultHash<WKRetainPtr<P>> : PtrHash<WKRetainPtr<P>> { };

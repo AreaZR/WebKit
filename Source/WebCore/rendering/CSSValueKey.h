@@ -51,7 +51,7 @@ namespace WTF {
 struct CSSValueKeyHash {
     static unsigned hash(const WebCore::CSSValueKey& key) { return key.hash(); }
     static bool equal(const WebCore::CSSValueKey& a, const WebCore::CSSValueKey& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 template<> struct HashTraits<WebCore::CSSValueKey> : GenericHashTraits<WebCore::CSSValueKey> {

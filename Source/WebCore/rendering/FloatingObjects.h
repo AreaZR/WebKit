@@ -127,7 +127,7 @@ struct FloatingObjectHashFunctions {
 
     static unsigned hash(PtrType key) { return PtrHash<RenderBox*>::hash(&key->renderer()); }
     static bool equal(PtrType a, PtrType b) { return &a->renderer() == &b->renderer(); }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 
     static unsigned hash(const T& key) { return hash(WTF::getPtr(key)); }
     static bool equal(const T& a, const T& b) { return equal(WTF::getPtr(a), WTF::getPtr(b)); }

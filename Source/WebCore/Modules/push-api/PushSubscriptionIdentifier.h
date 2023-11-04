@@ -99,13 +99,13 @@ namespace WTF {
 struct PushSubscriptionSetIdentifierHash {
     static unsigned hash(const WebCore::PushSubscriptionSetIdentifier& key) { return computeHash(key); }
     static bool equal(const WebCore::PushSubscriptionSetIdentifier& a, const WebCore::PushSubscriptionSetIdentifier& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 template<> struct DefaultHash<WebCore::PushSubscriptionSetIdentifier> : PushSubscriptionSetIdentifierHash { };
 
 template<> struct HashTraits<WebCore::PushSubscriptionSetIdentifier> : GenericHashTraits<WebCore::PushSubscriptionSetIdentifier> {
-    static const bool emptyValueIsZero = false;
+    static constexpr bool emptyValueIsZero = false;
     static WebCore::PushSubscriptionSetIdentifier emptyValue() { return { emptyString(), emptyString(), std::nullopt }; }
 
     static void constructDeletedValue(WebCore::PushSubscriptionSetIdentifier& slot) { new (NotNull, &slot) WebCore::PushSubscriptionSetIdentifier { emptyString(), emptyString(), WTF::UUID { HashTableDeletedValue } }; }

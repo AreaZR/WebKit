@@ -77,11 +77,11 @@ struct HashableActionListHash {
     {
         return a == b;
     }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 struct HashableActionListHashTraits : public WTF::CustomHashTraits<HashableActionList> {
-    static const bool emptyValueIsZero = false;
+    static constexpr bool emptyValueIsZero = false;
 };
 
 } // namespace ContentExtensions

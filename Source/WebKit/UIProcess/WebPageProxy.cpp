@@ -4128,9 +4128,9 @@ void WebPageProxy::receivedNavigationPolicyDecision(WebProcessProxy& processNavi
 #endif
 
 #if PLATFORM(COCOA)
-    static const bool forceDownloadFromDownloadAttribute = false;
+    static constexpr bool forceDownloadFromDownloadAttribute = false;
 #else
-    static const bool forceDownloadFromDownloadAttribute = true;
+    static constexpr bool forceDownloadFromDownloadAttribute = true;
 #endif
     if (policyAction == PolicyAction::Use && navigation && (forceDownloadFromDownloadAttribute && navigation->shouldPerformDownload()))
         policyAction = PolicyAction::Download;

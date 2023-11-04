@@ -52,11 +52,11 @@ inline void add(Hasher& hasher, std::array<char, 4> array)
 struct FourCharacterTagHash {
     static unsigned hash(FontTag characters) { return computeHash(characters); }
     static bool equal(FontTag a, FontTag b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 struct FourCharacterTagHashTraits : HashTraits<FontTag> {
-    static const bool emptyValueIsZero = true;
+    static constexpr bool emptyValueIsZero = true;
     static void constructDeletedValue(FontTag& slot) { new (NotNull, std::addressof(slot)) FontTag({{ ff, ff, ff, ff }}); }
     static bool isDeletedValue(FontTag value) { return value == FontTag({{ ff, ff, ff, ff }}); }
 

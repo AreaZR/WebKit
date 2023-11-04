@@ -81,7 +81,7 @@ public:
     struct RegistrableDomainHash {
         static unsigned hash(const RegistrableDomain& registrableDomain) { return ASCIICaseInsensitiveHash::hash(registrableDomain.m_registrableDomain.impl()); }
         static bool equal(const RegistrableDomain& a, const RegistrableDomain& b) { return equalIgnoringASCIICase(a.string(), b.string()); }
-        static const bool safeToCompareToEmptyOrDeleted = false;
+        static constexpr bool safeToCompareToEmptyOrDeleted = false;
     };
 
     static RegistrableDomain uncheckedCreateFromRegistrableDomainString(const String& domain)

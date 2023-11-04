@@ -398,13 +398,13 @@ static const MonotonicTime Infinity = MonotonicTime::infinity();
 static const MonotonicTime Zero = MonotonicTime::fromRawSeconds(0);
 static const MonotonicTime One = Zero + Seconds(1);
 static const MonotonicTime NegativeOne = Zero - Seconds(1);
-static const bool ZeroIsFalse = !!Zero;
-static const bool Equal = Zero == Zero;
-static const bool NotEqual = Zero != One;
-static const bool LessThan = Zero < One;
-static const bool GreaterThan = One > Zero;
-static const bool LessThanOrEqual = Zero <= Zero;
-static const bool GreaterThanOrEqual = Zero >= Zero;
+static constexpr bool ZeroIsFalse = !!Zero;
+static constexpr bool Equal = Zero == Zero;
+static constexpr bool NotEqual = Zero != One;
+static constexpr bool LessThan = Zero < One;
+static constexpr bool GreaterThan = One > Zero;
+static constexpr bool LessThanOrEqual = Zero <= Zero;
+static constexpr bool GreaterThanOrEqual = Zero >= Zero;
 
 TEST(WTF_Time, constexprMonotonicTime)
 {

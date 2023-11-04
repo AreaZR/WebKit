@@ -63,7 +63,7 @@ inline void add(Hasher& hasher, const FontSetCacheKey& key)
 struct FontSetCacheKeyHash {
     static unsigned hash(const FontSetCacheKey& key) { return computeHash(key); }
     static bool equal(const FontSetCacheKey& a, const FontSetCacheKey& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 class FontSetCache {

@@ -117,7 +117,7 @@ typedef Vector<CSSProperty, 256> ParsedPropertyVector;
 
 namespace WTF {
 template <> struct VectorTraits<WebCore::CSSProperty> : VectorTraitsBase<false, WebCore::CSSProperty> {
-    static const bool canInitializeWithMemset = true;
-    static const bool canMoveWithMemcpy = true;
+    static constexpr bool canInitializeWithMemset = true;
+    static constexpr bool canMoveWithMemcpy = true;
 };
 }

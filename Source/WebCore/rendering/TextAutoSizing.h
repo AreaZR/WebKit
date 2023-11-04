@@ -69,7 +69,7 @@ inline bool operator==(const TextAutoSizingKey& a, const TextAutoSizingKey& b)
 struct TextAutoSizingHash {
     static unsigned hash(const TextAutoSizingKey& key) { return key.hash(); }
     static bool equal(const TextAutoSizingKey& a, const TextAutoSizingKey& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 struct TextAutoSizingHashTranslator {
@@ -109,7 +109,7 @@ private:
 };
 
 struct TextAutoSizingTraits : HashTraits<TextAutoSizingKey> {
-    static const bool emptyValueIsZero = true;
+    static constexpr bool emptyValueIsZero = true;
     static void constructDeletedValue(TextAutoSizingKey& slot) { new (NotNull, &slot) TextAutoSizingKey(TextAutoSizingKey::Deleted); }
     static bool isDeletedValue(const TextAutoSizingKey& value) { return value.isDeleted(); }
 };

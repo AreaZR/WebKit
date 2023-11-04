@@ -181,12 +181,12 @@ inline void add(Hasher& hasher, const IDBKeyData& keyData)
 struct IDBKeyDataHash {
     static unsigned hash(const IDBKeyData& a) { return computeHash(a); }
     static bool equal(const IDBKeyData& a, const IDBKeyData& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 struct IDBKeyDataHashTraits : public WTF::CustomHashTraits<IDBKeyData> {
-    static const bool emptyValueIsZero = false;
-    static const bool hasIsEmptyValueFunction = true;
+    static constexpr bool emptyValueIsZero = false;
+    static constexpr bool hasIsEmptyValueFunction = true;
 
     static void constructDeletedValue(IDBKeyData& key) { key.m_isDeletedValue = true; }
     static bool isDeletedValue(const IDBKeyData& key) { return key.m_isDeletedValue; }

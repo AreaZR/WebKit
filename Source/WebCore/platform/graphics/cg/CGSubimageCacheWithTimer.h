@@ -56,9 +56,9 @@ public:
     struct CacheEntryTraits : HashTraits<CacheEntry> {
         typedef HashTraits<RetainPtr<CGImageRef>> ImageTraits;
 
-        static const bool emptyValueIsZero = true;
+        static constexpr bool emptyValueIsZero = true;
 
-        static const bool hasIsEmptyValueFunction = true;
+        static constexpr bool hasIsEmptyValueFunction = true;
         static bool isEmptyValue(const CacheEntry& value) { return !value.image; }
 
         static void constructDeletedValue(CacheEntry& slot) { ImageTraits::constructDeletedValue(slot.image); }
@@ -79,7 +79,7 @@ public:
         {
             return a.image == b.image && a.rect == b.rect;
         }
-        static const bool safeToCompareToEmptyOrDeleted = true;
+        static constexpr bool safeToCompareToEmptyOrDeleted = true;
     };
 
     static RetainPtr<CGImageRef> getSubimage(CGImageRef, const FloatRect&);

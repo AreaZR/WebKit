@@ -85,12 +85,12 @@ inline void add(Hasher& hasher, const IDBResourceIdentifier& identifier)
 struct IDBResourceIdentifierHash {
     static unsigned hash(const IDBResourceIdentifier& a) { return computeHash(a); }
     static bool equal(const IDBResourceIdentifier& a, const IDBResourceIdentifier& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 struct IDBResourceIdentifierHashTraits : WTF::CustomHashTraits<IDBResourceIdentifier> {
-    static const bool hasIsEmptyValueFunction = true;
-    static const bool emptyValueIsZero = false;
+    static constexpr bool hasIsEmptyValueFunction = true;
+    static constexpr bool emptyValueIsZero = false;
 
     static IDBResourceIdentifier emptyValue()
     {

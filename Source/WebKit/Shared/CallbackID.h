@@ -99,7 +99,7 @@ namespace WTF {
 struct CallbackIDHash {
     static unsigned hash(const WebKit::CallbackID& callbackID) { return intHash(callbackID.m_id); }
     static bool equal(const WebKit::CallbackID& a, const WebKit::CallbackID& b) { return a.m_id == b.m_id; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 template<> struct HashTraits<WebKit::CallbackID> : GenericHashTraits<WebKit::CallbackID> {
     static WebKit::CallbackID emptyValue() { return WebKit::CallbackID(); }

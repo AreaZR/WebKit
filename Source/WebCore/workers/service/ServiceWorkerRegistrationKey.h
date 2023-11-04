@@ -86,7 +86,7 @@ namespace WTF {
 struct ServiceWorkerRegistrationKeyHash {
     static unsigned hash(const WebCore::ServiceWorkerRegistrationKey& key) { return computeHash(key); }
     static bool equal(const WebCore::ServiceWorkerRegistrationKey& a, const WebCore::ServiceWorkerRegistrationKey& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 template<> struct HashTraits<WebCore::ServiceWorkerRegistrationKey> : GenericHashTraits<WebCore::ServiceWorkerRegistrationKey> {

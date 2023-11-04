@@ -129,7 +129,7 @@ struct CookieHash {
     {
         return a == b;
     }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 }
@@ -142,7 +142,7 @@ namespace WTF {
         static void constructDeletedValue(WebCore::Cookie& slot) { new (NotNull, &slot.name) String(WTF::HashTableDeletedValue); }
         static bool isDeletedValue(const WebCore::Cookie& slot) { return slot.name.isHashTableDeletedValue(); }
 
-        static const bool hasIsEmptyValueFunction = true;
+        static constexpr bool hasIsEmptyValueFunction = true;
         static bool isEmptyValue(const WebCore::Cookie& slot) { return slot.isNull(); }
     };
     template<> struct EnumTraits<WebCore::Cookie::SameSitePolicy> {

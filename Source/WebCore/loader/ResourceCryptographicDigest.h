@@ -89,7 +89,7 @@ template<> struct DefaultHash<WebCore::ResourceCryptographicDigest> {
     {
         return a == b;
     }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 template<> struct HashTraits<WebCore::ResourceCryptographicDigest> : GenericHashTraits<WebCore::ResourceCryptographicDigest> {
@@ -98,7 +98,7 @@ template<> struct HashTraits<WebCore::ResourceCryptographicDigest> : GenericHash
     static constexpr auto emptyAlgorithmValue = static_cast<Algorithm>(std::numeric_limits<AlgorithmUnderlyingType>::max());
     static constexpr auto deletedAlgorithmValue = static_cast<Algorithm>(std::numeric_limits<AlgorithmUnderlyingType>::max() - 1);
 
-    static const bool emptyValueIsZero = false;
+    static constexpr bool emptyValueIsZero = false;
 
     static WebCore::ResourceCryptographicDigest emptyValue()
     {

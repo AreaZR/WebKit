@@ -58,7 +58,7 @@ inline void add(Hasher& hasher, const CharacterFallbackMapKey& key)
 struct CharacterFallbackMapKeyHash {
     static unsigned hash(const CharacterFallbackMapKey& key) { return computeHash(key); }
     static bool equal(const CharacterFallbackMapKey& a, const CharacterFallbackMapKey& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 class SystemFallbackFontCache {

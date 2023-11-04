@@ -59,7 +59,7 @@ private:
 namespace WTF {
 
 template<> struct HashTraits<DeletedAddressOfOperator> : public GenericHashTraits<DeletedAddressOfOperator> {
-    static const bool emptyValueIsZero = true;
+    static constexpr bool emptyValueIsZero = true;
 
     static void constructDeletedValue(DeletedAddressOfOperator& slot) { slot = DeletedAddressOfOperator(std::numeric_limits<unsigned>::max()); }
     static bool isDeletedValue(const DeletedAddressOfOperator& slot) { return slot.value() == std::numeric_limits<unsigned>::max(); }
@@ -76,7 +76,7 @@ template<> struct DefaultHash<DeletedAddressOfOperator> {
         return a == b;
     }
 
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
     static constexpr bool hasHashInValue = true; // This is not correct, but for debugging of RobinHoodHashSet.
 };
 }

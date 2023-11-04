@@ -37,7 +37,7 @@ using SharedStringHash = uint32_t;
 struct SharedStringHashHash {
     static unsigned hash(SharedStringHash key) { return static_cast<unsigned>(key); }
     static bool equal(SharedStringHash a, SharedStringHash b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
     static constexpr SharedStringHash deletedValue = std::numeric_limits<SharedStringHash>::max();
 };
 

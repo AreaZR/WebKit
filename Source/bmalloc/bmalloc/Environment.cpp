@@ -110,9 +110,9 @@ static bool isLibgmallocEnabled()
 static bool isSanitizerEnabled()
 {
 #if BOS(DARWIN)
-    static const char sanitizerPrefix[] = "/libclang_rt.";
-    static const char asanName[] = "asan_";
-    static const char tsanName[] = "tsan_";
+    static const char *sanitizerPrefix = "/libclang_rt.";
+    static const char *asanName = "asan_";
+    static const char *tsanName = "tsan_";
     uint32_t imageCount = _dyld_image_count();
     for (uint32_t i = 0; i < imageCount; ++i) {
         const char* imageName = _dyld_get_image_name(i);

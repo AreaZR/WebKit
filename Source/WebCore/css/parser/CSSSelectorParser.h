@@ -131,7 +131,7 @@ void add(Hasher&, const CSSSelectorParserContext&);
 struct CSSSelectorParserContextHash {
     static unsigned hash(const CSSSelectorParserContext& context) { return computeHash(context); }
     static bool equal(const CSSSelectorParserContext& a, const CSSSelectorParserContext& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 } // namespace WebCore

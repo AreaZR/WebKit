@@ -47,7 +47,7 @@ namespace WTF {
 struct WebFoundTextRangeHash {
     static unsigned hash(const WebKit::WebFoundTextRange& range) { return pairIntHash(range.location, range.length); }
     static bool equal(const WebKit::WebFoundTextRange& a, const WebKit::WebFoundTextRange& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 template<> struct HashTraits<WebKit::WebFoundTextRange> : GenericHashTraits<WebKit::WebFoundTextRange> {

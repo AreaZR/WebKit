@@ -223,7 +223,7 @@ namespace WTF {
 struct SlotPositionHash {
     static unsigned hash(const WebCore::Layout::SlotPosition& slotPosition) { return pairIntHash(slotPosition.column, slotPosition.row); }
     static bool equal(const WebCore::Layout::SlotPosition& a, const WebCore::Layout::SlotPosition& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 template<> struct HashTraits<WebCore::Layout::SlotPosition> : GenericHashTraits<WebCore::Layout::SlotPosition> {
     static WebCore::Layout::SlotPosition emptyValue() { return WebCore::Layout::SlotPosition(0, std::numeric_limits<size_t>::max()); }

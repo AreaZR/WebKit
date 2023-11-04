@@ -30,7 +30,7 @@ namespace WTF {
 struct IntPointHash {
     static unsigned hash(const WebCore::IntPoint& p) { return pairIntHash(p.x(), p.y()); }
     static bool equal(const WebCore::IntPoint& a, const WebCore::IntPoint& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 template<> struct HashTraits<WebCore::IntPoint> : GenericHashTraits<WebCore::IntPoint> {
     static WebCore::IntPoint emptyValue() { return WebCore::IntPoint(0, std::numeric_limits<int>::min()); }

@@ -88,7 +88,7 @@ struct IntegerArrayHashTraits : HashTraits<IntegerArray> {
 struct IntegerArrayHash {
     static unsigned hash(const IntegerArray& array) { return computeHash(array); }
     static bool equal(const IntegerArray&, const IntegerArray&);
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 bool IntegerArrayHash::equal(const IntegerArray& a, const IntegerArray& b)

@@ -824,7 +824,7 @@ namespace WTF {
 template<> struct DefaultHash<WebCore::LayoutUnit> {
     static unsigned hash(const WebCore::LayoutUnit& p) { return DefaultHash<int>::hash(p.rawValue()); }
     static bool equal(const WebCore::LayoutUnit& a, const WebCore::LayoutUnit& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 // The empty value is INT_MIN, the deleted value is INT_MAX. During the course of layout

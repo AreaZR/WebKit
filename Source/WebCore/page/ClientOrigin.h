@@ -62,7 +62,7 @@ namespace WTF {
 struct ClientOriginKeyHash {
     static unsigned hash(const WebCore::ClientOrigin& key) { return computeHash(key); }
     static bool equal(const WebCore::ClientOrigin& a, const WebCore::ClientOrigin& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 template<> struct HashTraits<WebCore::ClientOrigin> : GenericHashTraits<WebCore::ClientOrigin> {

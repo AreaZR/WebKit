@@ -92,11 +92,11 @@ template<> struct DefaultHash<WebCore::AnimatableProperty> {
         );
     }
     static bool equal(const WebCore::AnimatableProperty& a, const WebCore::AnimatableProperty& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 template<> struct HashTraits<WebCore::AnimatableProperty> : GenericHashTraits<WebCore::AnimatableProperty> {
-    static const bool emptyValueIsZero = true;
+    static constexpr bool emptyValueIsZero = true;
     static void constructDeletedValue(WebCore::AnimatableProperty& slot) {
         WebCore::CSSPropertyID property;
         HashTraits<WebCore::CSSPropertyID>::constructDeletedValue(property);

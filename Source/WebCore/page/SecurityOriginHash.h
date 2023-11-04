@@ -64,7 +64,7 @@ struct SecurityOriginHash {
         return equal(a.get(), b.get());
     }
 
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 } // namespace WebCore

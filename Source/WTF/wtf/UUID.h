@@ -133,7 +133,7 @@ inline void add(Hasher& hasher, UUID uuid)
 struct UUIDHash {
     static unsigned hash(const UUID& key) { return computeHash(key); }
     static bool equal(const UUID& a, const UUID& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 template<> struct HashTraits<UUID> : GenericHashTraits<UUID> {

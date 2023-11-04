@@ -78,7 +78,7 @@ namespace WTF {
 struct GlobalFrameIDHash {
     static unsigned hash(const WebKit::NetworkCache::GlobalFrameID& key) { return computeHash(key); }
     static bool equal(const WebKit::NetworkCache::GlobalFrameID& a, const WebKit::NetworkCache::GlobalFrameID& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 template<> struct HashTraits<WebKit::NetworkCache::GlobalFrameID> : GenericHashTraits<WebKit::NetworkCache::GlobalFrameID> {

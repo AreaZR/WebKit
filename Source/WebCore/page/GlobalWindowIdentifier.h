@@ -55,7 +55,7 @@ namespace WTF {
 struct GlobalWindowIdentifierHash {
     static unsigned hash(const WebCore::GlobalWindowIdentifier& key) { return computeHash(key); }
     static bool equal(const WebCore::GlobalWindowIdentifier& a, const WebCore::GlobalWindowIdentifier& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = true;
+    static constexpr bool safeToCompareToEmptyOrDeleted = true;
 };
 
 template<> struct HashTraits<WebCore::GlobalWindowIdentifier> : GenericHashTraits<WebCore::GlobalWindowIdentifier> {

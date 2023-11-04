@@ -177,8 +177,8 @@ inline void add(Hasher& hasher, const SecurityOriginData::Tuple& tuple)
 }
 
 struct SecurityOriginDataHashTraits : SimpleClassHashTraits<SecurityOriginData> {
-    static const bool hasIsEmptyValueFunction = true;
-    static const bool emptyValueIsZero = false;
+    static constexpr bool hasIsEmptyValueFunction = true;
+    static constexpr bool emptyValueIsZero = false;
     static bool isEmptyValue(const SecurityOriginData& data) { return data.isNull(); }
 };
 
@@ -187,7 +187,7 @@ struct SecurityOriginDataHash {
     static unsigned hash(const std::optional<SecurityOriginData>& data) { return computeHash(data); }
     static bool equal(const SecurityOriginData& a, const SecurityOriginData& b) { return a == b; }
     static bool equal(const std::optional<SecurityOriginData>& a, const std::optional<SecurityOriginData>& b) { return a == b; }
-    static const bool safeToCompareToEmptyOrDeleted = false;
+    static constexpr bool safeToCompareToEmptyOrDeleted = false;
 };
 
 struct SecurityOriginDataMarkableTraits {

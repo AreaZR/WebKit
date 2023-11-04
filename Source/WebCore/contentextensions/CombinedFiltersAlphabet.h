@@ -50,7 +50,7 @@ private:
         {
             return *a == *b;
         }
-        static const bool safeToCompareToEmptyOrDeleted = false;
+        static constexpr bool safeToCompareToEmptyOrDeleted = false;
     };
 
     HashSet<const Term*, TermPointerHash> m_uniqueTerms;
