@@ -54,41 +54,17 @@ namespace WebKit {
 
 static bool canUseWebPrivacyFramework()
 {
-#if HAVE(SYSTEM_SUPPORT_FOR_ADVANCED_PRIVACY_PROTECTIONS)
     return PAL::isWebPrivacyFrameworkAvailable();
-#else
-    // On macOS Monterey where WebPrivacy is present as a staged framework, attempts to soft-link the framework may fail.
-    // Instead of using dlopen, we instead check for the presence of `WPResources`; the call to dlopen is not necessary because
-    // we weak-link against the framework, so the class should be present as long as the framework has been successfully linked.
-    // FIXME: This workaround can be removed once we drop support for macOS Monterey, and we can use the standard soft-linking
-    // helpers from WebPrivacySoftLink.
-    static bool hasWPResourcesClass = [&] {
-        return !!PAL::getWPResourcesClass();
-    }();
-    return hasWPResourcesClass;
-#endif
 }
 
 static NSNotificationName resourceDataChangedNotificationName()
 {
-#if HAVE(SYSTEM_SUPPORT_FOR_ADVANCED_PRIVACY_PROTECTIONS)
     return PAL::get_WebPrivacy_WPResourceDataChangedNotificationName();
-#else
-    // FIXME: This workaround can be removed once we drop support for macOS Monterey, and we can use the standard soft-linking
-    // helpers from WebPrivacySoftLink.
-    return @"WPResourceDataChangedNotificationName";
-#endif
 }
 
 static NSString *notificationUserInfoResourceTypeKey()
 {
-#if HAVE(SYSTEM_SUPPORT_FOR_ADVANCED_PRIVACY_PROTECTIONS)
     return PAL::get_WebPrivacy_WPNotificationUserInfoResourceTypeKey();
-#else
-    // FIXME: This workaround can be removed once we drop support for macOS Monterey, and we can use the standard soft-linking
-    // helpers from WebPrivacySoftLink.
-    return @"ResourceType";
-#endif
 }
 
 } // namespace WebKit

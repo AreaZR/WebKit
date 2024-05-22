@@ -118,9 +118,7 @@ class TestFactory(Factory):
         if platform.startswith('win') or platform.startswith('mac') or platform.startswith('ios-simulator'):
             self.addStep(RunAPITests())
 
-        # FIXME: Re-enable these tests for Monterey once webkit.org/b/239463 is resolved.
-        if platform.startswith('mac') and (platform != 'mac-monterey'):
-            self.addStep(RunLLDBWebKitTests())
+        self.addStep(RunLLDBWebKitTests())
 
         self.addStep(RunWebKitPyTests())
         self.addStep(RunPerlTests())
