@@ -321,7 +321,7 @@ void ProcessLauncher::finishLaunchingProcess(ASCIILiteral name)
     // 1. When the application and system frameworks simply have different localized resources available, we should match the application.
     // 1.1. An important case is WebKitTestRunner, where we should use English localizations for all system frameworks.
     // 2. When AppleLanguages is passed as command line argument for UI process, or set in its preferences, we should respect it in child processes.
-    auto initializationMessage = adoptOSObject(xpc_dictionary_create(nullptr, nullptr, 0));
+    auto initializationMessage = adoptOSObject(xpc_dictionary_create_empty());
     _CFBundleSetupXPCBootstrap(initializationMessage.get());
 
     // Create the listening port.
@@ -352,7 +352,7 @@ void ProcessLauncher::finishLaunchingProcess(ASCIILiteral name)
         clientIdentifier = [[NSBundle mainBundle] bundleIdentifier];
 
     // FIXME: Switch to xpc_connection_set_bootstrap once it's available everywhere we need.
-    auto bootstrapMessage = adoptOSObject(xpc_dictionary_create(nullptr, nullptr, 0));
+    auto bootstrapMessage = adoptOSObject(xpc_dictionary_create_empty());
 
 #if PLATFORM(MAC) || PLATFORM(MACCATALYST)
     xpc_dictionary_set_string(bootstrapMessage.get(), "WebKitBundleVersion", WEBKIT_BUNDLE_VERSION);
@@ -361,7 +361,7 @@ void ProcessLauncher::finishLaunchingProcess(ASCIILiteral name)
     auto languagesIterator = m_launchOptions.extraInitializationData.find<HashTranslatorASCIILiteral>("OverrideLanguages"_s);
     if (languagesIterator != m_launchOptions.extraInitializationData.end()) {
         LOG_WITH_STREAM(Language, stream << "Process Launcher is copying OverrideLanguages into initialization message: " << languagesIterator->value);
-        auto languages = adoptOSObject(xpc_array_create(nullptr, 0));
+        auto languages = adoptOSObject(xpc_array_create_empty());
         for (auto language : StringView(languagesIterator->value).split(','))
             xpc_array_set_string(languages.get(), XPC_ARRAY_APPEND, language.utf8().data());
         xpc_dictionary_set_value(bootstrapMessage.get(), "OverrideLanguages", languages.get());
@@ -369,7 +369,7 @@ void ProcessLauncher::finishLaunchingProcess(ASCIILiteral name)
 
 #if PLATFORM(IOS_FAMILY)
     // Clients that set these environment variables explicitly do not have the values automatically forwarded by libxpc.
-    auto containerEnvironmentVariables = adoptOSObject(xpc_dictionary_create(nullptr, nullptr, 0));
+    auto containerEnvironmentVariables = adoptOSObject(xpc_dictionary_create_empty());
     if (const char* environmentHOME = getenv("HOME"))
         xpc_dictionary_set_string(containerEnvironmentVariables.get(), "HOME", environmentHOME);
     if (const char* environmentCFFIXED_USER_HOME = getenv("CFFIXED_USER_HOME"))
@@ -420,7 +420,7 @@ void ProcessLauncher::finishLaunchingProcess(ASCIILiteral name)
     auto sdkBehaviors = sdkAlignedBehaviors();
     xpc_dictionary_set_data(bootstrapMessage.get(), "client-sdk-aligned-behaviors", sdkBehaviors.storage(), sdkBehaviors.storageLengthInBytes());
 
-    auto extraInitializationData = adoptOSObject(xpc_dictionary_create(nullptr, nullptr, 0));
+    auto extraInitializationData = adoptOSObject(xpc_dictionary_create_empty());
 
     for (const auto& keyValuePair : m_launchOptions.extraInitializationData)
         xpc_dictionary_set_string(extraInitializationData.get(), keyValuePair.key.utf8().data(), keyValuePair.value.utf8().data());
